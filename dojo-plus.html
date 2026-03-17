@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DOJO+ | Encuentra Tu Arte</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="dojo-plus-styles.css">
+</head>
+<body>
+
+<!-- ===== NAVIGATION ===== -->
+<nav>
+  <div class="nav-logo" onclick="goTo('home')">DOJO<span>+</span></div>
+  <ul class="nav-links">
+    <li class="active" onclick="goTo('home')">Inicio</li>
+    <li onclick="goTo('school')">Escuelas</li>
+    <li onclick="goTo('trainer')">Entrenadores</li>
+    <li onclick="goTo('event')">Eventos</li>
+    <li onclick="goTo('plans')">Planes</li>
+  </ul>
+  <div class="nav-right">
+    <div id="navAuth">
+      <button class="btn-login" onclick="goTo('login')">Ingresar</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ===================================================
+     SCREEN 1 — HOME / SEARCH
+     =================================================== -->
+<div class="screen active" id="screen-home">
+
+  <section class="hero-section">
+    <div class="hero-eyebrow">🥋 La plataforma de artes marciales #1 en Colombia</div>
+    <h1 class="hero-headline">ENCUENTRA TU ARTE.<br><span>ENTRENA EN</span> TU CIUDAD.</h1>
+    <p class="hero-sub">Conectamos escuelas, entrenadores y eventos con personas apasionadas por las artes marciales.</p>
+    <div class="search-bar-wrap">
+      <input class="search-input" type="text" placeholder="Busca BJJ, Boxeo, Muay Thai, Karate...">
+      <button class="search-btn">🔍</button>
+    </div>
+  </section>
+  
+
+  <div class="filters-section">
+    <div class="filter-row">
+      <span class="filter-label">Tipo</span>
+      <button class="pill active" onclick="togglePill(this,'tipo')">Escuela</button>
+      <button class="pill" onclick="togglePill(this,'tipo')">Personalizado</button>
+      <button class="pill" onclick="togglePill(this,'tipo')">Evento</button>
+    </div>
+    <div class="filter-row">
+      <span class="filter-label">Horario</span>
+      <button class="pill" onclick="togglePill(this,'horario')">Mañana</button>
+      <button class="pill" onclick="togglePill(this,'horario')">Tarde</button>
+      <button class="pill active" onclick="togglePill(this,'horario')">Noche</button>
+    </div>
+    <div class="filter-row">
+      <span class="filter-label">Ciudad</span>
+      <button class="pill active" onclick="togglePill(this,'ciudad')">Cali</button>
+      <button class="pill" onclick="togglePill(this,'ciudad')">Bogotá</button>
+    </div>
+  </div>
+
+  <div class="home-sections">
+
+    <!-- Escuelas Populares -->
+    <div class="home-section">
+      <div class="section-header">
+        <h2 class="section-title">ESCUELAS POPULARES</h2>
+        <a class="see-all" onclick="goTo('school')">VER TODAS →</a>
+      </div>
+      <div class="h-scroll">
+        <div class="card school-card" onclick="goTo('school')">
+          <div class="school-card-img">🥋</div>
+          <div class="school-card-body">
+            <div class="school-card-name">Alliance BJJ Cali</div>
+            <div class="school-card-city">📍 Cali, Valle</div>
+            <div><span class="tag">BJJ</span> <span class="tag">Lucha</span></div>
+            <div class="school-card-foot">
+              <div class="stars">★★★★★ <span style="color:var(--gray);font-size:11px">(128)</span></div>
+              <div class="wa-icon">📲</div>
+            </div>
+          </div>
+        </div>
+        <div class="card school-card" onclick="goTo('school')">
+          <div class="school-card-img">🥊</div>
+          <div class="school-card-body">
+            <div class="school-card-name">Boxeo Élite Bogotá</div>
+            <div class="school-card-city">📍 Bogotá, DC</div>
+            <div><span class="tag">Boxeo</span></div>
+            <div class="school-card-foot">
+              <div class="stars">★★★★☆ <span style="color:var(--gray);font-size:11px">(87)</span></div>
+              <div class="wa-icon">📲</div>
+            </div>
+          </div>
+        </div>
+        <div class="card school-card" onclick="goTo('school')">
+          <div class="school-card-img" style="font-size:42px">🦵</div>
+          <div class="school-card-body">
+            <div class="school-card-name">Tiger Muay Thai CO</div>
+            <div class="school-card-city">📍 Cali, Valle</div>
+            <div><span class="tag">Muay Thai</span> <span class="tag">Kickboxing</span></div>
+            <div class="school-card-foot">
+              <div class="stars">★★★★★ <span style="color:var(--gray);font-size:11px">(204)</span></div>
+              <div class="wa-icon">📲</div>
+            </div>
+          </div>
+        </div>
+        <div class="card school-card" onclick="goTo('school')">
+          <div class="school-card-img">🥋</div>
+          <div class="school-card-body">
+            <div class="school-card-name">Karate Shotokan CVC</div>
+            <div class="school-card-city">📍 Cali, Valle</div>
+            <div><span class="tag">Karate</span></div>
+            <div class="school-card-foot">
+              <div class="stars">★★★★☆ <span style="color:var(--gray);font-size:11px">(63)</span></div>
+              <div class="wa-icon">📲</div>
+            </div>
+          </div>
+        </div>
+        <div class="card school-card" onclick="goTo('school')">
+          <div class="school-card-img">⚔️</div>
+          <div class="school-card-body">
+            <div class="school-card-name">MMA Factory Bogotá</div>
+            <div class="school-card-city">📍 Bogotá, DC</div>
+            <div><span class="tag">MMA</span> <span class="tag">Grappling</span></div>
+            <div class="school-card-foot">
+              <div class="stars">★★★★★ <span style="color:var(--gray);font-size:11px">(156)</span></div>
+              <div class="wa-icon">📲</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Próximos Eventos -->
+    <div class="home-section">
+      <div class="section-header">
+        <h2 class="section-title">PRÓXIMOS EVENTOS</h2>
+        <a class="see-all" onclick="goTo('event')">VER TODOS →</a>
+      </div>
+      <div class="h-scroll">
+        <div class="card event-card" onclick="goTo('event')">
+          <div class="event-poster">🏆</div>
+          <div class="event-card-body">
+            <div class="event-name">Copa Valle BJJ Open 2025</div>
+            <span class="tag">BJJ · Gi</span>
+            <div class="event-date">📅 15 Feb · Cali</div>
+          </div>
+        </div>
+        <div class="card event-card" onclick="goTo('event')">
+          <div class="event-poster" style="background:linear-gradient(160deg,#0a1a0a,#0a2a1a)">🥊</div>
+          <div class="event-card-body">
+            <div class="event-name">Noche de Boxeo Colombia</div>
+            <span class="tag">Boxeo</span>
+            <div class="event-date">📅 22 Feb · Bogotá</div>
+          </div>
+        </div>
+        <div class="card event-card" onclick="goTo('event')">
+          <div class="event-poster" style="background:linear-gradient(160deg,#1a0a0a,#2a1a0a)">🦵</div>
+          <div class="event-card-body">
+            <div class="event-name">Muay Thai Gran Prix</div>
+            <span class="tag">Muay Thai</span>
+            <div class="event-date">📅 8 Mar · Cali</div>
+          </div>
+        </div>
+        <div class="card event-card" onclick="goTo('event')">
+          <div class="event-poster" style="background:linear-gradient(160deg,#0a0a1a,#1a0a2a)">⚔️</div>
+          <div class="event-card-body">
+            <div class="event-name">MMA Showdown Bogotá</div>
+            <span class="tag">MMA</span>
+            <div class="event-date">📅 20 Mar · Bogotá</div>
+          </div>
+        </div>
+        <div class="card event-card" onclick="goTo('event')">
+          <div class="event-poster" style="background:linear-gradient(160deg,#1a1a0a,#2a1a0a)">🎌</div>
+          <div class="event-card-body">
+            <div class="event-name">Torneo Nacional Judo</div>
+            <span class="tag">Judo</span>
+            <div class="event-date">📅 5 Abr · Cali</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Entrenadores Destacados -->
+    <div class="home-section">
+      <div class="section-header">
+        <h2 class="section-title">ENTRENADORES DESTACADOS</h2>
+        <a class="see-all" onclick="goTo('trainer')">VER TODOS →</a>
+      </div>
+      <div class="h-scroll">
+        <div class="card trainer-card" onclick="goTo('trainer')">
+          <div class="trainer-photo-wrap"><div class="trainer-photo">🥋</div></div>
+          <div class="trainer-card-body">
+            <div class="trainer-name">Carlos Medina</div>
+            <div class="tags-wrap"><span class="tag">BJJ</span><span class="tag">Grappling</span></div>
+            <div class="trainer-exp">⚡ 12 años de exp.</div>
+          </div>
+        </div>
+        <div class="card trainer-card" onclick="goTo('trainer')">
+          <div class="trainer-photo-wrap"><div class="trainer-photo" style="background:linear-gradient(135deg,#1a4a7a,#0a2a4a)">🥊</div></div>
+          <div class="trainer-card-body">
+            <div class="trainer-name">Juan Rodríguez</div>
+            <div class="tags-wrap"><span class="tag">Boxeo</span><span class="tag">MMA</span></div>
+            <div class="trainer-exp">⚡ 8 años de exp.</div>
+          </div>
+        </div>
+        <div class="card trainer-card" onclick="goTo('trainer')">
+          <div class="trainer-photo-wrap"><div class="trainer-photo" style="background:linear-gradient(135deg,#4a1a2a,#2a0a1a)">🦵</div></div>
+          <div class="trainer-card-body">
+            <div class="trainer-name">Ana Gómez</div>
+            <div class="tags-wrap"><span class="tag">Muay Thai</span><span class="tag">Kickboxing</span></div>
+            <div class="trainer-exp">⚡ 6 años de exp.</div>
+          </div>
+        </div>
+        <div class="card trainer-card" onclick="goTo('trainer')">
+          <div class="trainer-photo-wrap"><div class="trainer-photo" style="background:linear-gradient(135deg,#1a2a4a,#0a1a3a)">🎌</div></div>
+          <div class="trainer-card-body">
+            <div class="trainer-name">Luis Caicedo</div>
+            <div class="tags-wrap"><span class="tag">Judo</span><span class="tag">Wrestling</span></div>
+            <div class="trainer-exp">⚡ 15 años de exp.</div>
+          </div>
+        </div>
+        <div class="card trainer-card" onclick="goTo('trainer')">
+          <div class="trainer-photo-wrap"><div class="trainer-photo" style="background:linear-gradient(135deg,#2a3a1a,#1a2a0a)">🏆</div></div>
+          <div class="trainer-card-body">
+            <div class="trainer-name">Diego Torres</div>
+            <div class="tags-wrap"><span class="tag">Karate</span></div>
+            <div class="trainer-exp">⚡ 18 años de exp.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===================================================
+     SCREEN 2 — SCHOOL DETAIL
+     =================================================== -->
+<div class="screen" id="screen-school">
+  <div class="hero-detail">
+    <div class="hero-detail-bg">🥋</div>
+    <div class="hero-detail-overlay"></div>
+    <div class="hero-detail-content">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+        <span class="tag gold">⭐ RECOMENDADO</span>
+        <div class="city-badge">📍 Cali, Valle del Cauca</div>
+      </div>
+      <h1 style="font-size:clamp(32px,5vw,52px);margin-bottom:10px">Alliance BJJ Cali</h1>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <span class="tag">BJJ</span>
+        <span class="tag">Grappling</span>
+        <span class="tag">No-Gi</span>
+        <div class="stars" style="margin-left:8px">★★★★★ <span style="color:var(--gray);font-size:12px">(128 reseñas)</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content-wrap">
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab(this,'school-desc')">Descripción</button>
+      <button class="tab-btn" onclick="switchTab(this,'school-inst')">Instalaciones</button>
+      <button class="tab-btn" onclick="switchTab(this,'school-prof')">Profesores</button>
+      <button class="tab-btn" onclick="switchTab(this,'school-hor')">Horarios</button>
+    </div>
+
+    <div class="tab-content active" id="tab-school-desc">
+      <div class="section-card">
+        <div class="section-card-title">🏫 Sobre la Escuela</div>
+        <p style="font-size:15px;line-height:1.7;color:rgba(255,255,255,0.8);margin-bottom:20px">
+          Alliance BJJ Cali es una de las academias de Jiu-Jitsu Brasileño más reconocidas de Colombia. Afiliada a la red mundial Alliance Jiu-Jitsu, ofrecemos programas para todos los niveles — desde principiantes absolutos hasta competidores de alto rendimiento.
+        </p>
+        <div style="display:flex;gap:12px;flex-wrap:wrap">
+          <div class="badge">🗓 Desde 2012 · 13 años</div>
+          <div class="badge">👥 +400 estudiantes</div>
+          <div class="badge">🌎 Afiliada Alliance Global</div>
+        </div>
+      </div>
+      <div class="section-card">
+        <div class="section-card-title">🏆 Logros y Títulos</div>
+        <div class="achievement-item">
+          <span class="achievement-icon">🥇</span>
+          <div><div style="font-weight:600">Campeones Nacionales CBJJ 2024</div><div style="font-size:12px;color:var(--gray)">Categoría Absoluta · División Adultos</div></div>
+        </div>
+        <div class="achievement-item">
+          <span class="achievement-icon">🏅</span>
+          <div><div style="font-weight:600">Copa Valle de Jiu-Jitsu · 1er Puesto</div><div style="font-size:12px;color:var(--gray)">2023 · Múltiples categorías</div></div>
+        </div>
+        <div class="achievement-item">
+          <span class="achievement-icon">🌟</span>
+          <div><div style="font-weight:600">IBJJF Pan American Games</div><div style="font-size:12px;color:var(--gray)">2022 · Semifinalistas</div></div>
+        </div>
+        <div class="achievement-item" style="border-bottom:none">
+          <span class="achievement-icon">🎖</span>
+          <div><div style="font-weight:600">Mejor Academia Colombia · BJJF</div><div style="font-size:12px;color:var(--gray)">2021 · Premio Nacional</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-content" id="tab-school-inst">
+      <div class="section-card">
+        <div class="section-card-title">🏋️ Galería de Instalaciones</div>
+        <div class="photo-grid">
+          <div class="photo-grid-item" style="background:linear-gradient(135deg,#1a0a0a,#2a1515)">🥋<br><span style="font-size:12px;color:var(--gray)">Tatami Principal</span></div>
+          <div class="photo-grid-item" style="background:linear-gradient(135deg,#0a0a1a,#15152a)">🏋️<br><span style="font-size:12px;color:var(--gray)">Área de Pesas</span></div>
+          <div class="photo-grid-item" style="background:linear-gradient(135deg,#0a1a0a,#15251a)">🚿<br><span style="font-size:12px;color:var(--gray)">Vestuarios</span></div>
+          <div class="photo-grid-item" style="background:linear-gradient(135deg,#1a1a0a,#2a2a15)">🥊<br><span style="font-size:12px;color:var(--gray)">Área de Striking</span></div>
+        </div>
+        <div style="margin-top:20px">
+          <div class="achievement-item"><span class="achievement-icon">📐</span><span>Tatami de 300 m² con colchonetas de alta calidad</span></div>
+          <div class="achievement-item"><span class="achievement-icon">❄️</span><span>Aire acondicionado industrial en todas las áreas</span></div>
+          <div class="achievement-item" style="border-bottom:none"><span class="achievement-icon">🅿️</span><span>Parqueadero privado para estudiantes</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-content" id="tab-school-prof">
+      <div class="instructor-cards">
+        <div class="instructor-card">
+          <div class="instructor-photo">🥋</div>
+          <span class="belt-badge belt-black">Cinta Negra 3er Grado</span>
+          <div style="font-weight:700;margin-bottom:6px">Carlos Medina</div>
+          <div style="font-size:12px;color:var(--gray);line-height:1.5">Head Coach · Más de 12 años enseñando BJJ.</div>
+        </div>
+        <div class="instructor-card">
+          <div class="instructor-photo" style="background:linear-gradient(135deg,#4a1a6a,#2a0a4a)">🏆</div>
+          <span class="belt-badge belt-brown">Cinta Café</span>
+          <div style="font-weight:700;margin-bottom:6px">María Ospina</div>
+          <div style="font-size:12px;color:var(--gray);line-height:1.5">Instructora Principal · Competición femenina.</div>
+        </div>
+        <div class="instructor-card">
+          <div class="instructor-photo" style="background:linear-gradient(135deg,#6a3a1a,#4a1a0a)">⚡</div>
+          <span class="belt-badge belt-purple">Cinta Púrpura</span>
+          <div style="font-weight:700;margin-bottom:6px">Santiago Peña</div>
+          <div style="font-size:12px;color:var(--gray);line-height:1.5">Instructor Juvenil · Formación de jóvenes.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-content" id="tab-school-hor">
+      <div class="section-card">
+        <div class="section-card-title">📅 Horario Semanal</div>
+        <div style="overflow-x:auto">
+          <table class="schedule-table">
+            <thead>
+              <tr>
+                <th>Horario</th><th>LUN</th><th>MAR</th><th>MIÉ</th><th>JUE</th><th>VIE</th><th>SÁB</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span style="font-size:11px;color:var(--gold)">🌅 Mañana</span></td>
+                <td><span class="sched-morning">7:00 AM</span></td>
+                <td><span class="sched-empty">—</span></td>
+                <td><span class="sched-morning">7:00 AM</span></td>
+                <td><span class="sched-empty">—</span></td>
+                <td><span class="sched-morning">7:00 AM</span></td>
+                <td><span class="sched-morning">8:00 AM</span></td>
+              </tr>
+              <tr>
+                <td><span style="font-size:11px;color:#3498DB">☀️ Tarde</span></td>
+                <td><span class="sched-afternoon">3:00 PM</span></td>
+                <td><span class="sched-afternoon">3:00 PM</span></td>
+                <td><span class="sched-afternoon">3:00 PM</span></td>
+                <td><span class="sched-afternoon">3:00 PM</span></td>
+                <td><span class="sched-afternoon">3:00 PM</span></td>
+                <td><span class="sched-afternoon">10:00 AM</span></td>
+              </tr>
+              <tr>
+                <td><span style="font-size:11px;color:var(--red)">🌙 Noche</span></td>
+                <td><span class="sched-night">7:00 PM</span></td>
+                <td><span class="sched-night">7:00 PM</span></td>
+                <td><span class="sched-night">7:00 PM</span></td>
+                <td><span class="sched-night">7:00 PM</span></td>
+                <td><span class="sched-night">7:00 PM</span></td>
+                <td><span class="sched-empty">—</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="margin-top:16px;display:flex;gap:16px;flex-wrap:wrap">
+          <div style="font-size:12px;color:var(--gray)"><span class="sched-morning">Mañana</span> = Técnica Fundamental</div>
+          <div style="font-size:12px;color:var(--gray)"><span class="sched-afternoon">Tarde</span> = Sparring Abierto</div>
+          <div style="font-size:12px;color:var(--gray)"><span class="sched-night">Noche</span> = Entrenamiento Avanzado</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <div class="fixed-wa">
+    <button class="btn-wa"><span style="font-size:18px">📲</span> Contactar por WhatsApp</button>
+  </div>
+</div>
+
+<!-- ===================================================
+     SCREEN 3 — TRAINER DETAIL
+     =================================================== -->
+<div class="screen" id="screen-trainer">
+  <div class="trainer-hero" style="background:radial-gradient(ellipse at 50% 0%, rgba(192,57,43,0.12) 0%, transparent 60%)">
+    <div class="trainer-hero-photo">🥊</div>
+    <h1 class="trainer-hero-name">JUAN RODRÍGUEZ</h1>
+    <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:20px">
+      <span class="tag">Boxeo</span><span class="tag">Muay Thai</span><span class="tag">MMA</span>
+    </div>
+    <p style="max-width:500px;margin:0 auto;color:rgba(255,255,255,0.75);font-size:15px;line-height:1.7">
+      Entrenador certificado con experiencia en alto rendimiento. Campeón departamental de boxeo 3 veces consecutivas.
+    </p>
+  </div>
+
+  <div class="content-wrap">
+    <div class="section-card">
+      <div class="section-card-title">⚡ Experiencia</div>
+      <div style="display:flex;gap:16px;margin-bottom:20px;flex-wrap:wrap">
+        <div class="badge">🗓 8 años entrenando</div>
+        <div class="badge">👥 +200 atletas formados</div>
+        <div class="badge">🌎 Certificado AIBA</div>
+      </div>
+      <div class="exp-bar-wrap">
+        <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--gray);margin-bottom:4px"><span>Boxeo Técnico</span><span>Experto</span></div>
+        <div class="exp-bar"><div class="exp-bar-fill" style="width:95%"></div></div>
+      </div>
+      <div class="exp-bar-wrap" style="margin-top:12px">
+        <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--gray);margin-bottom:4px"><span>Muay Thai</span><span>Avanzado</span></div>
+        <div class="exp-bar"><div class="exp-bar-fill" style="width:80%"></div></div>
+      </div>
+      <div class="exp-bar-wrap" style="margin-top:12px">
+        <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--gray);margin-bottom:4px"><span>Preparación Física</span><span>Avanzado</span></div>
+        <div class="exp-bar"><div class="exp-bar-fill" style="width:85%"></div></div>
+      </div>
+      <div class="divider"></div>
+      <div class="achievement-item">
+        <span class="achievement-icon">🥇</span>
+        <div><div style="font-weight:600">Campeón Departamental Valle · 2022, 2023, 2024</div><div style="font-size:12px;color:var(--gray)">Boxeo Amateur · Peso Welter</div></div>
+      </div>
+      <div class="achievement-item" style="border-bottom:none">
+        <span class="achievement-icon">🏅</span>
+        <div><div style="font-weight:600">Selección Colombia Amateur · 2023</div><div style="font-size:12px;color:var(--gray)">Juegos Bolivarianos · Representante</div></div>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <div class="section-card-title">📅 Horarios Disponibles</div>
+      <p style="font-size:13px;color:var(--gray);margin-bottom:16px">Selecciona un bloque disponible para agendar tu clase</p>
+      <div class="avail-grid">
+        <div class="avail-header"></div>
+        <div class="avail-header">LUN</div><div class="avail-header">MAR</div><div class="avail-header">MIÉ</div>
+        <div class="avail-header">JUE</div><div class="avail-header">VIE</div><div class="avail-header">SÁB</div>
+        <div class="avail-label">🌅 7AM</div>
+        <div class="avail-slot free"></div><div class="avail-slot busy"></div><div class="avail-slot free"></div>
+        <div class="avail-slot busy"></div><div class="avail-slot free"></div><div class="avail-slot free"></div>
+        <div class="avail-label">☀️ 3PM</div>
+        <div class="avail-slot busy"></div><div class="avail-slot free"></div><div class="avail-slot busy"></div>
+        <div class="avail-slot free"></div><div class="avail-slot busy"></div><div class="avail-slot free"></div>
+        <div class="avail-label">🌙 7PM</div>
+        <div class="avail-slot free"></div><div class="avail-slot free"></div><div class="avail-slot busy"></div>
+        <div class="avail-slot free"></div><div class="avail-slot free"></div><div class="avail-slot busy"></div>
+      </div>
+      <div style="margin-top:14px;display:flex;gap:16px;font-size:12px;color:var(--gray)">
+        <div style="display:flex;align-items:center;gap:6px"><div style="width:12px;height:12px;border-radius:2px;background:rgba(192,57,43,0.3);border:1px solid var(--red)"></div> Disponible</div>
+        <div style="display:flex;align-items:center;gap:6px"><div style="width:12px;height:12px;border-radius:2px;background:var(--black3);border:1px solid var(--gray2)"></div> Ocupado</div>
+      </div>
+    </div>
+
+    <div style="text-align:center;margin-top:8px;font-size:14px;color:var(--gray)">
+      💵 Desde <strong style="color:var(--white)">$80.000 COP</strong> / sesión
+    </div>
+  </div>
+
+  <div class="fixed-wa">
+    <button class="btn-wa"><span style="font-size:18px">📲</span> Agendar con WhatsApp</button>
+  </div>
+</div>
+
+<!-- ===================================================
+     SCREEN 4 — EVENT DETAIL
+     =================================================== -->
+<div class="screen" id="screen-event">
+  <div style="max-width:480px;margin:0 auto;padding:24px 24px 0">
+    <div style="width:100%;aspect-ratio:3/4;border-radius:12px;overflow:hidden;background:linear-gradient(160deg,#1a0a0a,#2a0a0a,#0a0a1a);display:flex;align-items:center;justify-content:center;font-size:120px;border:1px solid rgba(192,57,43,0.2);box-shadow:0 8px 48px var(--red-glow)">🏆</div>
+  </div>
+
+  <div class="content-wrap">
+    <h1 style="font-size:clamp(32px,5vw,48px);margin-bottom:10px">COPA VALLE BJJ OPEN 2025</h1>
+    <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;align-items:center">
+      <span class="tag">BJJ · Gi</span><span class="tag">No-Gi</span><span class="tag gold">Torneo Oficial</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px">
+      <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--red),#7b1a12);display:flex;align-items:center;justify-content:center;font-size:18px;border:2px solid rgba(192,57,43,0.4)">🏢</div>
+      <div>
+        <div style="font-size:11px;color:var(--gray);text-transform:uppercase;font-weight:600;letter-spacing:0.06em">Organizado por</div>
+        <div style="font-size:14px;font-weight:700">Federación Colombiana de BJJ</div>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <div class="section-card-title">📋 Detalles del Evento</div>
+      <div class="detail-info-item">
+        <span class="detail-info-icon">📍</span>
+        <div><div class="detail-info-label">Ubicación</div><div>Coliseo El Pueblo, Cali — Valle del Cauca</div></div>
+      </div>
+      <div class="detail-info-item">
+        <span class="detail-info-icon">📅</span>
+        <div><div class="detail-info-label">Fecha y Hora</div><div>Sábado, 15 de Febrero 2025 · 8:00 AM – 6:00 PM</div></div>
+      </div>
+      <div class="detail-info-item">
+        <span class="detail-info-icon">🥋</span>
+        <div><div class="detail-info-label">Disciplina</div><div>BJJ · Gi y No-Gi · Todas las categorías</div></div>
+      </div>
+      <div class="detail-info-item" style="border-bottom:none">
+        <span class="detail-info-icon">🏢</span>
+        <div><div class="detail-info-label">Organizado por</div><div>Federación Colombiana de Jiu-Jitsu Brasileño (FCBJJ)</div></div>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <div class="section-card-title">📜 Reglamento</div>
+      <p style="font-size:14px;color:rgba(255,255,255,0.75);margin-bottom:16px;line-height:1.6">Descarga el reglamento oficial del torneo con todas las categorías y normas de competencia.</p>
+      <button class="btn-outline-red" style="display:flex;align-items:center;gap:10px">
+        <span style="font-size:18px">📄</span> Descargar Reglamento PDF
+      </button>
+    </div>
+
+    <div class="section-card">
+      <div class="section-card-title">✍️ Inscripción</div>
+      <div style="display:flex;gap:16px;flex-wrap:wrap">
+        <div style="text-align:center;flex:1;min-width:100px">
+          <div style="font-size:24px;font-family:'Bebas Neue',sans-serif;color:var(--red)">247</div>
+          <div style="font-size:12px;color:var(--gray)">Inscritos</div>
+        </div>
+        <div style="text-align:center;flex:1;min-width:100px">
+          <div style="font-size:24px;font-family:'Bebas Neue',sans-serif;color:var(--gold)">$80.000</div>
+          <div style="font-size:12px;color:var(--gray)">COP por categoría</div>
+        </div>
+        <div style="text-align:center;flex:1;min-width:100px">
+          <div style="font-size:24px;font-family:'Bebas Neue',sans-serif;color:var(--wa)">5</div>
+          <div style="font-size:12px;color:var(--gray)">Días restantes</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="fixed-wa">
+    <button class="btn-wa"><span style="font-size:18px">📲</span> Contactar al Organizador</button>
+  </div>
+</div>
+
+<!-- ===================================================
+     SCREEN 5 — LOGIN / REGISTER
+     =================================================== -->
+<div class="screen" id="screen-login">
+  <div class="login-hero">
+    <div class="login-box">
+
+      <!-- Step 1 -->
+      <div id="reg-step-1">
+        <div class="progress-steps">
+          <div class="step-dot active">1</div><div class="step-line"></div>
+          <div class="step-dot">2</div><div class="step-line"></div>
+          <div class="step-dot">3</div>
+        </div>
+        <h1 class="register-title">Crea tu cuenta</h1>
+        <p class="register-sub">Únete a la comunidad DOJO+</p>
+        <div class="form-group"><label class="form-label">Nombre completo</label><input class="form-input" type="text" placeholder="Ej: Carlos Medina"></div>
+        <div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" placeholder="tu@email.com"></div>
+        <div class="form-group"><label class="form-label">Contraseña</label><input class="form-input" type="password" placeholder="Mínimo 8 caracteres"></div>
+        <div class="form-group"><label class="form-label">Confirmar contraseña</label><input class="form-input" type="password" placeholder="Repite tu contraseña"></div>
+        <div class="form-group">
+          <label class="form-label">Ciudad</label>
+          <select class="form-input"><option value="">Selecciona tu ciudad</option><option>Cali</option><option>Bogotá</option></select>
+        </div>
+        <button class="btn-red" style="width:100%;justify-content:center;margin-top:8px" onclick="nextStep(2)">Continuar →</button>
+        <p style="text-align:center;margin-top:20px;font-size:14px;color:var(--gray)">¿Ya tienes cuenta? <a class="register-link" onclick="showLogin()">Inicia sesión</a></p>
+      </div>
+
+      <!-- Step 2 -->
+      <div id="reg-step-2" style="display:none">
+        <div class="progress-steps">
+          <div class="step-dot done">✓</div><div class="step-line"></div>
+          <div class="step-dot active">2</div><div class="step-line"></div>
+          <div class="step-dot">3</div>
+        </div>
+        <h1 class="register-title">Personaliza tu experiencia</h1>
+        <p class="register-sub">¿Qué artes marciales te interesan?</p>
+        <div class="disc-grid" style="margin-bottom:28px">
+          <div class="disc-card" onclick="toggleDisc(this)"><div class="disc-icon">🥋</div><div class="disc-name">BJJ</div></div>
+          <div class="disc-card selected" onclick="toggleDisc(this)"><div class="disc-icon">🥊</div><div class="disc-name">Boxeo</div></div>
+          <div class="disc-card" onclick="toggleDisc(this)"><div class="disc-icon">🦵</div><div class="disc-name">Muay Thai</div></div>
+          <div class="disc-card" onclick="toggleDisc(this)"><div class="disc-icon">🎌</div><div class="disc-name">Karate</div></div>
+          <div class="disc-card selected" onclick="toggleDisc(this)"><div class="disc-icon">🏅</div><div class="disc-name">Taekwondo</div></div>
+          <div class="disc-card" onclick="toggleDisc(this)"><div class="disc-icon">💪</div><div class="disc-name">Wrestling</div></div>
+          <div class="disc-card" onclick="toggleDisc(this)"><div class="disc-icon">⚔️</div><div class="disc-name">MMA</div></div>
+          <div class="disc-card" onclick="toggleDisc(this)"><div class="disc-icon">🎯</div><div class="disc-name">Judo</div></div>
+          <div class="disc-card" onclick="toggleDisc(this)"><div class="disc-icon">🔥</div><div class="disc-name">Kickboxing</div></div>
+          <div class="disc-card" onclick="toggleDisc(this)"><div class="disc-icon">🌊</div><div class="disc-name">Capoeira</div></div>
+        </div>
+        <button class="btn-red" style="width:100%;justify-content:center" onclick="nextStep(3)">Continuar →</button>
+      </div>
+
+      <!-- Step 3 -->
+      <div id="reg-step-3" style="display:none">
+        <div class="progress-steps">
+          <div class="step-dot done">✓</div><div class="step-line"></div>
+          <div class="step-dot done">✓</div><div class="step-line"></div>
+          <div class="step-dot active">3</div>
+        </div>
+        <h1 class="register-title">Horario preferido</h1>
+        <p class="register-sub">¿Cuándo sueles entrenar?</p>
+        <div class="sched-opt-grid" style="margin-bottom:28px">
+          <div class="sched-opt" onclick="selectSched(this)"><div class="sched-icon">🌅</div><div class="sched-time">Mañana</div><div class="sched-range">6am – 12pm</div></div>
+          <div class="sched-opt selected" onclick="selectSched(this)"><div class="sched-icon">☀️</div><div class="sched-time" style="color:var(--red)">Tarde</div><div class="sched-range">12pm – 6pm</div></div>
+          <div class="sched-opt" onclick="selectSched(this)"><div class="sched-icon">🌙</div><div class="sched-time">Noche</div><div class="sched-range">6pm – 10pm</div></div>
+        </div>
+        <button class="btn-red" style="width:100%;justify-content:center" onclick="finishRegister()">🎉 Finalizar Registro</button>
+      </div>
+
+      <!-- Login Form -->
+      <div id="login-form" style="display:none">
+        <h1 class="register-title">Bienvenido</h1>
+        <p class="register-sub">Inicia sesión en tu cuenta</p>
+        <div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" placeholder="tu@email.com"></div>
+        <div class="form-group"><label class="form-label">Contraseña</label><input class="form-input" type="password" placeholder="Tu contraseña"></div>
+        <button class="btn-red" style="width:100%;justify-content:center;margin-top:8px" onclick="finishRegister()">Iniciar Sesión</button>
+        <p style="text-align:center;margin-top:20px;font-size:14px;color:var(--gray)">¿No tienes cuenta? <a class="register-link" onclick="showRegister()">Regístrate gratis</a></p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ===================================================
+     SCREEN 6 — PLANS / PRICING
+     =================================================== -->
+<div class="screen" id="screen-plans">
+  <div style="padding:60px 24px 100px;max-width:1060px;margin:0 auto">
+
+    <div style="text-align:center;margin-bottom:56px">
+      <div class="hero-eyebrow" style="margin-bottom:12px">💼 Monetiza tu pasión</div>
+      <h1 style="font-size:clamp(42px,6vw,70px);margin-bottom:12px">ELIGE TU PLAN</h1>
+      <p style="font-size:16px;color:var(--gray);max-width:400px;margin:0 auto">Haz crecer tu escuela o perfil de entrenador en la plataforma #1 de artes marciales</p>
+    </div>
+
+    <div class="pricing-grid">
+      <!-- Basic Personalizado -->
+      <div class="price-card">
+        <div class="price-name">BASIC PERSONALIZADO</div>
+        <div style="font-size:12px;color:var(--gray);margin-bottom:4px">Para entrenadores independientes</div>
+        <div class="price-amount">$50.000</div>
+        <div class="price-period">COP / mes</div>
+        <ul class="price-features">
+          <li>Perfil de entrenador personalizado</li>
+          <li>Aparece en búsquedas</li>
+          <li>Contacto directo por WhatsApp</li>
+          <li>Horarios visibles a estudiantes</li>
+        </ul>
+        <button class="btn-outline-red" style="width:100%;text-align:center;padding:14px" onclick="showToast('¡Comenzando con Plan Basic Personalizado!')">Comenzar</button>
+      </div>
+
+      <!-- Basic Escuela (Popular) -->
+      <div class="price-card popular">
+        <div class="popular-badge">MÁS POPULAR</div>
+        <div class="price-name" style="color:var(--white)">BASIC ESCUELA</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.7);margin-bottom:4px">Para academias y dojos</div>
+        <div class="price-amount" style="color:var(--white)">$70.000</div>
+        <div class="price-period" style="color:rgba(255,255,255,0.7)">COP / mes</div>
+        <ul class="price-features" style="color:var(--white)">
+          <li>Todo lo del plan anterior</li>
+          <li>Perfil completo de escuela</li>
+          <li>Galería de instalaciones</li>
+          <li>2 entrenadores incluidos</li>
+          <li>Horario semanal completo</li>
+        </ul>
+        <button style="width:100%;padding:14px;border-radius:4px;background:var(--white);color:var(--red);border:none;font-family:'Outfit',sans-serif;font-weight:700;font-size:14px;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;transition:opacity 0.2s"
+          onclick="showToast('¡Comenzando con Plan Basic Escuela!')"
+          onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">Comenzar</button>
+      </div>
+
+      <!-- Premium -->
+      <div class="price-card premium">
+        <div class="price-name" style="color:var(--gold)">PREMIUM</div>
+        <div style="font-size:12px;color:var(--gray);margin-bottom:4px">Máxima visibilidad</div>
+        <div class="price-amount" style="color:var(--gold)">$100.000</div>
+        <div class="price-period">COP / mes</div>
+        <ul class="price-features">
+          <li>Todo lo del Basic Escuela</li>
+          <li>Primero en búsquedas</li>
+          <li>Etiqueta "Recomendado"</li>
+          <li>Destacado en sección principal</li>
+          <li>Mayor visibilidad en eventos</li>
+        </ul>
+        <button style="width:100%;padding:14px;border-radius:4px;background:transparent;color:var(--gold);border:1.5px solid var(--gold);font-family:'Outfit',sans-serif;font-weight:700;font-size:14px;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;transition:all 0.2s"
+          onclick="showToast('¡Comenzando con Plan Premium!')"
+          onmouseover="this.style.background='rgba(212,172,13,0.15)'" onmouseout="this.style.background='transparent'">Comenzar</button>
+      </div>
+    </div>
+
+    <p style="text-align:center;color:var(--gray);font-size:13px;margin-top:32px">
+      🔒 Todos los planes con facturación mensual. Cancela cuando quieras.
+    </p>
+
+    <!-- Comparison Table -->
+    <div style="margin-top:56px;background:var(--card-bg);border-radius:12px;border:1px solid rgba(255,255,255,0.06);overflow:hidden">
+      <div style="padding:20px 24px;border-bottom:1px solid rgba(255,255,255,0.06)"><h2 style="font-size:22px">COMPARAR PLANES</h2></div>
+      <div style="overflow-x:auto">
+        <table style="width:100%;border-collapse:collapse">
+          <thead>
+            <tr>
+              <th style="padding:16px 24px;font-size:12px;color:var(--gray);font-weight:600;letter-spacing:0.06em;text-transform:uppercase;text-align:left;border-bottom:1px solid rgba(255,255,255,0.06)">Característica</th>
+              <th style="padding:16px;font-size:13px;font-family:'Bebas Neue',sans-serif;letter-spacing:0.05em;border-bottom:1px solid rgba(255,255,255,0.06);text-align:center">Basic<br>Personal</th>
+              <th style="padding:16px;font-size:13px;font-family:'Bebas Neue',sans-serif;color:var(--red);letter-spacing:0.05em;border-bottom:1px solid rgba(255,255,255,0.06);text-align:center">Basic<br>Escuela</th>
+              <th style="padding:16px;font-size:13px;font-family:'Bebas Neue',sans-serif;color:var(--gold);letter-spacing:0.05em;border-bottom:1px solid rgba(255,255,255,0.06);text-align:center">Premium</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid rgba(255,255,255,0.04)">
+              <td style="padding:14px 24px;font-size:13px">Perfil visible en búsquedas</td>
+              <td style="text-align:center">✅</td><td style="text-align:center">✅</td><td style="text-align:center">✅</td>
+            </tr>
+            <tr style="border-bottom:1px solid rgba(255,255,255,0.04)">
+              <td style="padding:14px 24px;font-size:13px">Galería de instalaciones</td>
+              <td style="text-align:center;color:var(--gray2)">—</td><td style="text-align:center">✅</td><td style="text-align:center">✅</td>
+            </tr>
+            <tr style="border-bottom:1px solid rgba(255,255,255,0.04)">
+              <td style="padding:14px 24px;font-size:13px">Primer lugar en búsquedas</td>
+              <td style="text-align:center;color:var(--gray2)">—</td><td style="text-align:center;color:var(--gray2)">—</td><td style="text-align:center;color:var(--gold)">✅</td>
+            </tr>
+            <tr>
+              <td style="padding:14px 24px;font-size:13px">Etiqueta "Recomendado"</td>
+              <td style="text-align:center;color:var(--gray2)">—</td><td style="text-align:center;color:var(--gray2)">—</td><td style="text-align:center;color:var(--gold)">✅</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- JavaScript — al final del body para que el DOM esté disponible -->
+<script src="dojo-plus-script.js"></script>
+
+</body>
+</html>
