@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DOJO+ | Encuentra Tu Arte</title>
+  <title>DOJX | Encuentra Tu Arte</title>
 
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -16,12 +16,12 @@
 <!-- ===== NAVIGATION ===== -->
 <nav>
   <div class="nav-inner">
-    <div class="nav-logo" onclick="goTo('home')">DOJO<span>+</span></div>
+    <div class="nav-logo" onclick="goTo('home')">DOJ<span>X</span></div>
     <ul class="nav-links">
       <li class="active" onclick="goTo('home')">Inicio</li>
-      <li onclick="goTo('school')">Escuelas</li>
-      <li onclick="goTo('trainer')">Entrenadores</li>
-      <li onclick="goTo('event')">Eventos</li>
+      <li onclick="goTo('schools')">Escuelas</li>
+      <li onclick="goTo('trainers')">Entrenadores</li>
+      <li onclick="goTo('events')">Eventos</li>
       <li onclick="goTo('plans')">Planes</li>
     </ul>
     <div class="nav-right">
@@ -42,9 +42,9 @@
 <div class="nav-mobile-menu" id="mobileMenu">
   <ul class="nav-mobile-links">
     <li onclick="goToMobile('home')">Inicio</li>
-    <li onclick="goToMobile('school')">Escuelas</li>
-    <li onclick="goToMobile('trainer')">Entrenadores</li>
-    <li onclick="goToMobile('event')">Eventos</li>
+    <li onclick="goToMobile('schools')">Escuelas</li>
+    <li onclick="goToMobile('trainers')">Entrenadores</li>
+    <li onclick="goToMobile('events')">Eventos</li>
     <li onclick="goToMobile('plans')">Planes</li>
   </ul>
   <div class="nav-mobile-footer">
@@ -61,43 +61,55 @@
   <section class="hero-section">
     <div class="hero-eyebrow">🥋 La plataforma de artes marciales #1 en Colombia</div>
     <h1 class="hero-headline">ENCUENTRA TU ARTE.<br><span>ENTRENA EN</span> TU CIUDAD.</h1>
-    <p class="hero-sub">Conectamos escuelas, entrenadores y eventos con personas apasionadas por las artes marciales.</p>
+    <p class="hero-sub">DOJX conecta escuelas, entrenadores y eventos con personas apasionadas por las artes marciales.</p>
     <div class="search-bar-wrap">
-      <input class="search-input" type="text" placeholder="Busca BJJ, Boxeo, Muay Thai, Karate...">
-      <button class="search-btn">🔍</button>
+      <input
+        class="search-input"
+        id="searchInput"
+        type="text"
+        placeholder="Busca BJJ, Boxeo, Muay Thai, Karate..."
+        onkeydown="if(event.key==='Enter') applyFilters()"
+        oninput="applyFilters()">
+      <button class="search-btn" onclick="applyFilters()">🔍</button>
     </div>
   </section>
 
   <div class="filters-section">
     <div class="filter-row">
       <span class="filter-label">Tipo</span>
-      <button class="pill active" onclick="togglePill(this,'tipo')">Escuela</button>
-      <button class="pill" onclick="togglePill(this,'tipo')">Personalizado</button>
-      <button class="pill" onclick="togglePill(this,'tipo')">Evento</button>
+      <button class="pill" data-group="tipo" data-value="escuela"       onclick="togglePill(this,'tipo')">Escuela</button>
+      <button class="pill" data-group="tipo" data-value="personalizado" onclick="togglePill(this,'tipo')">Personalizado</button>
+      <button class="pill" data-group="tipo" data-value="evento"        onclick="togglePill(this,'tipo')">Evento</button>
     </div>
     <div class="filter-row">
       <span class="filter-label">Horario</span>
-      <button class="pill" onclick="togglePill(this,'horario')">Mañana</button>
-      <button class="pill" onclick="togglePill(this,'horario')">Tarde</button>
-      <button class="pill active" onclick="togglePill(this,'horario')">Noche</button>
+      <button class="pill" data-group="horario" data-value="mañana" onclick="togglePill(this,'horario')">Mañana</button>
+      <button class="pill" data-group="horario" data-value="tarde"  onclick="togglePill(this,'horario')">Tarde</button>
+      <button class="pill" data-group="horario" data-value="noche"  onclick="togglePill(this,'horario')">Noche</button>
     </div>
     <div class="filter-row">
       <span class="filter-label">Ciudad</span>
-      <button class="pill active" onclick="togglePill(this,'ciudad')">Cali</button>
-      <button class="pill" onclick="togglePill(this,'ciudad')">Bogotá</button>
+      <button class="pill" data-group="ciudad" data-value="cali"   onclick="togglePill(this,'ciudad')">Cali</button>
+      <button class="pill" data-group="ciudad" data-value="bogota" onclick="togglePill(this,'ciudad')">Bogotá</button>
     </div>
   </div>
 
   <div class="home-sections">
 
-    <!-- Escuelas Populares -->
-    <div class="home-section">
+    <!-- ── ESCUELAS POPULARES ── -->
+    <div class="home-section" id="section-escuelas" data-section-type="escuela">
       <div class="section-header">
         <h2 class="section-title">ESCUELAS POPULARES</h2>
-        <a class="see-all" onclick="goTo('school')">VER TODAS →</a>
+        <a class="see-all" onclick="goTo('schools')">VER TODAS →</a>
       </div>
-      <div class="h-scroll">
-        <div class="card school-card" onclick="goTo('school')">
+      <div class="h-scroll" id="scroll-escuelas">
+
+        <div class="card school-card"
+          data-type="escuela" data-city="cali"
+          data-disciplines="bjj lucha grappling"
+          data-schedule="mañana tarde noche"
+          data-name="alliance bjj cali"
+          onclick="goTo('school')">
           <div class="school-card-img">🥋</div>
           <div class="school-card-body">
             <div class="school-card-name">Alliance BJJ Cali</div>
@@ -109,7 +121,13 @@
             </div>
           </div>
         </div>
-        <div class="card school-card" onclick="goTo('school')">
+
+        <div class="card school-card"
+          data-type="escuela" data-city="bogota"
+          data-disciplines="boxeo"
+          data-schedule="tarde noche"
+          data-name="boxeo elite bogota"
+          onclick="goTo('school')">
           <div class="school-card-img">🥊</div>
           <div class="school-card-body">
             <div class="school-card-name">Boxeo Élite Bogotá</div>
@@ -121,7 +139,13 @@
             </div>
           </div>
         </div>
-        <div class="card school-card" onclick="goTo('school')">
+
+        <div class="card school-card"
+          data-type="escuela" data-city="cali"
+          data-disciplines="muay-thai kickboxing"
+          data-schedule="tarde noche"
+          data-name="tiger muay thai co"
+          onclick="goTo('school')">
           <div class="school-card-img" style="font-size:42px">🦵</div>
           <div class="school-card-body">
             <div class="school-card-name">Tiger Muay Thai CO</div>
@@ -133,7 +157,13 @@
             </div>
           </div>
         </div>
-        <div class="card school-card" onclick="goTo('school')">
+
+        <div class="card school-card"
+          data-type="escuela" data-city="cali"
+          data-disciplines="karate"
+          data-schedule="mañana tarde"
+          data-name="karate shotokan cvc"
+          onclick="goTo('school')">
           <div class="school-card-img">🥋</div>
           <div class="school-card-body">
             <div class="school-card-name">Karate Shotokan CVC</div>
@@ -145,7 +175,13 @@
             </div>
           </div>
         </div>
-        <div class="card school-card" onclick="goTo('school')">
+
+        <div class="card school-card"
+          data-type="escuela" data-city="bogota"
+          data-disciplines="mma grappling"
+          data-schedule="noche"
+          data-name="mma factory bogota"
+          onclick="goTo('school')">
           <div class="school-card-img">⚔️</div>
           <div class="school-card-body">
             <div class="school-card-name">MMA Factory Bogotá</div>
@@ -157,17 +193,24 @@
             </div>
           </div>
         </div>
+
       </div>
+      <div class="section-empty" id="empty-escuelas">Sin escuelas que coincidan con los filtros.</div>
     </div>
 
-    <!-- Próximos Eventos -->
-    <div class="home-section">
+    <!-- ── PRÓXIMOS EVENTOS ── -->
+    <div class="home-section" id="section-eventos" data-section-type="evento">
       <div class="section-header">
         <h2 class="section-title">PRÓXIMOS EVENTOS</h2>
-        <a class="see-all" onclick="goTo('event')">VER TODOS →</a>
+        <a class="see-all" onclick="goTo('events')">VER TODOS →</a>
       </div>
-      <div class="h-scroll">
-        <div class="card event-card" onclick="goTo('event')">
+      <div class="h-scroll" id="scroll-eventos">
+
+        <div class="card event-card"
+          data-type="evento" data-city="cali"
+          data-disciplines="bjj"
+          data-name="copa valle bjj open 2025"
+          onclick="goTo('event')">
           <div class="event-poster">🏆</div>
           <div class="event-card-body">
             <div class="event-name">Copa Valle BJJ Open 2025</div>
@@ -175,7 +218,12 @@
             <div class="event-date">📅 15 Feb · Cali</div>
           </div>
         </div>
-        <div class="card event-card" onclick="goTo('event')">
+
+        <div class="card event-card"
+          data-type="evento" data-city="bogota"
+          data-disciplines="boxeo"
+          data-name="noche de boxeo colombia"
+          onclick="goTo('event')">
           <div class="event-poster" style="background:linear-gradient(160deg,#0a1a0a,#0a2a1a)">🥊</div>
           <div class="event-card-body">
             <div class="event-name">Noche de Boxeo Colombia</div>
@@ -183,7 +231,12 @@
             <div class="event-date">📅 22 Feb · Bogotá</div>
           </div>
         </div>
-        <div class="card event-card" onclick="goTo('event')">
+
+        <div class="card event-card"
+          data-type="evento" data-city="cali"
+          data-disciplines="muay-thai kickboxing"
+          data-name="muay thai gran prix"
+          onclick="goTo('event')">
           <div class="event-poster" style="background:linear-gradient(160deg,#1a0a0a,#2a1a0a)">🦵</div>
           <div class="event-card-body">
             <div class="event-name">Muay Thai Gran Prix</div>
@@ -191,7 +244,12 @@
             <div class="event-date">📅 8 Mar · Cali</div>
           </div>
         </div>
-        <div class="card event-card" onclick="goTo('event')">
+
+        <div class="card event-card"
+          data-type="evento" data-city="bogota"
+          data-disciplines="mma"
+          data-name="mma showdown bogota"
+          onclick="goTo('event')">
           <div class="event-poster" style="background:linear-gradient(160deg,#0a0a1a,#1a0a2a)">⚔️</div>
           <div class="event-card-body">
             <div class="event-name">MMA Showdown Bogotá</div>
@@ -199,7 +257,12 @@
             <div class="event-date">📅 20 Mar · Bogotá</div>
           </div>
         </div>
-        <div class="card event-card" onclick="goTo('event')">
+
+        <div class="card event-card"
+          data-type="evento" data-city="cali"
+          data-disciplines="judo"
+          data-name="torneo nacional judo"
+          onclick="goTo('event')">
           <div class="event-poster" style="background:linear-gradient(160deg,#1a1a0a,#2a1a0a)">🎌</div>
           <div class="event-card-body">
             <div class="event-name">Torneo Nacional Judo</div>
@@ -207,17 +270,25 @@
             <div class="event-date">📅 5 Abr · Cali</div>
           </div>
         </div>
+
       </div>
+      <div class="section-empty" id="empty-eventos">Sin eventos que coincidan con los filtros.</div>
     </div>
 
-    <!-- Entrenadores Destacados -->
-    <div class="home-section">
+    <!-- ── ENTRENADORES DESTACADOS ── -->
+    <div class="home-section" id="section-entrenadores" data-section-type="personalizado">
       <div class="section-header">
         <h2 class="section-title">ENTRENADORES DESTACADOS</h2>
-        <a class="see-all" onclick="goTo('trainer')">VER TODOS →</a>
+        <a class="see-all" onclick="goTo('trainers')">VER TODOS →</a>
       </div>
-      <div class="h-scroll">
-        <div class="card trainer-card" onclick="goTo('trainer')">
+      <div class="h-scroll" id="scroll-entrenadores">
+
+        <div class="card trainer-card"
+          data-type="personalizado" data-city="cali"
+          data-disciplines="bjj grappling"
+          data-schedule="mañana noche"
+          data-name="carlos medina"
+          onclick="goTo('trainer')">
           <div class="trainer-photo-wrap"><div class="trainer-photo">🥋</div></div>
           <div class="trainer-card-body">
             <div class="trainer-name">Carlos Medina</div>
@@ -225,7 +296,13 @@
             <div class="trainer-exp">⚡ 12 años de exp.</div>
           </div>
         </div>
-        <div class="card trainer-card" onclick="goTo('trainer')">
+
+        <div class="card trainer-card"
+          data-type="personalizado" data-city="bogota"
+          data-disciplines="boxeo mma"
+          data-schedule="mañana tarde noche"
+          data-name="juan rodriguez"
+          onclick="goTo('trainer')">
           <div class="trainer-photo-wrap"><div class="trainer-photo" style="background:linear-gradient(135deg,#1a4a7a,#0a2a4a)">🥊</div></div>
           <div class="trainer-card-body">
             <div class="trainer-name">Juan Rodríguez</div>
@@ -233,7 +310,13 @@
             <div class="trainer-exp">⚡ 8 años de exp.</div>
           </div>
         </div>
-        <div class="card trainer-card" onclick="goTo('trainer')">
+
+        <div class="card trainer-card"
+          data-type="personalizado" data-city="cali"
+          data-disciplines="muay-thai kickboxing"
+          data-schedule="tarde noche"
+          data-name="ana gomez"
+          onclick="goTo('trainer')">
           <div class="trainer-photo-wrap"><div class="trainer-photo" style="background:linear-gradient(135deg,#4a1a2a,#2a0a1a)">🦵</div></div>
           <div class="trainer-card-body">
             <div class="trainer-name">Ana Gómez</div>
@@ -241,7 +324,13 @@
             <div class="trainer-exp">⚡ 6 años de exp.</div>
           </div>
         </div>
-        <div class="card trainer-card" onclick="goTo('trainer')">
+
+        <div class="card trainer-card"
+          data-type="personalizado" data-city="cali"
+          data-disciplines="judo wrestling"
+          data-schedule="mañana tarde"
+          data-name="luis caicedo"
+          onclick="goTo('trainer')">
           <div class="trainer-photo-wrap"><div class="trainer-photo" style="background:linear-gradient(135deg,#1a2a4a,#0a1a3a)">🎌</div></div>
           <div class="trainer-card-body">
             <div class="trainer-name">Luis Caicedo</div>
@@ -249,7 +338,13 @@
             <div class="trainer-exp">⚡ 15 años de exp.</div>
           </div>
         </div>
-        <div class="card trainer-card" onclick="goTo('trainer')">
+
+        <div class="card trainer-card"
+          data-type="personalizado" data-city="bogota"
+          data-disciplines="karate"
+          data-schedule="mañana tarde"
+          data-name="diego torres"
+          onclick="goTo('trainer')">
           <div class="trainer-photo-wrap"><div class="trainer-photo" style="background:linear-gradient(135deg,#2a3a1a,#1a2a0a)">🏆</div></div>
           <div class="trainer-card-body">
             <div class="trainer-name">Diego Torres</div>
@@ -257,9 +352,320 @@
             <div class="trainer-exp">⚡ 18 años de exp.</div>
           </div>
         </div>
+
       </div>
+      <div class="section-empty" id="empty-entrenadores">Sin entrenadores que coincidan con los filtros.</div>
     </div>
 
+    <!-- ── EMPTY GLOBAL ── -->
+    <div id="global-empty" class="global-empty" style="display:none">
+      <div class="global-empty-icon">🔍</div>
+      <div class="global-empty-title">Sin resultados</div>
+      <div class="global-empty-sub">Prueba con otra búsqueda o cambia los filtros activos.</div>
+      <button class="btn-outline-red" onclick="clearFilters()" style="margin-top:20px">Limpiar filtros</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===================================================
+     SCREEN — ESCUELAS (listado)
+     =================================================== -->
+<div class="screen" id="screen-schools">
+
+  <div class="listing-header">
+    <div class="listing-header-inner">
+      <h1 class="listing-title">ESCUELAS</h1>
+      <p class="listing-subtitle">Academias de artes marciales en Colombia</p>
+    </div>
+  </div>
+
+  <div class="listing-filters">
+    <span class="filter-label" style="min-width:auto;margin-right:4px">Ciudad</span>
+    <button class="pill active" data-group="sl-ciudad" data-value="todas"  onclick="listingFilter(this,'sl-ciudad','schools')">Todas</button>
+    <button class="pill"        data-group="sl-ciudad" data-value="cali"   onclick="listingFilter(this,'sl-ciudad','schools')">Cali</button>
+    <button class="pill"        data-group="sl-ciudad" data-value="bogota" onclick="listingFilter(this,'sl-ciudad','schools')">Bogotá</button>
+    <span class="filter-label" style="min-width:auto;margin-left:12px;margin-right:4px">Disciplina</span>
+    <button class="pill active" data-group="sl-disc" data-value="todas"     onclick="listingFilter(this,'sl-disc','schools')">Todas</button>
+    <button class="pill"        data-group="sl-disc" data-value="bjj"       onclick="listingFilter(this,'sl-disc','schools')">BJJ</button>
+    <button class="pill"        data-group="sl-disc" data-value="boxeo"     onclick="listingFilter(this,'sl-disc','schools')">Boxeo</button>
+    <button class="pill"        data-group="sl-disc" data-value="muay-thai" onclick="listingFilter(this,'sl-disc','schools')">Muay Thai</button>
+    <button class="pill"        data-group="sl-disc" data-value="mma"       onclick="listingFilter(this,'sl-disc','schools')">MMA</button>
+    <button class="pill"        data-group="sl-disc" data-value="karate"    onclick="listingFilter(this,'sl-disc','schools')">Karate</button>
+  </div>
+
+  <div class="listing-grid-wrap">
+    <div class="listing-count" id="count-schools"><strong>5</strong> escuelas encontradas</div>
+    <div class="listing-grid" id="grid-schools">
+
+      <div class="card listing-school-card"
+        data-city="cali" data-disciplines="bjj lucha grappling"
+        onclick="goTo('school')">
+        <div class="school-card-img">🥋</div>
+        <div class="school-card-body">
+          <div class="school-card-name">Alliance BJJ Cali</div>
+          <div class="school-card-city">📍 Cali, Valle</div>
+          <div style="margin-bottom:4px"><span class="tag">BJJ</span> <span class="tag">Lucha</span></div>
+          <div class="school-card-foot">
+            <div class="stars">★★★★★ <span style="color:var(--gray);font-size:11px">(128)</span></div>
+            <div class="wa-icon">📲</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card listing-school-card"
+        data-city="bogota" data-disciplines="boxeo"
+        onclick="goTo('school')">
+        <div class="school-card-img">🥊</div>
+        <div class="school-card-body">
+          <div class="school-card-name">Boxeo Élite Bogotá</div>
+          <div class="school-card-city">📍 Bogotá, DC</div>
+          <div style="margin-bottom:4px"><span class="tag">Boxeo</span></div>
+          <div class="school-card-foot">
+            <div class="stars">★★★★☆ <span style="color:var(--gray);font-size:11px">(87)</span></div>
+            <div class="wa-icon">📲</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card listing-school-card"
+        data-city="cali" data-disciplines="muay-thai kickboxing"
+        onclick="goTo('school')">
+        <div class="school-card-img" style="font-size:64px">🦵</div>
+        <div class="school-card-body">
+          <div class="school-card-name">Tiger Muay Thai CO</div>
+          <div class="school-card-city">📍 Cali, Valle</div>
+          <div style="margin-bottom:4px"><span class="tag">Muay Thai</span> <span class="tag">Kickboxing</span></div>
+          <div class="school-card-foot">
+            <div class="stars">★★★★★ <span style="color:var(--gray);font-size:11px">(204)</span></div>
+            <div class="wa-icon">📲</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card listing-school-card"
+        data-city="cali" data-disciplines="karate"
+        onclick="goTo('school')">
+        <div class="school-card-img">🥋</div>
+        <div class="school-card-body">
+          <div class="school-card-name">Karate Shotokan CVC</div>
+          <div class="school-card-city">📍 Cali, Valle</div>
+          <div style="margin-bottom:4px"><span class="tag">Karate</span></div>
+          <div class="school-card-foot">
+            <div class="stars">★★★★☆ <span style="color:var(--gray);font-size:11px">(63)</span></div>
+            <div class="wa-icon">📲</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card listing-school-card"
+        data-city="bogota" data-disciplines="mma grappling"
+        onclick="goTo('school')">
+        <div class="school-card-img">⚔️</div>
+        <div class="school-card-body">
+          <div class="school-card-name">MMA Factory Bogotá</div>
+          <div class="school-card-city">📍 Bogotá, DC</div>
+          <div style="margin-bottom:4px"><span class="tag">MMA</span> <span class="tag">Grappling</span></div>
+          <div class="school-card-foot">
+            <div class="stars">★★★★★ <span style="color:var(--gray);font-size:11px">(156)</span></div>
+            <div class="wa-icon">📲</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="listing-empty" id="empty-schools">
+      <div class="listing-empty-icon">🥋</div>
+      <div class="listing-empty-title">Sin escuelas</div>
+      <div class="listing-empty-sub">No hay escuelas que coincidan con los filtros seleccionados.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================================================
+     SCREEN — ENTRENADORES (listado)
+     =================================================== -->
+<div class="screen" id="screen-trainers">
+
+  <div class="listing-header">
+    <div class="listing-header-inner">
+      <h1 class="listing-title">ENTRENADORES</h1>
+      <p class="listing-subtitle">Entrenadores personales certificados en Colombia</p>
+    </div>
+  </div>
+
+  <div class="listing-filters">
+    <span class="filter-label" style="min-width:auto;margin-right:4px">Ciudad</span>
+    <button class="pill active" data-group="tr-ciudad" data-value="todas"  onclick="listingFilter(this,'tr-ciudad','trainers')">Todas</button>
+    <button class="pill"        data-group="tr-ciudad" data-value="cali"   onclick="listingFilter(this,'tr-ciudad','trainers')">Cali</button>
+    <button class="pill"        data-group="tr-ciudad" data-value="bogota" onclick="listingFilter(this,'tr-ciudad','trainers')">Bogotá</button>
+    <span class="filter-label" style="min-width:auto;margin-left:12px;margin-right:4px">Disciplina</span>
+    <button class="pill active" data-group="tr-disc" data-value="todas"     onclick="listingFilter(this,'tr-disc','trainers')">Todas</button>
+    <button class="pill"        data-group="tr-disc" data-value="bjj"       onclick="listingFilter(this,'tr-disc','trainers')">BJJ</button>
+    <button class="pill"        data-group="tr-disc" data-value="boxeo"     onclick="listingFilter(this,'tr-disc','trainers')">Boxeo</button>
+    <button class="pill"        data-group="tr-disc" data-value="muay-thai" onclick="listingFilter(this,'tr-disc','trainers')">Muay Thai</button>
+    <button class="pill"        data-group="tr-disc" data-value="mma"       onclick="listingFilter(this,'tr-disc','trainers')">MMA</button>
+  </div>
+
+  <div class="listing-grid-wrap">
+    <div class="listing-count" id="count-trainers"><strong>5</strong> entrenadores encontrados</div>
+    <div class="listing-trainers-grid" id="grid-trainers">
+
+      <div class="card trainer-card"
+        data-city="cali" data-disciplines="bjj grappling"
+        onclick="goTo('trainer')">
+        <div class="trainer-photo-wrap"><div class="trainer-photo">🥋</div></div>
+        <div class="trainer-card-body">
+          <div class="trainer-name">Carlos Medina</div>
+          <div class="tags-wrap"><span class="tag">BJJ</span><span class="tag">Grappling</span></div>
+          <div class="trainer-exp">⚡ 12 años de exp.</div>
+        </div>
+      </div>
+
+      <div class="card trainer-card"
+        data-city="bogota" data-disciplines="boxeo mma"
+        onclick="goTo('trainer')">
+        <div class="trainer-photo-wrap"><div class="trainer-photo" style="background:linear-gradient(135deg,#1a4a7a,#0a2a4a)">🥊</div></div>
+        <div class="trainer-card-body">
+          <div class="trainer-name">Juan Rodríguez</div>
+          <div class="tags-wrap"><span class="tag">Boxeo</span><span class="tag">MMA</span></div>
+          <div class="trainer-exp">⚡ 8 años de exp.</div>
+        </div>
+      </div>
+
+      <div class="card trainer-card"
+        data-city="cali" data-disciplines="muay-thai kickboxing"
+        onclick="goTo('trainer')">
+        <div class="trainer-photo-wrap"><div class="trainer-photo" style="background:linear-gradient(135deg,#4a1a2a,#2a0a1a)">🦵</div></div>
+        <div class="trainer-card-body">
+          <div class="trainer-name">Ana Gómez</div>
+          <div class="tags-wrap"><span class="tag">Muay Thai</span><span class="tag">Kickboxing</span></div>
+          <div class="trainer-exp">⚡ 6 años de exp.</div>
+        </div>
+      </div>
+
+      <div class="card trainer-card"
+        data-city="cali" data-disciplines="judo wrestling"
+        onclick="goTo('trainer')">
+        <div class="trainer-photo-wrap"><div class="trainer-photo" style="background:linear-gradient(135deg,#1a2a4a,#0a1a3a)">🎌</div></div>
+        <div class="trainer-card-body">
+          <div class="trainer-name">Luis Caicedo</div>
+          <div class="tags-wrap"><span class="tag">Judo</span><span class="tag">Wrestling</span></div>
+          <div class="trainer-exp">⚡ 15 años de exp.</div>
+        </div>
+      </div>
+
+      <div class="card trainer-card"
+        data-city="bogota" data-disciplines="karate"
+        onclick="goTo('trainer')">
+        <div class="trainer-photo-wrap"><div class="trainer-photo" style="background:linear-gradient(135deg,#2a3a1a,#1a2a0a)">🏆</div></div>
+        <div class="trainer-card-body">
+          <div class="trainer-name">Diego Torres</div>
+          <div class="tags-wrap"><span class="tag">Karate</span></div>
+          <div class="trainer-exp">⚡ 18 años de exp.</div>
+        </div>
+      </div>
+
+    </div>
+    <div class="listing-empty" id="empty-trainers">
+      <div class="listing-empty-icon">🥊</div>
+      <div class="listing-empty-title">Sin entrenadores</div>
+      <div class="listing-empty-sub">No hay entrenadores que coincidan con los filtros seleccionados.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================================================
+     SCREEN — EVENTOS (listado)
+     =================================================== -->
+<div class="screen" id="screen-events">
+
+  <div class="listing-header">
+    <div class="listing-header-inner">
+      <h1 class="listing-title">EVENTOS</h1>
+      <p class="listing-subtitle">Torneos y competencias de artes marciales</p>
+    </div>
+  </div>
+
+  <div class="listing-filters">
+    <span class="filter-label" style="min-width:auto;margin-right:4px">Ciudad</span>
+    <button class="pill active" data-group="ev-ciudad" data-value="todas"  onclick="listingFilter(this,'ev-ciudad','events')">Todas</button>
+    <button class="pill"        data-group="ev-ciudad" data-value="cali"   onclick="listingFilter(this,'ev-ciudad','events')">Cali</button>
+    <button class="pill"        data-group="ev-ciudad" data-value="bogota" onclick="listingFilter(this,'ev-ciudad','events')">Bogotá</button>
+    <span class="filter-label" style="min-width:auto;margin-left:12px;margin-right:4px">Disciplina</span>
+    <button class="pill active" data-group="ev-disc" data-value="todas"     onclick="listingFilter(this,'ev-disc','events')">Todas</button>
+    <button class="pill"        data-group="ev-disc" data-value="bjj"       onclick="listingFilter(this,'ev-disc','events')">BJJ</button>
+    <button class="pill"        data-group="ev-disc" data-value="boxeo"     onclick="listingFilter(this,'ev-disc','events')">Boxeo</button>
+    <button class="pill"        data-group="ev-disc" data-value="muay-thai" onclick="listingFilter(this,'ev-disc','events')">Muay Thai</button>
+    <button class="pill"        data-group="ev-disc" data-value="mma"       onclick="listingFilter(this,'ev-disc','events')">MMA</button>
+    <button class="pill"        data-group="ev-disc" data-value="judo"      onclick="listingFilter(this,'ev-disc','events')">Judo</button>
+  </div>
+
+  <div class="listing-grid-wrap">
+    <div class="listing-count" id="count-events"><strong>5</strong> eventos encontrados</div>
+    <div class="listing-events-grid" id="grid-events">
+
+      <div class="card event-card"
+        data-city="cali" data-disciplines="bjj"
+        onclick="goTo('event')">
+        <div class="event-poster">🏆</div>
+        <div class="event-card-body">
+          <div class="event-name">Copa Valle BJJ Open 2025</div>
+          <span class="tag">BJJ · Gi</span>
+          <div class="event-date">📅 15 Feb · Cali</div>
+        </div>
+      </div>
+
+      <div class="card event-card"
+        data-city="bogota" data-disciplines="boxeo"
+        onclick="goTo('event')">
+        <div class="event-poster" style="background:linear-gradient(160deg,#0a1a0a,#0a2a1a)">🥊</div>
+        <div class="event-card-body">
+          <div class="event-name">Noche de Boxeo Colombia</div>
+          <span class="tag">Boxeo</span>
+          <div class="event-date">📅 22 Feb · Bogotá</div>
+        </div>
+      </div>
+
+      <div class="card event-card"
+        data-city="cali" data-disciplines="muay-thai"
+        onclick="goTo('event')">
+        <div class="event-poster" style="background:linear-gradient(160deg,#1a0a0a,#2a1a0a)">🦵</div>
+        <div class="event-card-body">
+          <div class="event-name">Muay Thai Gran Prix</div>
+          <span class="tag">Muay Thai</span>
+          <div class="event-date">📅 8 Mar · Cali</div>
+        </div>
+      </div>
+
+      <div class="card event-card"
+        data-city="bogota" data-disciplines="mma"
+        onclick="goTo('event')">
+        <div class="event-poster" style="background:linear-gradient(160deg,#0a0a1a,#1a0a2a)">⚔️</div>
+        <div class="event-card-body">
+          <div class="event-name">MMA Showdown Bogotá</div>
+          <span class="tag">MMA</span>
+          <div class="event-date">📅 20 Mar · Bogotá</div>
+        </div>
+      </div>
+
+      <div class="card event-card"
+        data-city="cali" data-disciplines="judo"
+        onclick="goTo('event')">
+        <div class="event-poster" style="background:linear-gradient(160deg,#1a1a0a,#2a1a0a)">🎌</div>
+        <div class="event-card-body">
+          <div class="event-name">Torneo Nacional Judo</div>
+          <span class="tag">Judo</span>
+          <div class="event-date">📅 5 Abr · Cali</div>
+        </div>
+      </div>
+
+    </div>
+    <div class="listing-empty" id="empty-events">
+      <div class="listing-empty-icon">🏆</div>
+      <div class="listing-empty-title">Sin eventos</div>
+      <div class="listing-empty-sub">No hay eventos que coincidan con los filtros seleccionados.</div>
+    </div>
   </div>
 </div>
 
@@ -286,6 +692,7 @@
   </div>
 
   <div class="content-wrap">
+    <button class="btn-back" onclick="goTo('schools')">← Escuelas</button>
     <div class="tabs">
       <button class="tab-btn active" onclick="switchTab(this,'school-desc')">Descripción</button>
       <button class="tab-btn" onclick="switchTab(this,'school-inst')">Instalaciones</button>
@@ -437,6 +844,7 @@
   </div>
 
   <div class="content-wrap">
+    <button class="btn-back" onclick="goTo('trainers')">← Entrenadores</button>
     <div class="section-card">
       <div class="section-card-title">⚡ Experiencia</div>
       <div style="display:flex;gap:16px;margin-bottom:20px;flex-wrap:wrap">
@@ -509,6 +917,7 @@
   </div>
 
   <div class="content-wrap">
+    <button class="btn-back" onclick="goTo('events')">← Eventos</button>
     <h1 style="font-size:clamp(32px,5vw,48px);margin-bottom:10px">COPA VALLE BJJ OPEN 2025</h1>
     <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;align-items:center">
       <span class="tag">BJJ · Gi</span><span class="tag">No-Gi</span><span class="tag gold">Torneo Oficial</span>
@@ -588,16 +997,40 @@
           <div class="step-dot">3</div>
         </div>
         <h1 class="register-title">Crea tu cuenta</h1>
-        <p class="register-sub">Únete a la comunidad DOJO+</p>
-        <div class="form-group"><label class="form-label">Nombre completo</label><input class="form-input" type="text" placeholder="Ej: Carlos Medina"></div>
-        <div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" placeholder="tu@email.com"></div>
-        <div class="form-group"><label class="form-label">Contraseña</label><input class="form-input" type="password" placeholder="Mínimo 8 caracteres"></div>
-        <div class="form-group"><label class="form-label">Confirmar contraseña</label><input class="form-input" type="password" placeholder="Repite tu contraseña"></div>
+        <p class="register-sub">Únete a la comunidad DOJX</p>
+
         <div class="form-group">
-          <label class="form-label">Ciudad</label>
-          <select class="form-input"><option value="">Selecciona tu ciudad</option><option>Cali</option><option>Bogotá</option></select>
+          <label class="form-label">Nombre completo <span style="color:var(--red)">*</span></label>
+          <input id="reg-nombre" class="form-input" type="text" placeholder="Ej: Carlos Medina" oninput="clearFieldError('reg-nombre')">
+          <div class="form-error" id="err-nombre">Ingresa tu nombre completo (mínimo 2 caracteres)</div>
         </div>
-        <button class="btn-red" style="width:100%;justify-content:center;margin-top:8px" onclick="nextStep(2)">Continuar →</button>
+        <div class="form-group">
+          <label class="form-label">Email <span style="color:var(--red)">*</span></label>
+          <input id="reg-email" class="form-input" type="email" placeholder="tu@email.com" oninput="clearFieldError('reg-email')">
+          <div class="form-error" id="err-email">Ingresa un email válido (ej: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0b65646669796e4b686479796e6425686466">[email&#160;protected]</a>)</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Contraseña <span style="color:var(--red)">*</span></label>
+          <input id="reg-pwd" class="form-input" type="password" placeholder="Mínimo 8 caracteres" oninput="checkPwdStrength(); clearFieldError('reg-pwd')">
+          <div class="pwd-strength" id="pwd-strength-bar"><div class="pwd-strength-fill" id="pwd-strength-fill"></div></div>
+          <div class="form-error" id="err-pwd">La contraseña debe tener al menos 8 caracteres</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Confirmar contraseña <span style="color:var(--red)">*</span></label>
+          <input id="reg-pwd2" class="form-input" type="password" placeholder="Repite tu contraseña" oninput="clearFieldError('reg-pwd2')">
+          <div class="form-error" id="err-pwd2">Las contraseñas no coinciden</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Ciudad <span style="color:var(--red)">*</span></label>
+          <select id="reg-ciudad" class="form-input" onchange="clearFieldError('reg-ciudad')">
+            <option value="">Selecciona tu ciudad</option>
+            <option value="Cali">Cali</option>
+            <option value="Bogotá">Bogotá</option>
+          </select>
+          <div class="form-error" id="err-ciudad">Selecciona tu ciudad</div>
+        </div>
+
+        <button class="btn-red" style="width:100%;justify-content:center;margin-top:8px" onclick="validateStep1()">Continuar →</button>
         <p style="text-align:center;margin-top:20px;font-size:14px;color:var(--gray)">¿Ya tienes cuenta? <a class="register-link" onclick="showLogin()">Inicia sesión</a></p>
       </div>
 
@@ -665,7 +1098,7 @@
     <div style="text-align:center;margin-bottom:56px">
       <div class="hero-eyebrow" style="margin-bottom:12px">💼 Monetiza tu pasión</div>
       <h1 style="font-size:clamp(42px,6vw,70px);margin-bottom:12px">ELIGE TU PLAN</h1>
-      <p style="font-size:16px;color:var(--gray);max-width:400px;margin:0 auto">Haz crecer tu escuela o perfil de entrenador en la plataforma #1 de artes marciales</p>
+      <p style="font-size:16px;color:var(--gray);max-width:400px;margin:0 auto">Haz crecer tu escuela o perfil de entrenador en la plataforma #1 de artes marciales en Colombia</p>
     </div>
 
     <div class="pricing-grid">
@@ -763,6 +1196,168 @@
 
   </div>
 </div>
+
+<!-- ===================================================
+     SCREEN — PERFIL DE USUARIO
+     =================================================== -->
+<div class="screen" id="screen-profile">
+
+  <div class="profile-hero">
+    <div class="profile-hero-inner">
+      <div class="profile-avatar-wrap">
+        <div class="profile-avatar" id="profileAvatar">CM</div>
+        <div class="profile-avatar-edit" title="Cambiar foto">✏️</div>
+      </div>
+      <div class="profile-meta">
+        <div class="profile-name" id="profileName">CARLOS MEDINA</div>
+        <div class="profile-email" id="profileEmail"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="adceccdfc1c2deedc8c0ccc4c183cec2c0">[email&#160;protected]</a></div>
+        <div class="profile-badges">
+          <span class="profile-city-badge" id="profileCity">📍 Cali</span>
+          <span class="profile-member-badge">🥋 Miembro DOJX</span>
+        </div>
+      </div>
+      <div class="profile-actions">
+        <button class="btn-edit-profile">✏️ Editar perfil</button>
+        <button class="btn-logout" onclick="logoutUser()">Cerrar sesión</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="profile-body">
+
+    <!-- Disciplinas guardadas -->
+    <div class="profile-section-card full">
+      <div class="profile-section-title">🥋 Mis disciplinas</div>
+      <div class="profile-disc-grid" id="profileDiscs">
+        <span class="profile-no-disc">Completa tu registro para ver tus disciplinas guardadas.</span>
+      </div>
+    </div>
+
+    <!-- Horario preferido -->
+    <div class="profile-section-card">
+      <div class="profile-section-title">⏰ Horario preferido</div>
+      <div class="profile-schedule-card" id="profileSchedule">
+        <div class="profile-schedule-icon">⚡</div>
+        <div>
+          <div class="profile-schedule-label">Sin seleccionar</div>
+          <div class="profile-schedule-range">Completa tu registro</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Estadísticas rápidas -->
+    <div class="profile-section-card">
+      <div class="profile-section-title">📊 Actividad</div>
+      <div class="profile-stats">
+        <div class="profile-stat">
+          <div class="profile-stat-num">0</div>
+          <div class="profile-stat-label">Escuelas guardadas</div>
+        </div>
+        <div class="profile-stat">
+          <div class="profile-stat-num">0</div>
+          <div class="profile-stat-label">Eventos vistos</div>
+        </div>
+        <div class="profile-stat">
+          <div class="profile-stat-num">0</div>
+          <div class="profile-stat-label">Entrenadores</div>
+        </div>
+        <div class="profile-stat">
+          <div class="profile-stat-num">1</div>
+          <div class="profile-stat-label">Días activo</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Accesos rápidos -->
+    <div class="profile-section-card">
+      <div class="profile-section-title">🔗 Accesos rápidos</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <button class="btn-outline-red" style="display:flex;align-items:center;gap:10px;justify-content:flex-start;padding:12px 16px" onclick="goTo('schools')">
+          🏫 <span>Buscar escuelas</span>
+        </button>
+        <button class="btn-outline-red" style="display:flex;align-items:center;gap:10px;justify-content:flex-start;padding:12px 16px" onclick="goTo('trainers')">
+          🥊 <span>Ver entrenadores</span>
+        </button>
+        <button class="btn-outline-red" style="display:flex;align-items:center;gap:10px;justify-content:flex-start;padding:12px 16px" onclick="goTo('events')">
+          🏆 <span>Próximos eventos</span>
+        </button>
+        <button style="display:flex;align-items:center;gap:10px;justify-content:flex-start;padding:12px 16px;border-radius:4px;background:transparent;border:1.5px solid var(--gold);color:var(--gold);font-family:'Outfit',sans-serif;font-weight:600;font-size:14px;cursor:pointer;transition:all 0.2s" onclick="goTo('plans')">
+          ⭐ <span>Ver planes premium</span>
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+
+      <!-- Marca -->
+      <div class="footer-brand">
+        <div class="footer-logo">DOJ<span>X</span></div>
+        <p class="footer-tagline">La plataforma de artes marciales más completa de Colombia. Conectamos escuelas, entrenadores y eventos con tu pasión.</p>
+        <div class="footer-socials">
+          <a class="social-btn" href="#" title="Instagram">📸</a>
+          <a class="social-btn" href="#" title="TikTok">🎵</a>
+          <a class="social-btn" href="#" title="WhatsApp">💬</a>
+          <a class="social-btn" href="#" title="YouTube">▶️</a>
+        </div>
+      </div>
+
+      <!-- Plataforma -->
+      <div>
+        <div class="footer-col-title">Plataforma</div>
+        <ul class="footer-links">
+          <li><span onclick="goTo('schools')">Escuelas</span></li>
+          <li><span onclick="goTo('trainers')">Entrenadores</span></li>
+          <li><span onclick="goTo('events')">Eventos</span></li>
+          <li><span onclick="goTo('plans')">Planes y precios</span></li>
+          <li><span onclick="goTo('login')">Registrarse</span></li>
+        </ul>
+      </div>
+
+      <!-- Ciudades -->
+      <div>
+        <div class="footer-col-title">Ciudades</div>
+        <ul class="footer-links">
+          <li><span>Cali</span></li>
+          <li><span>Bogotá</span></li>
+          <li><span style="opacity:0.4">Medellín — pronto</span></li>
+          <li><span style="opacity:0.4">Barranquilla — pronto</span></li>
+        </ul>
+      </div>
+
+      <!-- Legal -->
+      <div>
+        <div class="footer-col-title">Legal</div>
+        <ul class="footer-links">
+          <li><a href="#">Términos de uso</a></li>
+          <li><a href="#">Privacidad</a></li>
+          <li><a href="#">Cookies</a></li>
+          <li><a href="#">Soporte</a></li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="footer-bottom">
+      <span class="footer-copy">© 2025 DOJX. Todos los derechos reservados.</span>
+      <div class="footer-cities">
+        <span class="footer-city-dot"></span> Cali
+        <span class="footer-city-dot"></span> Bogotá
+      </div>
+      <div class="footer-legal">
+        <a href="#">Términos</a>
+                <a href="#">Privacidad</a>
+        <a href="#">Cookies</a>
+      </div>
+    </div>
+
+  </div>
+</footer>
 
 <!-- JavaScript — al final del body para que el DOM esté disponible -->
 <script src="dojo-plus-script.js"></script>
