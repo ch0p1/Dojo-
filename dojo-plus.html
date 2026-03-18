@@ -1079,9 +1079,20 @@
       <div id="login-form" style="display:none">
         <h1 class="register-title">Bienvenido</h1>
         <p class="register-sub">Inicia sesión en tu cuenta</p>
-        <div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" placeholder="tu@email.com"></div>
-        <div class="form-group"><label class="form-label">Contraseña</label><input class="form-input" type="password" placeholder="Tu contraseña"></div>
-        <button class="btn-red" style="width:100%;justify-content:center;margin-top:8px" onclick="finishRegister()">Iniciar Sesión</button>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input id="login-email" class="form-input" type="email" placeholder="tu@email.com"
+            onkeydown="if(event.key==='Enter') doLogin()">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Contraseña</label>
+          <input id="login-password" class="form-input" type="password" placeholder="Tu contraseña"
+            onkeydown="if(event.key==='Enter') doLogin()">
+        </div>
+        <div class="form-error" id="login-error" style="margin-bottom:12px"></div>
+        <button id="login-btn" class="btn-red" style="width:100%;justify-content:center;margin-top:8px" onclick="doLogin()">
+          Iniciar Sesión
+        </button>
         <p style="text-align:center;margin-top:20px;font-size:14px;color:var(--gray)">¿No tienes cuenta? <a class="register-link" onclick="showRegister()">Regístrate gratis</a></p>
       </div>
 
@@ -1210,10 +1221,12 @@
       </div>
       <div class="profile-meta">
         <div class="profile-name" id="profileName">CARLOS MEDINA</div>
-        <div class="profile-email" id="profileEmail"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="adceccdfc1c2deedc8c0ccc4c183cec2c0">[email&#160;protected]</a></div>
+        <div class="profile-email" id="profileEmail">usuario@email.com</div>
         <div class="profile-badges">
           <span class="profile-city-badge" id="profileCity">📍 Cali</span>
-          <span class="profile-member-badge">🥋 Miembro DOJX</span>
+          <span id="profile-badges-extra">
+            <span class="profile-member-badge">🥋 Miembro DOJX</span>
+          </span>
         </div>
       </div>
       <div class="profile-actions">
@@ -1287,6 +1300,32 @@
       </div>
     </div>
 
+    <!-- Publicar contenido (dinámico según plan) -->
+    <div class="profile-section-card" id="profile-plan-section">
+      <div class="profile-section-title">🔒 Publicar contenido</div>
+      <p style="font-size:13px;color:var(--gray);margin-bottom:14px;line-height:1.6">Activa un plan mensual para publicar tu perfil de entrenador o tu escuela en DOJX.</p>
+      <button class="btn-red" style="width:100%;justify-content:center" onclick="goTo('plans')">Ver planes desde $50.000 COP →</button>
+    </div>
+
+    <!-- Mis entrenadores publicados -->
+    <div class="profile-section-card full">
+      <div class="profile-section-title">🥋 Mis entrenadores publicados</div>
+      <div id="profile-mis-trainers">
+        <span class="profile-no-disc">Inicia sesión para ver tus publicaciones.</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== MODAL: PUBLICAR ENTRENADOR / ESCUELA ===== -->
+<div class="modal-overlay" id="publishModal" onclick="if(event.target===this) closePublishModal()">
+  <div class="modal" style="max-height:90vh;overflow-y:auto">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+      <div class="modal-title" id="publishModalTitle">Publicar</div>
+      <button onclick="closePublishModal()" style="background:none;border:none;color:var(--gray);font-size:20px;cursor:pointer;padding:4px;line-height:1">×</button>
+    </div>
+    <div id="publishForm"></div>
   </div>
 </div>
 
