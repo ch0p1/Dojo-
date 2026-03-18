@@ -15,20 +15,43 @@
 
 <!-- ===== NAVIGATION ===== -->
 <nav>
-  <div class="nav-logo" onclick="goTo('home')">DOJO<span>+</span></div>
-  <ul class="nav-links">
-    <li class="active" onclick="goTo('home')">Inicio</li>
-    <li onclick="goTo('school')">Escuelas</li>
-    <li onclick="goTo('trainer')">Entrenadores</li>
-    <li onclick="goTo('event')">Eventos</li>
-    <li onclick="goTo('plans')">Planes</li>
-  </ul>
-  <div class="nav-right">
-    <div id="navAuth">
-      <button class="btn-login" onclick="goTo('login')">Ingresar</button>
+  <div class="nav-inner">
+    <div class="nav-logo" onclick="goTo('home')">DOJO<span>+</span></div>
+    <ul class="nav-links">
+      <li class="active" onclick="goTo('home')">Inicio</li>
+      <li onclick="goTo('school')">Escuelas</li>
+      <li onclick="goTo('trainer')">Entrenadores</li>
+      <li onclick="goTo('event')">Eventos</li>
+      <li onclick="goTo('plans')">Planes</li>
+    </ul>
+    <div class="nav-right">
+      <div id="navAuth">
+        <button class="btn-login" onclick="goTo('login')">Ingresar</button>
+      </div>
+      <!-- Hamburguesa — solo visible en mobile -->
+      <button class="nav-hamburger" id="hamburger" onclick="toggleMobileMenu()" aria-label="Abrir menú">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
     </div>
   </div>
 </nav>
+
+<!-- ===== MOBILE MENU ===== -->
+<div class="nav-mobile-menu" id="mobileMenu">
+  <ul class="nav-mobile-links">
+    <li onclick="goToMobile('home')">Inicio</li>
+    <li onclick="goToMobile('school')">Escuelas</li>
+    <li onclick="goToMobile('trainer')">Entrenadores</li>
+    <li onclick="goToMobile('event')">Eventos</li>
+    <li onclick="goToMobile('plans')">Planes</li>
+  </ul>
+  <div class="nav-mobile-footer">
+    <span class="nav-mobile-city">📍 Cali · Bogotá</span>
+    <button class="btn-login" onclick="goToMobile('login')">Ingresar</button>
+  </div>
+</div>
 
 <!-- ===================================================
      SCREEN 1 — HOME / SEARCH
@@ -44,7 +67,6 @@
       <button class="search-btn">🔍</button>
     </div>
   </section>
-  
 
   <div class="filters-section">
     <div class="filter-row">

@@ -23,6 +23,28 @@ function goTo(screenName) {
   if (wa) wa.style.display = 'block';
 }
 
+// ===== MOBILE MENU =====
+function toggleMobileMenu() {
+  const menu = document.getElementById('mobileMenu');
+  const btn  = document.getElementById('hamburger');
+  const isOpen = menu.classList.toggle('open');
+  btn.classList.toggle('open', isOpen);
+  // evitar scroll del body cuando el menu está abierto
+  document.body.style.overflow = isOpen ? 'hidden' : '';
+}
+
+function closeMobileMenu() {
+  document.getElementById('mobileMenu').classList.remove('open');
+  document.getElementById('hamburger').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function goToMobile(screenName) {
+  closeMobileMenu();
+  // pequeño delay para que la animación de cierre se vea
+  setTimeout(() => goTo(screenName), 120);
+}
+
 // ===== PILL FILTERS (multi-select) =====
 function togglePill(el, group) {
   el.classList.toggle('active');
@@ -108,5 +130,15 @@ document.addEventListener('DOMContentLoaded', () => {
     card.addEventListener('mouseenter', function () {
       this.style.transition = 'all 0.25s cubic-bezier(0.34,1.56,0.64,1)';
     });
+  });
+
+  // Escape cierra el menú mobile
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeMobileMenu();
+  });
+
+  // Al agrandar la ventana a desktop, cerrar el menú mobile
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 768) closeMobileMenu();
   });
 });
