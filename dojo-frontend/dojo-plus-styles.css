@@ -1033,3 +1033,125 @@ a.wa-icon[href="#"] { opacity: 0.5; cursor: not-allowed; }
 }
 .foto-preview--wide { height: 160px; }
 .foto-upload-wrap:hover .foto-preview { background: var(--card-bg); }
+
+/* ===== GALERÍA DE INSTALACIONES ===== */
+.galeria-preview-wrap {
+  display: flex; flex-wrap: wrap; gap: 8px;
+  padding: 10px; background: var(--black3);
+  border: 1px dashed var(--gray2); border-radius: 8px;
+  min-height: 88px;
+}
+.galeria-thumb {
+  width: 80px; height: 80px; border-radius: 6px;
+  background: var(--card-bg) center/cover no-repeat;
+  position: relative; flex-shrink: 0;
+  border: 1px solid var(--gray2);
+}
+.galeria-thumb-remove {
+  position: absolute; top: -6px; right: -6px;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: var(--red); color: var(--white);
+  border: none; cursor: pointer; font-size: 12px;
+  line-height: 1; display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-sans, sans-serif);
+}
+.galeria-add-btn {
+  width: 80px; height: 80px; border-radius: 6px;
+  border: 1px dashed var(--gray2); background: var(--card-bg);
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; cursor: pointer; color: var(--gray);
+  gap: 4px; transition: border-color 0.2s;
+}
+.galeria-add-btn:hover { border-color: var(--red); color: var(--white); }
+
+/* Poster del evento — más alto que la preview de foto normal */
+.foto-preview--poster { height: 200px; }
+
+/* ===== HORARIO DINÁMICO POR DÍA ===== */
+.sched-days-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 8px;
+}
+@media (max-width: 480px) {
+  .sched-days-grid { grid-template-columns: repeat(2, 1fr); }
+}
+.sched-day-block {
+  background: var(--black3);
+  border: 1px solid var(--gray2);
+  border-radius: 8px;
+  padding: 10px 10px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.sched-day-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--gray);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 2px;
+}
+.sched-slots { display: flex; flex-direction: column; gap: 5px; }
+.sched-slot  { display: flex; align-items: center; gap: 4px; }
+.sched-slot-remove {
+  background: none;
+  border: none;
+  color: var(--gray);
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  padding: 0 2px;
+  flex-shrink: 0;
+  transition: color 0.2s;
+}
+.sched-slot-remove:hover { color: var(--red); }
+.sched-add-slot {
+  margin-top: 4px;
+  background: transparent;
+  border: 1px dashed var(--gray2);
+  border-radius: 4px;
+  color: var(--red);
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 2px 0;
+  width: 100%;
+  transition: border-color 0.2s, background 0.2s;
+  line-height: 1.4;
+}
+.sched-add-slot:hover {
+  border-color: var(--red);
+  background: rgba(192,57,43,0.08);
+}
+
+/* ===== REGLAMENTO PDF ===== */
+.reglamento-upload-wrap {
+  border: 1px dashed var(--gray2);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+.reglamento-upload-wrap:hover { border-color: var(--red); }
+.reglamento-add-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  cursor: pointer;
+  background: var(--black3);
+  color: var(--gray);
+  transition: background 0.2s;
+}
+.reglamento-add-btn:hover { background: var(--card-bg); color: var(--white); }
+.reglamento-file-name {
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px;
+  background: var(--black3);
+  border-radius: 6px;
+  color: var(--wa);
+  font-size: 12px;
+}

@@ -16,6 +16,7 @@ const {
   subirFotoEscuela,
   subirGaleriaEscuela,
   subirPosterEvento,
+  subirReglamentoEvento,
   eliminarFotoGaleria,
 } = require('../controllers/upload.controller');
 const {
@@ -23,45 +24,15 @@ const {
   subirFotoEscuela:     multerEscuela,
   subirGaleriaEscuela:  multerGaleria,
   subirPosterEvento:    multerEvento,
+  subirReglamento:      multerReglamento,
 } = require('../middleware/upload');
 
 // Foto de perfil del entrenador
-router.post(
-  '/entrenador/:id/foto',
-  verificarToken,
-  multerEntrenador,
-  subirFotoEntrenador
-);
-
-// Foto principal de la escuela
-router.post(
-  '/escuela/:id/foto',
-  verificarToken,
-  multerEscuela,
-  subirFotoEscuela
-);
-
-// Galería de fotos de la escuela (hasta 5 a la vez)
-router.post(
-  '/escuela/:id/galeria',
-  verificarToken,
-  multerGaleria,
-  subirGaleriaEscuela
-);
-
-// Poster del evento
-router.post(
-  '/evento/:id/poster',
-  verificarToken,
-  multerEvento,
-  subirPosterEvento
-);
-
-// Eliminar una foto de la galería por índice
-router.delete(
-  '/escuela/:id/galeria/:index',
-  verificarToken,
-  eliminarFotoGaleria
-);
+router.post('/entrenador/:id/foto',    verificarToken, multerEntrenador,  subirFotoEntrenador);
+router.post('/escuela/:id/foto',       verificarToken, multerEscuela,     subirFotoEscuela);
+router.post('/escuela/:id/galeria',    verificarToken, multerGaleria,     subirGaleriaEscuela);
+router.post('/evento/:id/poster',      verificarToken, multerEvento,      subirPosterEvento);
+router.post('/evento/:id/reglamento',  verificarToken, multerReglamento,  subirReglamentoEvento);
+router.delete('/escuela/:id/galeria/:index', verificarToken, eliminarFotoGaleria);
 
 module.exports = router;

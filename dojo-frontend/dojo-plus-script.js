@@ -23,7 +23,10 @@ async function apiFetch(path, options = {}) {
 }
 
 // ===== NAVIGATION ===========================================
-function goTo(screenName) {
+function goTo(screenName, item = null) {
+  // Guardar el item activo si viene con datos
+  if (item) activeDetail[screenName] = item;
+
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   const screen = document.getElementById('screen-' + screenName);
   if (!screen) return;
@@ -43,9 +46,15 @@ function goTo(screenName) {
 
   if (screenName === 'schools')  loadSchools();
   if (screenName === 'trainers') loadTrainers();
+  if (screenName === 'events')   loadEvents();
   if (screenName === 'profile' && currentUser) loadProfileData();
 
-  // Actualizar botón flotante de WhatsApp en pantallas de detalle
+  // Renderizar detalles con datos reales
+  if (screenName === 'school')  renderSchoolDetail(activeDetail.school);
+  if (screenName === 'trainer') renderTrainerDetail(activeDetail.trainer);
+  if (screenName === 'event')   renderEventDetail(activeDetail.event);
+
+  // Actualizar botón WA flotante
   if (screenName === 'school')  wireDetailWa('school');
   if (screenName === 'trainer') wireDetailWa('trainer');
   if (screenName === 'event')   wireDetailWa('event');
@@ -65,6 +74,81 @@ function closeMobileMenu() {
 function goToMobile(n) { closeMobileMenu(); setTimeout(() => goTo(n), 120); }
 
 // ===== AUTH — REGISTRO ======================================
+// ===== REGISTRO — PASOS =====================================
+function nextStep(step) {
+  [1, 2, 3].forEach(n => {
+    const el = document.getElementById('reg-step-' + n);
+    if (el) el.style.display = n === step ? 'block' : 'none';
+  });
+  const lf = document.getElementById('login-form');
+  if (lf) lf.style.display = 'none';
+}
+
+function showLogin() {
+  [1, 2, 3].forEach(n => {
+    const el = document.getElementById('reg-step-' + n);
+    if (el) el.style.display = 'none';
+  });
+  const lf = document.getElementById('login-form');
+  if (lf) lf.style.display = 'block';
+}
+
+function showRegister() {
+  const lf = document.getElementById('login-form');
+  if (lf) lf.style.display = 'none';
+  const s1 = document.getElementById('reg-step-1');
+  if (s1) s1.style.display = 'block';
+  [2, 3].forEach(n => {
+    const el = document.getElementById('reg-step-' + n);
+    if (el) el.style.display = 'none';
+  });
+}
+
+function resetRegisterForm() {
+  ['reg-nombre','reg-email','reg-pwd','reg-pwd2'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.value = ''; el.classList.remove('error','valid'); }
+  });
+  const c = document.getElementById('reg-ciudad'); if (c) c.value = '';
+  document.querySelectorAll('#reg-step-2 .disc-card').forEach(c => c.classList.remove('selected'));
+  document.querySelectorAll('#reg-step-3 .sched-opt').forEach(c => {
+    c.classList.remove('selected');
+    const st = c.querySelector('.sched-time');
+    if (st) st.style.color = '';
+  });
+  const pwdBar = document.getElementById('pwd-strength-bar');
+  if (pwdBar) pwdBar.classList.remove('visible');
+  nextStep(1);
+}
+
+// ===== VALIDACIÓN FORMULARIO =================================
+function showFieldError(inputId, errorId) {
+  document.getElementById(inputId)?.classList.add('error');
+  document.getElementById(inputId)?.classList.remove('valid');
+  document.getElementById(errorId)?.classList.add('visible');
+}
+
+function clearFieldError(inputId) {
+  document.getElementById(inputId)?.classList.remove('error');
+  document.getElementById(inputId)?.classList.add('valid');
+  document.getElementById(inputId.replace('reg-','err-'))?.classList.remove('visible');
+}
+
+function checkPwdStrength() {
+  const pwd  = document.getElementById('reg-pwd')?.value || '';
+  const bar  = document.getElementById('pwd-strength-bar');
+  const fill = document.getElementById('pwd-strength-fill');
+  if (!bar || !fill) return;
+  bar.classList.add('visible');
+  let s = 0;
+  if (pwd.length >= 8) s++;
+  if (/[A-Z]/.test(pwd)) s++;
+  if (/[0-9]/.test(pwd)) s++;
+  if (/[^A-Za-z0-9]/.test(pwd)) s++;
+  fill.style.width      = ['25%','50%','75%','100%'][s-1] || '0%';
+  fill.style.background = ['#E74C3C','#E67E22','#F1C40F','#27AE60'][s-1] || '#E74C3C';
+}
+
 function validateStep1() {
   let ok = true;
   const nombre = document.getElementById('reg-nombre').value.trim();
@@ -169,7 +253,36 @@ async function loadUserFromToken() {
     const data  = await apiFetch('/auth/me');
     currentUser = data;
     renderUserUI(data);
-  } catch { removeToken(); }
+  } catch (err) {
+    // Solo eliminar el token si el servidor lo rechazó (401/403)
+    // NO eliminarlo si es error de red (servidor apagado, sin conexión)
+    if (err.status === 401 || err.status === 403) {
+      removeToken();
+    } else {
+      // Error de red — mantener el token, restaurar UI con datos del token local
+      const token = getToken();
+      if (token) {
+        try {
+          const payload = JSON.parse(atob(token.split('.')[1]));
+          // El token no ha expirado aún
+          if (payload.exp * 1000 > Date.now()) {
+            currentUser = {
+              userId:      payload.userId,
+              nombre:      payload.nombre,
+              email:       payload.email,
+              rol:         payload.rol,
+              ciudad:      payload.ciudad,
+              plan_activo: payload.plan_activo,
+              plan_expira: payload.plan_expira,
+            };
+            renderUserUI(currentUser);
+          } else {
+            removeToken(); // Token expirado
+          }
+        } catch { /* token malformado */ }
+      }
+    }
+  }
 }
 
 // ── Actualizar nav + perfil ───────────────────────────────────
@@ -218,7 +331,7 @@ function updateProfileButtons(user) {
         ${puedeEscuela
           ? `<button class="btn-outline-red" style="justify-content:center" onclick="openPublishModal('school')">🏫 Publicar escuela</button>`
           : `<div style="font-size:12px;color:var(--gray);text-align:center;padding:8px 0">Necesitas plan <strong style="color:var(--gold)">Basic Escuela</strong> para publicar academia</div>`}
-      </div>`;
+        <button class="btn-outline-red" style="justify-content:center;border-color:rgba(212,172,13,0.4);color:var(--gold)" onclick="openPublishModal('event')">🏆 Publicar evento</button>`;
   } else {
     el.innerHTML = `
       <div class="profile-section-title">🔒 Publicar contenido</div>
@@ -329,16 +442,195 @@ function wireDetailWa(tipo) {
   }
 }
 
+// ── Render detalle de escuela ─────────────────────────────────
+function renderSchoolDetail(s) {
+  if (!s) return; // Sin datos — mantiene el placeholder estático
+  const el = document.getElementById('screen-school');
+  if (!el) return;
+
+  // Hero
+  const heroName = el.querySelector('.hero-detail-content h1');
+  if (heroName) heroName.textContent = s.nombre;
+
+  const heroCity = el.querySelector('.city-badge');
+  if (heroCity) heroCity.textContent = '📍 ' + s.ciudad;
+
+  // Foto de fondo del hero
+  const heroBg = el.querySelector('.hero-detail-bg');
+  if (heroBg) {
+    if (s.foto_url) {
+      heroBg.style.backgroundImage = `url(${s.foto_url})`;
+      heroBg.style.backgroundSize  = 'cover';
+      heroBg.style.backgroundPosition = 'center';
+      heroBg.textContent = '';
+    } else {
+      heroBg.style.backgroundImage = '';
+      heroBg.textContent = '🏫';
+    }
+  }
+
+  // Tags de disciplinas
+  const tagsWrap = el.querySelector('.hero-detail-content .tags-wrap') ||
+                   el.querySelector('.hero-detail-content div[style*="gap:8px"]');
+  if (tagsWrap && s.disciplinas?.length) {
+    tagsWrap.innerHTML = s.disciplinas.map(d => `<span class="tag">${d}</span>`).join('');
+  }
+
+  // Tab Descripción
+  const descP = el.querySelector('#tab-school-desc .section-card p');
+  if (descP && s.descripcion) descP.textContent = s.descripcion;
+
+  // Tab Instalaciones — galería
+  const photoGrid = el.querySelector('.photo-grid');
+  if (photoGrid) {
+    if (s.galeria_urls?.length) {
+      photoGrid.innerHTML = s.galeria_urls.slice(0, 4).map(url =>
+        `<div class="photo-grid-item" style="background-image:url('${url}');background-size:cover;background-position:center"></div>`
+      ).join('');
+    } else {
+      photoGrid.innerHTML = `
+        <div class="photo-grid-item" style="background:var(--card-bg)">🏫<br><span style="font-size:12px;color:var(--gray)">Sin fotos aún</span></div>`;
+    }
+  }
+
+  // Tab Horarios
+  const horTabla = el.querySelector('#tab-school-hor .schedule-table tbody');
+  if (horTabla && s.horarios && Object.keys(s.horarios).length) {
+    const dias = ['lun','mar','mie','jue','vie','sab'];
+    const turnos = ['manana','tarde','noche'];
+    const iconos = { manana:'🌅', tarde:'☀️', noche:'🌙' };
+    const labels = { manana:'Mañana', tarde:'Tarde', noche:'Noche' };
+    const clases = { manana:'sched-morning', tarde:'sched-afternoon', noche:'sched-night' };
+
+    horTabla.innerHTML = turnos.map(t => `
+      <tr>
+        <td><span style="font-size:11px">${iconos[t]} ${labels[t]}</span></td>
+        ${dias.map(d => {
+          const hora = s.horarios[d]?.[t];
+          return hora
+            ? `<td><span class="${clases[t]}">${hora}</span></td>`
+            : `<td><span class="sched-empty">—</span></td>`;
+        }).join('')}
+      </tr>`).join('');
+  }
+
+  // Profesores (trainers de la escuela)
+  // Por ahora mantenemos los placeholder si no hay datos
+}
+
+// ── Render detalle de entrenador ──────────────────────────────
+function renderTrainerDetail(t) {
+  if (!t) return;
+  const el = document.getElementById('screen-trainer');
+  if (!el) return;
+
+  const nameEl = el.querySelector('.trainer-hero-name');
+  if (nameEl) nameEl.textContent = t.nombre.toUpperCase();
+
+  const photoEl = el.querySelector('.trainer-hero-photo');
+  if (photoEl) {
+    if (t.foto_url) {
+      photoEl.style.backgroundImage   = `url(${t.foto_url})`;
+      photoEl.style.backgroundSize    = 'cover';
+      photoEl.style.backgroundPosition = 'center';
+      photoEl.textContent = '';
+    } else {
+      photoEl.style.backgroundImage = '';
+      photoEl.textContent = '🥋';
+    }
+  }
+
+  const tagsDiv = el.querySelector('.trainer-hero div[style*="gap:8px"]');
+  if (tagsDiv && t.disciplinas?.length) {
+    tagsDiv.innerHTML = t.disciplinas.map(d => `<span class="tag">${d}</span>`).join('');
+  }
+
+  const bioP = el.querySelector('.trainer-hero p');
+  if (bioP && t.bio) bioP.textContent = t.bio;
+}
+
+// ── Render detalle de evento ──────────────────────────────────
+function renderEventDetail(ev) {
+  if (!ev) return;
+  const el = document.getElementById('screen-event');
+  if (!el) return;
+
+  // Poster
+  const posterEl = el.querySelector('.event-poster-detail');
+  if (posterEl) {
+    if (ev.poster_url) {
+      posterEl.style.backgroundImage   = `url(${ev.poster_url})`;
+      posterEl.style.backgroundSize    = 'cover';
+      posterEl.style.backgroundPosition = 'center';
+      posterEl.textContent = '';
+    } else {
+      posterEl.style.backgroundImage = '';
+      posterEl.textContent = '🏆';
+    }
+  }
+
+  const titleEl = el.querySelector('.event-detail-title');
+  if (titleEl) titleEl.textContent = ev.nombre.toUpperCase();
+
+  const orgEl = el.querySelector('.event-detail-org');
+  if (orgEl) orgEl.textContent = ev.organizador;
+
+  // Detalles
+  const detalles = {
+    ciudad:    ev.ciudad,
+    fecha:     ev.fecha ? new Date(ev.fecha).toLocaleDateString('es-CO', { weekday:'long', year:'numeric', month:'long', day:'numeric' }) : '—',
+    disciplina:ev.disciplina,
+    organizador:ev.organizador,
+  };
+  const detItems = el.querySelectorAll('.event-detail-item');
+  const keys = ['ciudad','fecha','disciplina','organizador'];
+  detItems.forEach((item, i) => {
+    const val = item.querySelector('.event-detail-val');
+    if (val && detalles[keys[i]]) val.textContent = detalles[keys[i]];
+  });
+
+  // Botón de reglamento
+  const regBtn = document.getElementById('reglamento-btn');
+  if (regBtn) {
+    if (ev.reglamento_url) {
+      regBtn.href = ev.reglamento_url;
+      regBtn.style.opacity = '1';
+      regBtn.style.pointerEvents = 'auto';
+    } else {
+      regBtn.href = '#';
+      regBtn.style.opacity = '0.4';
+      regBtn.style.pointerEvents = 'none';
+    }
+  }
+}
+
+// ===== STORE DE ITEMS — evita JSON en atributos onclick =======
+// Los datos se guardan en este mapa y se recuperan por ID al hacer clic
+const itemStore = { schools:{}, trainers:{}, events:{} };
+
+function storeItem(tipo, item) {
+  itemStore[tipo][item.id] = item;
+  return item.id;
+}
+
+function openDetail(tipo, id) {
+  const item = itemStore[tipo][id];
+  // tipo → screenName mapping
+  const screen = { schools:'school', trainers:'trainer', events:'event' }[tipo];
+  if (screen) goTo(screen, item || null);
+}
+
 // ===== LISTADOS — CARGAR DESDE API ==========================
 function renderSchoolCard(s) {
   const waUrl   = buildWaUrl(s.whatsapp, s.nombre, 'escuela');
+  const sid     = storeItem('schools', s);
   const imgHtml = s.foto_url
     ? `<div class="school-card-img" style="background-image:url('${s.foto_url}');background-size:cover;background-position:center;font-size:0"></div>`
     : `<div class="school-card-img" style="font-size:64px">🏫</div>`;
   return `<div class="card listing-school-card"
     data-city="${s.ciudad?.toLowerCase()}"
     data-disciplines="${(s.disciplinas||[]).join(' ').toLowerCase()}"
-    onclick="goTo('school')">
+    onclick="openDetail('schools','${sid}')">
     ${imgHtml}
     <div class="school-card-body">
       <div class="school-card-name">${s.nombre}</div>
@@ -353,14 +645,15 @@ function renderSchoolCard(s) {
 }
 
 function renderTrainerCard(t) {
-  const waUrl    = buildWaUrl(t.whatsapp, t.nombre, 'entrenador');
+  const waUrl   = buildWaUrl(t.whatsapp, t.nombre, 'entrenador');
+  const tid     = storeItem('trainers', t);
   const fotoHtml = t.foto_url
     ? `<div class="trainer-photo" style="background-image:url('${t.foto_url}');background-size:cover;background-position:center;font-size:0"></div>`
     : `<div class="trainer-photo" style="font-size:28px">🥋</div>`;
   return `<div class="card trainer-card"
     data-city="${t.ciudad?.toLowerCase()}"
     data-disciplines="${(t.disciplinas||[]).join(' ').toLowerCase()}"
-    onclick="goTo('trainer')">
+    onclick="openDetail('trainers','${tid}')">
     <div class="trainer-photo-wrap">${fotoHtml}</div>
     <div class="trainer-card-body">
       <div class="trainer-name">${t.nombre}</div>
@@ -370,6 +663,24 @@ function renderTrainerCard(t) {
          onclick="event.stopPropagation()" title="Agendar por WhatsApp">
         📲 Agendar
       </a>
+    </div></div>`;
+}
+
+function renderEventCard(ev) {
+  const waUrl = buildWaUrl(ev.whatsapp, ev.nombre, 'evento');
+  const eid   = storeItem('events', ev);
+  const fecha = ev.fecha ? new Date(ev.fecha).toLocaleDateString('es-CO', { day:'numeric', month:'short' }) : '';
+  return `<div class="card event-card"
+    data-city="${ev.ciudad?.toLowerCase()}"
+    data-disciplines="${ev.disciplina?.toLowerCase()}"
+    onclick="openDetail('events','${eid}')">
+    <div class="event-poster" ${ev.poster_url ? `style="background-image:url('${ev.poster_url}');background-size:cover;background-position:center;font-size:0"` : ''}>
+      ${ev.poster_url ? '' : '🏆'}
+    </div>
+    <div class="event-card-body">
+      <div class="event-name">${ev.nombre}</div>
+      <span class="tag">${ev.disciplina}</span>
+      <div class="event-date">📅 ${fecha} · ${ev.ciudad}</div>
     </div></div>`;
 }
 
@@ -403,6 +714,23 @@ async function loadTrainers() {
     if (count) count.innerHTML = `<strong>${data.total}</strong> entrenadores encontrados`;
     document.getElementById('empty-trainers')?.classList.toggle('visible', data.trainers.length === 0);
     listingFilterApply('trainers','tr');
+  } catch {
+    if (!hadCards) grid.innerHTML = '';
+  }
+}
+
+async function loadEvents() {
+  const grid  = document.getElementById('grid-events');
+  const count = document.getElementById('count-events');
+  if (!grid) return;
+  const hadCards = grid.querySelectorAll('[data-city]').length > 0;
+  if (!hadCards) grid.innerHTML = '<div class="listing-skeleton">Cargando eventos...</div>';
+  try {
+    const data = await apiFetch('/events');
+    grid.innerHTML = data.events.length ? data.events.map(renderEventCard).join('') : '';
+    if (count) count.innerHTML = `<strong>${data.total}</strong> eventos encontrados`;
+    document.getElementById('empty-events')?.classList.toggle('visible', data.events.length === 0);
+    listingFilterApply('events','ev');
   } catch {
     if (!hadCards) grid.innerHTML = '';
   }
@@ -443,18 +771,13 @@ function openPublishModal(type) {
   publishType = type;
   const modal = document.getElementById('publishModal');
   if (!modal) return;
-  document.getElementById('publishModalTitle').textContent =
-    type === 'trainer' ? '🥊 Publicar entrenador' : '🏫 Publicar escuela';
-  document.getElementById('publishForm').innerHTML =
-    type === 'trainer' ? buildTrainerForm() : buildSchoolForm();
+  const titles = { trainer:'🥊 Publicar entrenador', school:'🏫 Publicar escuela', event:'🏆 Publicar evento' };
+  document.getElementById('publishModalTitle').textContent = titles[type] || 'Publicar';
+  if (type === 'trainer')      document.getElementById('publishForm').innerHTML = buildTrainerForm();
+  else if (type === 'school')  document.getElementById('publishForm').innerHTML = buildSchoolForm();
+  else if (type === 'event')   document.getElementById('publishForm').innerHTML = buildEventForm();
   modal.classList.add('open');
   document.body.style.overflow = 'hidden';
-}
-
-function closePublishModal() {
-  document.getElementById('publishModal')?.classList.remove('open');
-  document.body.style.overflow = '';
-  publishType = null;
 }
 
 function buildTrainerForm() {
@@ -488,9 +811,30 @@ function buildTrainerForm() {
 }
 
 function buildSchoolForm() {
+  const dias  = [
+    { key:'lun', label:'Lun' }, { key:'mar', label:'Mar' },
+    { key:'mie', label:'Mié' }, { key:'jue', label:'Jue' },
+    { key:'vie', label:'Vie' }, { key:'sab', label:'Sáb' },
+  ];
+
+  // Cada día arranca con 1 slot vacío + botón "+"
+  const diaBlocks = dias.map(d => `
+    <div class="sched-day-block" data-day="${d.key}">
+      <div class="sched-day-label">${d.label}</div>
+      <div class="sched-slots" id="slots-${d.key}">
+        <div class="sched-slot">
+          <input type="text" class="sched-slot-input" data-day="${d.key}"
+            placeholder="7:00 AM"
+            style="flex:1;background:var(--black3);border:1px solid var(--gray2);color:var(--white);border-radius:4px;padding:5px 8px;font-size:12px;font-family:'Outfit',sans-serif">
+          <button type="button" class="sched-slot-remove" onclick="removeSchedSlot(this)" title="Quitar">×</button>
+        </div>
+      </div>
+      <button type="button" class="sched-add-slot" onclick="addSchedSlot('${d.key}')" title="Agregar horario">+</button>
+    </div>`).join('');
+
   return `
     <div class="form-group">
-      <label class="form-label">Foto principal de la escuela</label>
+      <label class="form-label">Foto principal</label>
       <div class="foto-upload-wrap" onclick="document.getElementById('pub-foto-input').click()">
         <div class="foto-preview foto-preview--wide" id="pub-foto-preview">
           <span style="font-size:32px">🏫</span>
@@ -499,8 +843,20 @@ function buildSchoolForm() {
         <input id="pub-foto-input" type="file" accept="image/jpeg,image/png,image/webp"
                style="display:none" onchange="previewFoto(this,'pub-foto-preview')">
       </div>
-      <div style="font-size:11px;color:var(--gray);margin-top:6px">JPG, PNG o WebP · máx 5 MB · se sube al guardar</div>
     </div>
+
+    <div class="form-group">
+      <label class="form-label">Galería de instalaciones <span style="color:var(--gray);font-size:11px">(máx 4 fotos)</span></label>
+      <div class="galeria-preview-wrap" id="galeria-preview-wrap">
+        <div class="galeria-add-btn" onclick="document.getElementById('pub-galeria-input').click()">
+          <span style="font-size:20px">+</span>
+          <span style="font-size:11px;color:var(--gray)">Agregar foto</span>
+        </div>
+      </div>
+      <input id="pub-galeria-input" type="file" accept="image/jpeg,image/png,image/webp"
+             multiple style="display:none" onchange="addGaleriaPreview(this)">
+    </div>
+
     <div class="form-group"><label class="form-label">Nombre de la escuela <span style="color:var(--red)">*</span></label>
       <input id="pub-nombre" class="form-input" type="text" placeholder="Ej: Alliance BJJ Cali"></div>
     <div class="form-group"><label class="form-label">WhatsApp <span style="color:var(--red)">*</span></label>
@@ -513,95 +869,298 @@ function buildSchoolForm() {
       <input id="pub-disciplinas" class="form-input" type="text" placeholder="BJJ, Boxeo, Muay Thai (separar con comas)"></div>
     <div class="form-group"><label class="form-label">Descripción</label>
       <textarea id="pub-bio" class="form-input" rows="3" placeholder="Describe tu academia, logros, años de experiencia..." style="resize:vertical;min-height:80px"></textarea></div>
+
+    <div class="form-group">
+      <label class="form-label">Horarios por día
+        <span style="font-size:11px;color:var(--gray);font-weight:400"> — usa el botón <strong style="color:var(--red)">+</strong> para añadir más franjas</span>
+      </label>
+      <div class="sched-days-grid">${diaBlocks}</div>
+      <div style="font-size:11px;color:var(--gray);margin-top:6px">Ej: "7:00 AM", "12:30 PM – 2:00 PM". Deja vacío si no hay clase ese día.</div>
+    </div>
+
     <div id="pub-error" class="form-error" style="margin-bottom:12px"></div>
     <button class="btn-red" style="width:100%;justify-content:center" onclick="submitPublish()">Publicar escuela</button>`;
 }
 
-// Preview de foto antes de subir
+function buildEventForm() {
+  return `
+    <div class="form-group">
+      <label class="form-label">Poster del evento</label>
+      <div class="foto-upload-wrap" onclick="document.getElementById('pub-foto-input').click()">
+        <div class="foto-preview foto-preview--poster" id="pub-foto-preview">
+          <span style="font-size:32px">🏆</span>
+          <span style="font-size:12px;color:var(--gray);margin-top:6px">Clic para subir poster</span>
+        </div>
+        <input id="pub-foto-input" type="file" accept="image/jpeg,image/png,image/webp"
+               style="display:none" onchange="previewFoto(this,'pub-foto-preview')">
+      </div>
+      <div style="font-size:11px;color:var(--gray);margin-top:6px">JPG, PNG o WebP · máx 5 MB</div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Reglamento del campeonato <span style="color:var(--gray);font-size:11px">(PDF)</span></label>
+      <div class="reglamento-upload-wrap" id="reglamento-wrap">
+        <div class="reglamento-add-btn" onclick="document.getElementById('pub-reglamento-input').click()">
+          <span style="font-size:22px">📄</span>
+          <span style="font-size:12px;color:var(--gray)">Subir PDF del reglamento</span>
+        </div>
+        <div class="reglamento-file-name" id="reglamento-file-name" style="display:none;font-size:12px;color:var(--wa);padding:10px 14px;background:var(--black3);border-radius:6px;display:flex;align-items:center;gap:8px">
+          <span>📄</span><span id="reglamento-name-text"></span>
+          <button type="button" onclick="removeReglamento()" style="margin-left:auto;background:none;border:none;color:var(--gray);cursor:pointer;font-size:16px">×</button>
+        </div>
+      </div>
+      <input id="pub-reglamento-input" type="file" accept="application/pdf"
+             style="display:none" onchange="previewReglamento(this)">
+      <div style="font-size:11px;color:var(--gray);margin-top:4px">Solo PDF · máx 15 MB</div>
+    </div>
+
+    <div class="form-group"><label class="form-label">Nombre del evento <span style="color:var(--red)">*</span></label>
+      <input id="pub-nombre" class="form-input" type="text" placeholder="Ej: Copa Valle BJJ Open 2025"></div>
+    <div class="form-group"><label class="form-label">Organizador <span style="color:var(--red)">*</span></label>
+      <input id="pub-organizador" class="form-input" type="text" placeholder="Ej: Federación Colombiana de BJJ"></div>
+    <div class="form-group"><label class="form-label">WhatsApp del organizador <span style="color:var(--red)">*</span></label>
+      <input id="pub-whatsapp" class="form-input" type="tel" placeholder="+57 300 123 4567"></div>
+    <div class="form-group"><label class="form-label">Ciudad <span style="color:var(--red)">*</span></label>
+      <select id="pub-ciudad" class="form-input"><option value="">Ciudad</option><option>Cali</option><option>Bogotá</option></select></div>
+    <div class="form-group"><label class="form-label">Disciplina <span style="color:var(--red)">*</span></label>
+      <select id="pub-disciplina" class="form-input">
+        <option value="">Selecciona disciplina</option>
+        <option>BJJ</option><option>Boxeo</option><option>Muay Thai</option>
+        <option>MMA</option><option>Karate</option><option>Judo</option>
+        <option>Taekwondo</option><option>Wrestling</option><option>Kickboxing</option>
+      </select></div>
+    <div class="form-group"><label class="form-label">Fecha y hora <span style="color:var(--red)">*</span></label>
+      <input id="pub-fecha" class="form-input" type="datetime-local"></div>
+    <div class="form-group"><label class="form-label">Descripción</label>
+      <textarea id="pub-bio" class="form-input" rows="3" placeholder="Describe el evento, categorías, requisitos de inscripción..." style="resize:vertical;min-height:80px"></textarea></div>
+
+    <div id="pub-error" class="form-error" style="margin-bottom:12px"></div>
+    <button class="btn-red" style="width:100%;justify-content:center" onclick="submitPublish()">Publicar evento</button>`;
+}
+
+// Galería de instalaciones — archivos en memoria
+let galeriaFiles = [];
+
+function closePublishModal() {
+  document.getElementById('publishModal')?.classList.remove('open');
+  document.body.style.overflow = '';
+  publishType   = null;
+  galeriaFiles  = [];
+  reglamentoFile = null;
+}
+
+// Agrega thumbnails al wrap con botón de quitar
+// ── Horario dinámico — agregar/quitar slots por día ───────────
+function addSchedSlot(dia) {
+  const container = document.getElementById('slots-' + dia);
+  if (!container) return;
+  const slot = document.createElement('div');
+  slot.className = 'sched-slot';
+  slot.innerHTML = `
+    <input type="text" class="sched-slot-input" data-day="${dia}"
+      placeholder="Ej: 6:30 PM"
+      style="flex:1;background:var(--black3);border:1px solid var(--gray2);color:var(--white);border-radius:4px;padding:5px 8px;font-size:12px;font-family:'Outfit',sans-serif">
+    <button type="button" class="sched-slot-remove" onclick="removeSchedSlot(this)" title="Quitar">×</button>`;
+  container.appendChild(slot);
+  slot.querySelector('input').focus();
+}
+
+function removeSchedSlot(btn) {
+  const slot = btn.closest('.sched-slot');
+  const container = slot?.parentElement;
+  // Mantener al menos 1 slot por día
+  if (container && container.querySelectorAll('.sched-slot').length > 1) {
+    slot.remove();
+  } else {
+    // Si es el único, solo limpiar el valor
+    const input = slot?.querySelector('input');
+    if (input) { input.value = ''; input.focus(); }
+  }
+}
+
+// ── Reglamento PDF ────────────────────────────────────────────
+let reglamentoFile = null;
+
+function previewReglamento(input) {
+  const file = input.files[0];
+  if (!file) return;
+  if (file.size > 15 * 1024 * 1024) {
+    showToast('❌ El PDF supera los 15 MB permitidos');
+    input.value = '';
+    return;
+  }
+  reglamentoFile = file;
+  const addBtn  = document.querySelector('.reglamento-add-btn');
+  const nameDiv = document.getElementById('reglamento-file-name');
+  const nameText = document.getElementById('reglamento-name-text');
+  if (addBtn)   addBtn.style.display  = 'none';
+  if (nameDiv)  nameDiv.style.display = 'flex';
+  if (nameText) nameText.textContent  = file.name;
+}
+
+function removeReglamento() {
+  reglamentoFile = null;
+  const input   = document.getElementById('pub-reglamento-input');
+  const addBtn  = document.querySelector('.reglamento-add-btn');
+  const nameDiv = document.getElementById('reglamento-file-name');
+  if (input)   input.value  = '';
+  if (addBtn)  addBtn.style.display  = 'flex';
+  if (nameDiv) nameDiv.style.display = 'none';
+}
+
+function addGaleriaPreview(input) {
+  const MAX  = 4;
+  const wrap = document.getElementById('galeria-preview-wrap');
+  if (!wrap) return;
+  Array.from(input.files).forEach(file => {
+    if (galeriaFiles.length >= MAX) { showToast('⚠️ Máximo 4 fotos en la galería'); return; }
+    if (file.size > 5 * 1024 * 1024) { showToast('❌ ' + file.name + ' supera 5 MB'); return; }
+    const idx   = galeriaFiles.push(file) - 1;
+    const thumb = document.createElement('div');
+    thumb.className = 'galeria-thumb';
+    const reader = new FileReader();
+    reader.onload = e => { thumb.style.backgroundImage = 'url(' + e.target.result + ')'; };
+    reader.readAsDataURL(file);
+    const rm = document.createElement('button');
+    rm.textContent = '×'; rm.className = 'galeria-thumb-remove';
+    rm.onclick = () => {
+      galeriaFiles.splice(idx, 1); thumb.remove();
+      const ab = wrap.querySelector('.galeria-add-btn');
+      if (ab) ab.style.display = 'flex';
+    };
+    thumb.appendChild(rm);
+    const addBtn = wrap.querySelector('.galeria-add-btn');
+    wrap.insertBefore(thumb, addBtn);
+  });
+  const addBtn = wrap.querySelector('.galeria-add-btn');
+  if (addBtn) addBtn.style.display = galeriaFiles.length >= MAX ? 'none' : 'flex';
+  input.value = '';
+}
+
+// Preview foto principal
 function previewFoto(input, previewId) {
   const file    = input.files[0];
   const preview = document.getElementById(previewId);
   if (!file || !preview) return;
-
-  // Validar tamaño (5 MB)
-  if (file.size > 5 * 1024 * 1024) {
-    showToast('❌ La imagen supera los 5 MB permitidos');
-    input.value = '';
-    return;
-  }
-
+  if (file.size > 5 * 1024 * 1024) { showToast('❌ La imagen supera los 5 MB'); input.value=''; return; }
   const reader = new FileReader();
-  reader.onload = (e) => {
-    preview.style.backgroundImage  = `url(${e.target.result})`;
-    preview.style.backgroundSize   = 'cover';
+  reader.onload = e => {
+    preview.style.backgroundImage    = 'url(' + e.target.result + ')';
+    preview.style.backgroundSize     = 'cover';
     preview.style.backgroundPosition = 'center';
-    preview.innerHTML = ''; // Quitar el icono placeholder
+    preview.innerHTML = '';
   };
   reader.readAsDataURL(file);
 }
 
 async function submitPublish() {
-  const nombre      = document.getElementById('pub-nombre')?.value.trim();
-  const whatsapp    = document.getElementById('pub-whatsapp')?.value.trim();
-  const ciudad      = document.getElementById('pub-ciudad')?.value;
-  const disciplinas = (document.getElementById('pub-disciplinas')?.value||'').split(',').map(d=>d.trim()).filter(Boolean);
-  const bio         = document.getElementById('pub-bio')?.value.trim() || null;
-  const fotoInput   = document.getElementById('pub-foto-input');
-  const errEl       = document.getElementById('pub-error');
+  const nombre   = document.getElementById('pub-nombre')?.value.trim();
+  const whatsapp = document.getElementById('pub-whatsapp')?.value.trim();
+  const ciudad   = document.getElementById('pub-ciudad')?.value;
+  const errEl    = document.getElementById('pub-error');
+  const btn      = document.querySelector('#publishForm .btn-red');
 
   if (!nombre || !whatsapp || !ciudad) {
     if (errEl) { errEl.textContent = 'Nombre, WhatsApp y ciudad son obligatorios.'; errEl.classList.add('visible'); }
     return;
   }
   if (errEl) errEl.classList.remove('visible');
-
-  const btn = document.querySelector('#publishForm .btn-red');
-  if (btn) { btn.disabled = true; btn.textContent = 'Publicando...'; }
+  if (btn)   { btn.disabled = true; btn.textContent = 'Publicando...'; }
 
   try {
-    // 1. Crear el entrenador o escuela en la BD (sin foto todavía)
-    const endpoint = publishType === 'trainer' ? '/trainers' : '/schools';
-    const body = publishType === 'trainer'
-      ? { nombre, whatsapp, ciudad, disciplinas, bio,
-          experiencia_anos: parseInt(document.getElementById('pub-exp')?.value)||0 }
-      : { nombre, whatsapp, ciudad, disciplinas, descripcion: bio,
-          direccion: document.getElementById('pub-direccion')?.value.trim()||null };
+    const token = getToken();
+    let creado, id;
 
-    const creado = await apiFetch(endpoint, { method:'POST', body: JSON.stringify(body) });
-    const id = publishType === 'trainer' ? creado.trainer.id : creado.school.id;
+    if (publishType === 'trainer') {
+      const disciplinas = (document.getElementById('pub-disciplinas')?.value||'')
+        .split(',').map(d=>d.trim()).filter(Boolean);
+      creado = await apiFetch('/trainers', { method:'POST', body: JSON.stringify({
+        nombre, whatsapp, ciudad, disciplinas,
+        bio: document.getElementById('pub-bio')?.value.trim()||null,
+        experiencia_anos: parseInt(document.getElementById('pub-exp')?.value)||0,
+      })});
+      id = creado.trainer.id;
 
-    // 2. Si hay foto, subirla a Cloudinary
-    if (fotoInput?.files?.length > 0) {
-      if (btn) btn.textContent = 'Subiendo foto...';
-      try {
-        const formData = new FormData();
-        formData.append('foto', fotoInput.files[0]);
-        const token = getToken();
-        const uploadPath = publishType === 'trainer'
-          ? `/entrenador/${id}/foto`
-          : `/escuela/${id}/foto`;
-        await fetch(API_URL + '/upload' + uploadPath, {
-          method: 'POST',
-          headers: { 'Authorization': 'Bearer ' + token },
-          body: formData,
-          // No poner Content-Type — el navegador lo pone solo con el boundary correcto
-        });
-      } catch (uploadErr) {
-        // La foto falló pero el entrenador/escuela ya se creó
-        // No es un error fatal — avisamos pero seguimos
-        console.warn('Error subiendo foto:', uploadErr);
-        showToast('⚠️ Publicado correctamente pero la foto no se pudo subir');
+    } else if (publishType === 'school') {
+      const disciplinas = (document.getElementById('pub-disciplinas')?.value||'')
+        .split(',').map(d=>d.trim()).filter(Boolean);
+
+      // Recoger horarios multi-slot: { lun: ['7:00 AM', '6:30 PM'], mar: ['7:00 AM'], ... }
+      const horarios = {};
+      document.querySelectorAll('.sched-slot-input').forEach(inp => {
+        const val = inp.value.trim();
+        if (!val) return;
+        const dia = inp.dataset.day;
+        if (!horarios[dia]) horarios[dia] = [];
+        horarios[dia].push(val);
+      });
+
+      creado = await apiFetch('/schools', { method:'POST', body: JSON.stringify({
+        nombre, whatsapp, ciudad, disciplinas, horarios,
+        descripcion: document.getElementById('pub-bio')?.value.trim()||null,
+        direccion:   document.getElementById('pub-direccion')?.value.trim()||null,
+      })});
+      id = creado.school.id;
+
+    } else if (publishType === 'event') {
+      const disciplina  = document.getElementById('pub-disciplina')?.value;
+      const fecha       = document.getElementById('pub-fecha')?.value;
+      const organizador = document.getElementById('pub-organizador')?.value.trim();
+      if (!disciplina || !fecha || !organizador) {
+        if (errEl) { errEl.textContent = 'Disciplina, organizador y fecha son obligatorios.'; errEl.classList.add('visible'); }
+        if (btn)   { btn.disabled = false; btn.textContent = 'Publicar evento'; }
+        return;
       }
+      creado = await apiFetch('/events', { method:'POST', body: JSON.stringify({
+        nombre, whatsapp, ciudad, disciplina, fecha, organizador,
+        descripcion: document.getElementById('pub-bio')?.value.trim()||null,
+      })});
+      id = creado.event.id;
+    }
+
+    // Subir foto principal
+    const fotoInput = document.getElementById('pub-foto-input');
+    if (fotoInput?.files?.length > 0 && id) {
+      if (btn) btn.textContent = 'Subiendo foto...';
+      const paths = { trainer:'/entrenador/'+id+'/foto', school:'/escuela/'+id+'/foto', event:'/evento/'+id+'/poster' };
+      const fd = new FormData();
+      fd.append('foto', fotoInput.files[0]);
+      await fetch(API_URL + '/upload' + paths[publishType], {
+        method:'POST', headers:{'Authorization':'Bearer '+token}, body:fd,
+      }).catch(e => console.warn('Foto no subida:', e));
+    }
+
+    // Subir galería (solo escuelas)
+    if (publishType === 'school' && galeriaFiles.length > 0 && id) {
+      if (btn) btn.textContent = 'Subiendo galería (' + galeriaFiles.length + ')...';
+      const fd = new FormData();
+      galeriaFiles.forEach(f => fd.append('galeria', f));
+      await fetch(API_URL + '/upload/escuela/' + id + '/galeria', {
+        method:'POST', headers:{'Authorization':'Bearer '+token}, body:fd,
+      }).catch(e => console.warn('Galería no subida:', e));
+    }
+
+    // Subir reglamento PDF (solo eventos)
+    if (publishType === 'event' && reglamentoFile && id) {
+      if (btn) btn.textContent = 'Subiendo reglamento...';
+      const fd = new FormData();
+      fd.append('reglamento', reglamentoFile);
+      await fetch(API_URL + '/upload/evento/' + id + '/reglamento', {
+        method:'POST', headers:{'Authorization':'Bearer '+token}, body:fd,
+      }).catch(e => console.warn('Reglamento no subido:', e));
     }
 
     closePublishModal();
-    showToast(`✅ ${publishType === 'trainer' ? 'Entrenador' : 'Escuela'} publicado correctamente`);
+    const labels = { trainer:'Entrenador', school:'Escuela', event:'Evento' };
+    showToast('✅ ' + (labels[publishType]||'Contenido') + ' publicado correctamente');
     await loadProfileData();
-    publishType === 'trainer' ? loadTrainers() : loadSchools();
+    if (publishType==='trainer') loadTrainers();
+    else if (publishType==='school') loadSchools();
+    else if (publishType==='event') loadEvents();
 
   } catch (err) {
-    if (btn) { btn.disabled = false; btn.textContent = 'Publicar ' + (publishType==='trainer'?'entrenador':'escuela'); }
-    if (errEl) { errEl.textContent = err.message||'Error al publicar'; errEl.classList.add('visible'); }
+    if (btn)   { btn.disabled=false; btn.textContent='Publicar '+(publishType||''); }
+    if (errEl) { errEl.textContent=err.message||'Error al publicar'; errEl.classList.add('visible'); }
   }
 }
 
@@ -610,154 +1169,143 @@ async function deleteTrainer(id) {
   try {
     await apiFetch('/trainers/'+id, { method:'DELETE' });
     showToast('🗑 Entrenador eliminado');
-    await loadMisTrainers();
+    await loadProfileData();
     loadTrainers();
   } catch (err) { showToast('❌ ' + err.message); }
 }
 
-// ===== HOME FILTERS ==========================================
-function togglePill(el, group) { el.classList.toggle('active'); applyFilters(); }
-
-function applyFilters() {
-  const query    = (document.getElementById('searchInput')?.value||'').toLowerCase().trim();
-  const wrap     = document.querySelector('.search-bar-wrap');
-  if (wrap) wrap.classList.toggle('has-query', query.length>0);
-
-  const active   = g => [...document.querySelectorAll(`.pill.active[data-group="${g}"]`)].map(p => p.dataset.value);
-  const tipos    = active('tipo');
-  const horarios = active('horario');
-  const ciudades = active('ciudad');
-
-  document.querySelectorAll('.home-sections [data-type]').forEach(card => {
-    const pass =
-      (tipos.length    === 0 || tipos.includes(card.dataset.type))   &&
-      (ciudades.length === 0 || ciudades.includes(card.dataset.city)) &&
-      (horarios.length === 0 || card.dataset.type === 'evento' || horarios.some(h => (card.dataset.schedule||'').includes(h))) &&
-      (query === ''          || (card.dataset.name||'').includes(query) || (card.dataset.disciplines||'').includes(query));
-    card.classList.toggle('card-hidden', !pass);
-  });
-
-  let allHidden = true;
-  document.querySelectorAll('.home-section[data-section-type]').forEach(section => {
-    const sType    = section.dataset.sectionType;
-    const hasCards = section.querySelectorAll('[data-type]:not(.card-hidden)').length > 0;
-    const tMatch   = tipos.length === 0 || tipos.includes(sType);
-    const show     = tMatch && hasCards;
-    section.classList.toggle('section-hidden', !show);
-    section.querySelector('.section-empty')?.classList.toggle('visible', tMatch && !hasCards);
-    if (show) allHidden = false;
-  });
-
-  const ge = document.getElementById('global-empty');
-  if (ge) ge.style.display = allHidden ? 'block' : 'none';
-}
-
-function clearFilters() {
-  const input = document.getElementById('searchInput');
-  if (input) input.value = '';
-  document.querySelectorAll('.pill[data-group]').forEach(p => p.classList.remove('active'));
-  applyFilters();
-}
-
-// ===== TABS =================================================
-function switchTab(btn, tabId) {
-  btn.parentElement.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  const school = document.getElementById('screen-school');
-  school.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
-  document.getElementById('tab-'+tabId)?.classList.add('active');
-}
-
-// ===== REGISTRO — STEPS =====================================
-function nextStep(step) {
-  [1,2,3].forEach(n => {
-    const el = document.getElementById('reg-step-'+n);
-    if (el) el.style.display = n===step ? 'block' : 'none';
-  });
-  document.getElementById('login-form').style.display = 'none';
-}
-function showLogin() {
-  [1,2,3].forEach(n => { const e=document.getElementById('reg-step-'+n); if(e) e.style.display='none'; });
-  document.getElementById('login-form').style.display = 'block';
-}
-function showRegister() {
-  document.getElementById('login-form').style.display = 'none';
-  document.getElementById('reg-step-1').style.display = 'block';
-}
-function resetRegisterForm() {
-  ['reg-nombre','reg-email','reg-pwd','reg-pwd2'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) { el.value=''; el.classList.remove('error','valid'); }
-  });
-  const c = document.getElementById('reg-ciudad'); if(c) c.value='';
-  document.querySelectorAll('#reg-step-2 .disc-card').forEach(c => c.classList.remove('selected'));
-  document.querySelectorAll('#reg-step-3 .sched-opt').forEach(c => {
-    c.classList.remove('selected');
-    c.querySelector('.sched-time').style.color='';
-  });
-  document.getElementById('pwd-strength-bar')?.classList.remove('visible');
-  nextStep(1);
-}
-
-// ===== FORM VALIDATION ======================================
-function showFieldError(inputId, errorId) {
-  document.getElementById(inputId)?.classList.add('error');
-  document.getElementById(inputId)?.classList.remove('valid');
-  document.getElementById(errorId)?.classList.add('visible');
-}
-function clearFieldError(inputId) {
-  document.getElementById(inputId)?.classList.remove('error');
-  document.getElementById(inputId)?.classList.add('valid');
-  document.getElementById(inputId.replace('reg-','err-'))?.classList.remove('visible');
-}
-function checkPwdStrength() {
-  const pwd  = document.getElementById('reg-pwd')?.value||'';
-  const bar  = document.getElementById('pwd-strength-bar');
-  const fill = document.getElementById('pwd-strength-fill');
-  if (!bar||!fill) return;
-  bar.classList.add('visible');
-  let s=0;
-  if(pwd.length>=8) s++; if(/[A-Z]/.test(pwd)) s++; if(/[0-9]/.test(pwd)) s++; if(/[^A-Za-z0-9]/.test(pwd)) s++;
-  fill.style.width=['25%','50%','75%','100%'][s-1]||'0%';
-  fill.style.background=['#E74C3C','#E67E22','#F1C40F','#27AE60'][s-1]||'#E74C3C';
-}
-
-// ===== DISC & SCHED =========================================
+// ===== DISC & SCHEDULE =======================================
 function toggleDisc(el) { el.classList.toggle('selected'); }
+
 function selectSched(el) {
   document.querySelectorAll('.sched-opt').forEach(s => {
     s.classList.remove('selected');
-    s.querySelector('.sched-time').style.color='';
+    const st = s.querySelector('.sched-time');
+    if (st) st.style.color = '';
   });
   el.classList.add('selected');
-  el.querySelector('.sched-time').style.color='var(--red)';
+  const st = el.querySelector('.sched-time');
+  if (st) st.style.color = 'var(--red)';
 }
 
-// ===== TOAST ================================================
+// ===== TOAST =================================================
 function showToast(msg) {
   const t = document.createElement('div');
-  t.className='toast'; t.textContent=msg;
+  t.className = 'toast'; t.textContent = msg;
   document.body.appendChild(t);
-  setTimeout(() => { t.style.animation='slideIn 0.3s ease reverse'; setTimeout(()=>t.remove(),300); },3000);
+  setTimeout(() => {
+    t.style.animation = 'slideIn 0.3s ease reverse';
+    setTimeout(() => t.remove(), 300);
+  }, 3000);
 }
 
-// ===== INIT =================================================
+// ===== WOMPI — PAGOS =========================================
+async function iniciarPago(plan) {
+  if (!currentUser) {
+    showToast('⚠️ Debes iniciar sesión para adquirir un plan');
+    goTo('login');
+    return;
+  }
+  const btn = event?.target;
+  if (btn) { btn.disabled = true; btn.textContent = 'Preparando pago...'; }
+  try {
+    const config = await apiFetch('/subscriptions/crear-pago', {
+      method: 'POST', body: JSON.stringify({ plan }),
+    });
+    if (btn) { btn.disabled = false; btn.textContent = 'Comenzar'; }
+    const checkout = new WidgetCheckout({
+      currency:        config.currency,
+      amountInCents:   config.amount_in_cents,
+      reference:       config.reference,
+      publicKey:       config.public_key,
+      signature:       { integrity: config.signature },
+      redirectUrl:     config.redirect_url,
+      customerData:    { email: currentUser.email, fullName: currentUser.nombre },
+    });
+    checkout.open((result) => {
+      const { transaction } = result;
+      if (transaction?.status === 'APPROVED') {
+        mostrarResultadoPago('aprobado', config.plan_nombre);
+        setTimeout(() => loadUserFromToken(), 2000);
+      } else if (transaction?.status === 'DECLINED') {
+        mostrarResultadoPago('declinado', config.plan_nombre);
+      } else {
+        mostrarResultadoPago('pendiente', config.plan_nombre);
+      }
+    });
+  } catch (err) {
+    if (btn) { btn.disabled = false; btn.textContent = 'Comenzar'; }
+    if (err.status === 401) { showToast('⚠️ Tu sesión expiró'); goTo('login'); }
+    else showToast('❌ ' + (err.message || 'Error al preparar el pago'));
+  }
+}
+
+function mostrarResultadoPago(estado, planNombre) {
+  const modal   = document.getElementById('pagoModal');
+  const iconEl  = document.getElementById('pagoModal-icon');
+  const titleEl = document.getElementById('pagoModal-title');
+  const subEl   = document.getElementById('pagoModal-sub');
+  if (!modal) return;
+  const estados = {
+    aprobado: { icon:'🎉', title:'¡Pago aprobado!', sub:'Tu plan ' + planNombre + ' está activo.' },
+    declinado:{ icon:'❌', title:'Pago declinado',   sub:'La transacción no fue aprobada. Intenta de nuevo.' },
+    pendiente:{ icon:'⏳', title:'Pago en revisión', sub:'Tu pago está siendo procesado.' },
+  };
+  const info = estados[estado] || estados.pendiente;
+  if (iconEl)  iconEl.textContent  = info.icon;
+  if (titleEl) titleEl.textContent = info.title;
+  if (subEl)   subEl.textContent   = info.sub;
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closePagoModal() {
+  document.getElementById('pagoModal')?.classList.remove('open');
+  document.body.style.overflow = '';
+  if (currentUser) goTo('profile');
+}
+
+async function verificarPagoEnUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const transactionId = params.get('id');
+  if (!transactionId || !currentUser) return;
+  window.history.replaceState({}, '', window.location.pathname);
+  try {
+    const data = await apiFetch('/subscriptions/verificar-pago?id=' + transactionId);
+    if (data.aprobado) {
+      const partes = data.referencia?.split('_') || [];
+      const plan = partes[1] || 'tu plan';
+      const nombres = { 'basic-personal':'Basic Personalizado', 'basic-escuela':'Basic Escuela', 'premium':'Premium' };
+      mostrarResultadoPago('aprobado', nombres[plan] || plan);
+      await loadUserFromToken();
+    } else if (data.estado === 'DECLINED') {
+      mostrarResultadoPago('declinado', '');
+    }
+  } catch { /* silencioso */ }
+}
+
+// ===== INIT ==================================================
 document.addEventListener('DOMContentLoaded', async () => {
-  document.querySelectorAll('.fixed-wa').forEach(el => el.style.display='none');
+  document.querySelectorAll('.fixed-wa').forEach(el => el.style.display = 'none');
   await loadUserFromToken();
+  await verificarPagoEnUrl();
   goTo('home');
   applyFilters();
 
   document.querySelectorAll('.card').forEach(card => {
     card.addEventListener('mouseenter', function() {
-      this.style.transition='all 0.25s cubic-bezier(0.34,1.56,0.64,1)';
+      this.style.transition = 'all 0.25s cubic-bezier(0.34,1.56,0.64,1)';
     });
   });
 
   document.addEventListener('keydown', e => {
-    if(e.key==='Escape') { closeMobileMenu(); closePublishModal(); }
+    if (e.key === 'Escape') {
+      closeMobileMenu();
+      closePublishModal();
+      closePagoModal();
+    }
   });
   window.addEventListener('resize', () => {
-    if(window.innerWidth>768) closeMobileMenu();
+    if (window.innerWidth > 768) closeMobileMenu();
   });
 });

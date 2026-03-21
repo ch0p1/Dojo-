@@ -75,19 +75,23 @@ CREATE TABLE IF NOT EXISTS schools (
 
 -- ── Tabla: events ────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS events (
-  id           UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  user_id      UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  nombre       VARCHAR(255) NOT NULL,
-  disciplina   VARCHAR(100) NOT NULL,
-  ciudad       VARCHAR(100) NOT NULL,
-  fecha        TIMESTAMPTZ NOT NULL,
-  organizador  VARCHAR(255) NOT NULL,
-  whatsapp     VARCHAR(20) NOT NULL,
-  poster_url   VARCHAR(500),
-  descripcion  TEXT,
-  activo       BOOLEAN DEFAULT TRUE,
-  created_at   TIMESTAMPTZ DEFAULT NOW()
+  id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id         UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  nombre          VARCHAR(255) NOT NULL,
+  disciplina      VARCHAR(100) NOT NULL,
+  ciudad          VARCHAR(100) NOT NULL,
+  fecha           TIMESTAMPTZ NOT NULL,
+  organizador     VARCHAR(255) NOT NULL,
+  whatsapp        VARCHAR(20) NOT NULL,
+  poster_url      VARCHAR(500),
+  reglamento_url  VARCHAR(500),
+  descripcion     TEXT,
+  activo          BOOLEAN DEFAULT TRUE,
+  created_at      TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- Agregar columna a eventos existentes si la BD ya fue creada
+ALTER TABLE events ADD COLUMN IF NOT EXISTS reglamento_url VARCHAR(500);
 
 -- ── Índices para búsquedas frecuentes ────────────────────────
 CREATE INDEX IF NOT EXISTS idx_trainers_ciudad   ON trainers(ciudad);

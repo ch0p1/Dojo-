@@ -27,7 +27,9 @@ app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
 app.use('/api/auth',          require('./routes/auth.routes'));
 app.use('/api/trainers',      require('./routes/trainers.routes'));
 app.use('/api/schools',       require('./routes/schools.routes'));
+app.use('/api/events',        require('./routes/events.routes'));
 app.use('/api/subscriptions', require('./routes/subscriptions.routes'));
+app.use('/api/upload',        require('./routes/upload.routes'));
 
 // ── Ruta raíz — health check ──────────────────────────────────
 app.get('/', (req, res) => {
@@ -49,6 +51,11 @@ app.get('/', (req, res) => {
       'DELETE /api/schools/:id',
       'GET    /api/subscriptions/mi-plan',
       'POST   /api/subscriptions/activar   (solo admin)',
+      'POST   /api/upload/entrenador/:id/foto',
+      'POST   /api/upload/escuela/:id/foto',
+      'POST   /api/upload/escuela/:id/galeria',
+      'POST   /api/upload/evento/:id/poster',
+      'DELETE /api/upload/escuela/:id/galeria/:index',
     ]
   });
 });

@@ -207,21 +207,47 @@ async function eliminarFotoGaleria(req, res) {
   }
 }
 
+// ── POST /upload/evento/:id/reglamento — PDF ──────────────────
+async function subirReglamentoEvento(req, res) {
+  const { id }  = req.params;
+  const userId  = req.usuario.userId;
+  const esAdmin = req.usuario.rol === 'admin';
+
+  if (!req.file) return res.status(400).json({ error: 'No se recibió ningún archivo PDF' });
+
+  try {
+    const existente = await pool.query('SELECT user_id, reglamento_url FROM events WHERE id = $1', [id]);
+    if (existente.rows.length === 0) return res.status(404).json({ error: 'Evento no encontrado' });
+    if (!esAdmin && existente.rows[0].user_id !== userId)
+      return res.status(403).json({ error: 'Sin permiso para editar este evento' });
+
+    // Eliminar PDF anterior de Cloudinary si existe
+    const urlAnterior = existente.rows[0].reglamento_url;
+    if (urlAnterior) {
+      const publicId = extraerPublicId(urlAnterior);
+      if (publicId) await cloudinary.uploader.destroy(publicId, { resource_type:'raw' }).catch(()=>{});
+    }
+
+    const pdfUrl = req.file.path;
+    await pool.query('UPDATE events SET reglamento_url = $1 WHERE id = $2', [pdfUrl, id]);
+
+    res.json({ mensaje: 'Reglamento subido correctamente', reglamento_url: pdfUrl });
+  } catch (err) {
+    console.error('Error subiendo reglamento:', err.message);
+    res.status(500).json({ error: 'Error al guardar el reglamento' });
+  }
+}
+
 // ── Helper: extrae el public_id de una URL de Cloudinary ─────
-//  URL ejemplo: https://res.cloudinary.com/dojx/image/upload/v123/dojx/entrenadores/abc.jpg
-//  public_id   : dojx/entrenadores/abc
 function extraerPublicId(url) {
   if (!url || !url.includes('cloudinary.com')) return null;
   try {
     const partes = url.split('/upload/');
     if (partes.length < 2) return null;
-    // Quitar versión (v123/) y extensión (.jpg)
     const sinVersion = partes[1].replace(/^v\d+\//, '');
     const sinExt     = sinVersion.replace(/\.[^.]+$/, '');
     return sinExt;
-  } catch {
-    return null;
-  }
+  } catch { return null; }
 }
 
 module.exports = {
@@ -229,5 +255,6 @@ module.exports = {
   subirFotoEscuela,
   subirGaleriaEscuela,
   subirPosterEvento,
+  subirReglamentoEvento,
   eliminarFotoGaleria,
 };
