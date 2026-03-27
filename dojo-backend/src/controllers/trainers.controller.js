@@ -70,9 +70,9 @@ async function crear(req, res) {
 
   // Admins no tienen límites
   if (!esAdmin) {
-    // Verificar cuántos trainers tiene este usuario
+    // Verificar cuántos trainers ACTIVOS tiene este usuario
     const count = await pool.query(
-      'SELECT COUNT(*) FROM trainers WHERE user_id = $1',
+      'SELECT COUNT(*) FROM trainers WHERE user_id = $1 AND activo = TRUE',
       [userId]
     );
     const total = parseInt(count.rows[0].count);
@@ -92,11 +92,21 @@ async function crear(req, res) {
   } = req.body;
 
   if (!nombre || !whatsapp || !ciudad) {
-    return res.status(400).json({
-      error: 'Faltan campos',
-      detalle: 'nombre, whatsapp y ciudad son obligatorios'
-    });
+    return res.status(400).json({ error: 'nombre, whatsapp y ciudad son obligatorios' });
   }
+
+  // Límites de longitud — previene almacenamiento de datos excesivos
+  if (String(nombre).length > 150)      return res.status(400).json({ error: 'Nombre demasiado largo (máx 150 caracteres)' });
+  if (String(ciudad).length > 100)      return res.status(400).json({ error: 'Ciudad demasiado larga' });
+  if (bio && String(bio).length > 2000) return res.status(400).json({ error: 'Biografía demasiado larga (máx 2000 caracteres)' });
+
+  const anosNum = parseInt(experiencia_anos) || 0;
+  if (anosNum < 0 || anosNum > 70)      return res.status(400).json({ error: 'Años de experiencia inválidos' });
+
+  // Disciplinas: máximo 10, cada una máx 50 chars
+  const disciplinasSanitizadas = Array.isArray(disciplinas)
+    ? disciplinas.slice(0, 10).map(d => String(d).trim().slice(0, 50)).filter(Boolean)
+    : [];
 
   try {
     const result = await pool.query(
@@ -107,14 +117,14 @@ async function crear(req, res) {
        RETURNING *`,
       [
         userId,
-        nombre.trim(),
+        String(nombre).trim().slice(0, 150),
         foto_url   || null,
-        disciplinas || [],
-        whatsapp.replace(/\D/g, ''),  // solo dígitos
-        ciudad,
-        experiencia_anos || 0,
-        bio   || null,
-        horarios || {}
+        disciplinasSanitizadas,
+        whatsapp.replace(/\D/g, '').slice(0, 15),
+        String(ciudad).trim().slice(0, 100),
+        anosNum,
+        bio ? String(bio).trim().slice(0, 2000) : null,
+        (horarios && typeof horarios === 'object') ? horarios : {}
       ]
     );
 

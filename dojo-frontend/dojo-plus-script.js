@@ -4,7 +4,26 @@
    ============================================================ */
 
 // ===== CONFIG API ===========================================
-const API_URL = 'http://localhost:3001/api';
+// API_URL se detecta automáticamente según el entorno
+// En local apunta a localhost:3001, en producción al mismo dominio/subdominio
+const API_URL = (() => {
+  const h = window.location.hostname;
+  if (h === '127.0.0.1' || h === 'localhost') return 'http://localhost:3001/api';
+  // En producción: ajustar a la URL real del backend en Railway/Render
+  return (window.DOJX_API_URL || `https://api.${h.replace('www.','')}`);
+})();
+
+// ── Sanitización — previene XSS al inyectar datos en innerHTML ─
+// Escapa los 5 caracteres HTML peligrosos antes de insertarlos en el DOM
+function esc(str) {
+  if (str === null || str === undefined) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;');
+}
 
 const getToken    = ()      => localStorage.getItem('dojx_token');
 const saveToken   = (t)     => localStorage.setItem('dojx_token', t);
@@ -295,7 +314,7 @@ function renderUserUI(user) {
     `<div class="avatar" onclick="goTo('profile')" title="Mi Perfil">${initials}</div>`;
 
   const mf = document.querySelector('.nav-mobile-footer');
-  if (mf) mf.innerHTML = `<span class="nav-mobile-city">📍 ${user.ciudad||'Colombia'}</span>
+  if (mf) mf.innerHTML = `<span class="nav-mobile-city">📍 ${esc(user.ciudad||'Colombia')}</span>
     <div class="avatar" onclick="goToMobile('profile')" style="width:36px;height:36px">${initials}</div>`;
 
   document.getElementById('profileAvatar').textContent = initials;
@@ -310,7 +329,7 @@ function renderUserUI(user) {
     badgesEl.innerHTML = esAdmin
       ? `<span class="profile-member-badge" style="background:rgba(212,172,13,0.12);border-color:rgba(212,172,13,0.3);color:var(--gold)">⭐ Admin DOJX</span>`
       : vigente
-      ? `<span class="profile-member-badge">🔒 ${user.plan_activo} · ${dias}d restantes</span>`
+      ? `<span class="profile-member-badge">🔒 ${esc(user.plan_activo)} · ${dias}d restantes</span>`
       : `<span class="profile-member-badge" style="background:rgba(136,136,136,0.1);border-color:var(--gray2);color:var(--gray)">🥋 Miembro DOJX</span>`;
   }
   updateProfileButtons(user);
@@ -361,7 +380,7 @@ async function loadProfileData() {
     if (user.horario_pref && schedMap[user.horario_pref]) {
       const s = schedMap[user.horario_pref];
       schedEl.innerHTML = `<div class="profile-schedule-icon">${s.icon}</div>
-        <div><div class="profile-schedule-label">${user.horario_pref}</div>
+        <div><div class="profile-schedule-label">${esc(user.horario_pref)}</div>
         <div class="profile-schedule-range">${s.range}</div></div>`;
     }
     await loadMisTrainers();
@@ -379,8 +398,8 @@ async function loadMisTrainers() {
       : data.trainers.map(t => `
           <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.05)">
             <div style="width:38px;height:38px;border-radius:50%;background:var(--card-bg);border:1px solid var(--gray2);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">🥋</div>
-            <div style="flex:1"><div style="font-size:13px;font-weight:600">${t.nombre}</div>
-            <div style="font-size:11px;color:var(--gray)">${t.ciudad} · ${t.experiencia_anos} años</div></div>
+            <div style="flex:1"><div style="font-size:13px;font-weight:600">${esc(t.nombre)}</div>
+            <div style="font-size:11px;color:var(--gray)">${esc(t.ciudad)} · ${esc(t.experiencia_anos)} años</div></div>
             <button onclick="deleteTrainer('${t.id}')" style="background:none;border:none;color:var(--gray);cursor:pointer;font-size:14px;padding:4px" title="Eliminar">🗑</button>
           </div>`).join('');
   } catch { el.innerHTML = '<span class="profile-no-disc">Sin conexión al servidor.</span>'; }
@@ -473,7 +492,7 @@ function renderSchoolDetail(s) {
   const tagsWrap = el.querySelector('.hero-detail-content .tags-wrap') ||
                    el.querySelector('.hero-detail-content div[style*="gap:8px"]');
   if (tagsWrap && s.disciplinas?.length) {
-    tagsWrap.innerHTML = s.disciplinas.map(d => `<span class="tag">${d}</span>`).join('');
+    tagsWrap.innerHTML = s.disciplinas.map(d => `<span class="tag">${esc(d)}</span>`).join('');
   }
 
   // Tab Descripción
@@ -542,7 +561,7 @@ function renderTrainerDetail(t) {
 
   const tagsDiv = el.querySelector('.trainer-hero div[style*="gap:8px"]');
   if (tagsDiv && t.disciplinas?.length) {
-    tagsDiv.innerHTML = t.disciplinas.map(d => `<span class="tag">${d}</span>`).join('');
+    tagsDiv.innerHTML = t.disciplinas.map(d => `<span class="tag">${esc(d)}</span>`).join('');
   }
 
   const bioP = el.querySelector('.trainer-hero p');
@@ -633,8 +652,8 @@ function renderSchoolCard(s) {
     onclick="openDetail('schools','${sid}')">
     ${imgHtml}
     <div class="school-card-body">
-      <div class="school-card-name">${s.nombre}</div>
-      <div class="school-card-city">📍 ${s.ciudad}</div>
+      <div class="school-card-name">${esc(s.nombre)}</div>
+      <div class="school-card-city">📍 ${esc(s.ciudad)}</div>
       <div style="margin-bottom:4px">${(s.disciplinas||[]).slice(0,3).map(d=>`<span class="tag">${d}</span>`).join(' ')}</div>
       <div class="school-card-foot">
         <div class="stars">${'★'.repeat(Math.round(s.rating||0))}${'☆'.repeat(5-Math.round(s.rating||0))}</div>
@@ -656,9 +675,9 @@ function renderTrainerCard(t) {
     onclick="openDetail('trainers','${tid}')">
     <div class="trainer-photo-wrap">${fotoHtml}</div>
     <div class="trainer-card-body">
-      <div class="trainer-name">${t.nombre}</div>
+      <div class="trainer-name">${esc(t.nombre)}</div>
       <div class="tags-wrap">${(t.disciplinas||[]).slice(0,2).map(d=>`<span class="tag">${d}</span>`).join('')}</div>
-      <div class="trainer-exp">⚡ ${t.experiencia_anos} años de exp.</div>
+      <div class="trainer-exp">⚡ ${esc(t.experiencia_anos)} años de exp.</div>
       <a class="wa-trainer-btn" href="${waUrl}" target="_blank"
          onclick="event.stopPropagation()" title="Agendar por WhatsApp">
         📲 Agendar
@@ -678,9 +697,9 @@ function renderEventCard(ev) {
       ${ev.poster_url ? '' : '🏆'}
     </div>
     <div class="event-card-body">
-      <div class="event-name">${ev.nombre}</div>
-      <span class="tag">${ev.disciplina}</span>
-      <div class="event-date">📅 ${fecha} · ${ev.ciudad}</div>
+      <div class="event-name">${esc(ev.nombre)}</div>
+      <span class="tag">${esc(ev.disciplina)}</span>
+      <div class="event-date">📅 ${fecha} · ${esc(ev.ciudad)}</div>
     </div></div>`;
 }
 

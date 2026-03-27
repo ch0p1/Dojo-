@@ -5,8 +5,15 @@
 const bcrypt    = require('bcrypt');
 const jwt       = require('jsonwebtoken');
 const pool      = require('../db/connection');
+const validator = require('validator');
 
 const SALT_ROUNDS = 12;
+
+// ── Sanitiza strings — elimina HTML y espacios extremos ───────
+function limpia(str) {
+  if (!str) return '';
+  return validator.escape(String(str).trim());
+}
 
 // ── Emite un JWT con los datos del usuario ────────────────────
 function emitirToken(usuario) {
@@ -32,26 +39,31 @@ function emitirToken(usuario) {
 async function register(req, res) {
   const { nombre, email, password, ciudad, disciplinas, horario_pref } = req.body;
 
-  // Validaciones básicas (el frontend ya las hace, pero el backend
-  // siempre debe validar independientemente)
   if (!nombre || !email || !password || !ciudad) {
-    return res.status(400).json({
-      error: 'Faltan campos',
-      detalle: 'nombre, email, password y ciudad son obligatorios'
-    });
+    return res.status(400).json({ error: 'Faltan campos obligatorios' });
   }
 
-  if (password.length < 8) {
-    return res.status(400).json({
-      error: 'Contraseña muy corta',
-      detalle: 'La contraseña debe tener al menos 8 caracteres'
-    });
+  // Validaciones robustas
+  if (String(nombre).trim().length < 2 || String(nombre).trim().length > 100) {
+    return res.status(400).json({ error: 'El nombre debe tener entre 2 y 100 caracteres' });
   }
 
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(email)) {
+  if (!validator.isEmail(String(email))) {
     return res.status(400).json({ error: 'Email inválido' });
   }
+
+  if (String(password).length < 8 || String(password).length > 128) {
+    return res.status(400).json({ error: 'La contraseña debe tener entre 8 y 128 caracteres' });
+  }
+
+  if (!validator.isLength(String(ciudad).trim(), { min:2, max:100 })) {
+    return res.status(400).json({ error: 'Ciudad inválida' });
+  }
+
+  // Sanitizar disciplinas
+  const disciplinasSanitizadas = Array.isArray(disciplinas)
+    ? disciplinas.map(d => limpia(String(d))).filter(Boolean).slice(0, 10)
+    : [];
 
   try {
     // Verificar que el email no esté ya registrado
@@ -75,12 +87,12 @@ async function register(req, res) {
        VALUES ($1, $2, $3, $4, $5, $6)
        RETURNING id, email, nombre, ciudad, plan_activo, plan_expira`,
       [
-        email.toLowerCase(),
+        validator.normalizeEmail(email) || email.toLowerCase(),
         password_hash,
-        nombre.trim(),
-        ciudad,
-        disciplinas || [],
-        horario_pref || null
+        limpia(nombre),
+        limpia(ciudad),
+        disciplinasSanitizadas,
+        horario_pref ? limpia(String(horario_pref)) : null
       ]
     );
 

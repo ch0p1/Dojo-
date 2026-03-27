@@ -43,6 +43,15 @@ async function crear(req, res) {
   if (!nombre || !disciplina || !ciudad || !fecha || !organizador || !whatsapp) {
     return res.status(400).json({ error: 'Faltan campos obligatorios' });
   }
+
+  // Validaciones de longitud
+  if (String(nombre).length > 200)        return res.status(400).json({ error: 'Nombre demasiado largo (máx 200)' });
+  if (String(organizador).length > 200)   return res.status(400).json({ error: 'Organizador demasiado largo (máx 200)' });
+  if (descripcion && String(descripcion).length > 3000) return res.status(400).json({ error: 'Descripción demasiado larga (máx 3000)' });
+
+  // Validar fecha
+  const fechaDate = new Date(fecha);
+  if (isNaN(fechaDate.getTime())) return res.status(400).json({ error: 'Fecha inválida' });
   try {
     const result = await pool.query(
       `INSERT INTO events (user_id, nombre, disciplina, ciudad, fecha, organizador, whatsapp, descripcion)

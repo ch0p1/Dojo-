@@ -27,11 +27,21 @@ function generarFirmaIntegridad(referencia, montoCentavos, moneda = 'COP') {
 
 // ── Verifica la firma que llega en el webhook de Wompi ────────
 //  Wompi firma: SHA256( transactionId + status + monto + moneda + eventsKey )
+//  Usa comparación en tiempo constante para prevenir timing attacks
 function verificarFirmaEvento(datos, firmaRecibida) {
+  if (!process.env.WOMPI_EVENTS_KEY) return false; // Rechazar si no está configurado
   const { id, status, amount_in_cents, currency } = datos.transaction;
   const cadena = `${id}${status}${amount_in_cents}${currency}${process.env.WOMPI_EVENTS_KEY}`;
   const firmaCalculada = crypto.createHash('sha256').update(cadena).digest('hex');
-  return firmaCalculada === firmaRecibida;
+  // Comparación en tiempo constante — previene timing attacks
+  try {
+    return crypto.timingSafeEqual(
+      Buffer.from(firmaCalculada, 'hex'),
+      Buffer.from(firmaRecibida,  'hex')
+    );
+  } catch {
+    return false; // Longitudes distintas u otro error
+  }
 }
 
 // ── POST /subscriptions/crear-pago ───────────────────────────
@@ -82,13 +92,15 @@ async function webhookWompi(req, res) {
   if (event !== 'transaction.updated') return;
   if (data?.transaction?.status !== 'APPROVED') return;
 
-  // Verificar que el webhook viene realmente de Wompi
-  if (process.env.WOMPI_EVENTS_KEY && signature?.checksum) {
-    const esValido = verificarFirmaEvento(data, signature.checksum);
-    if (!esValido) {
-      console.error('❌ Webhook Wompi: firma inválida — posible intento de fraude');
-      return;
-    }
+  // Verificar firma de Wompi — SIEMPRE obligatorio
+  if (!signature?.checksum) {
+    console.error('❌ Webhook sin firma — rechazado');
+    return;
+  }
+  const esValido = verificarFirmaEvento(data, signature.checksum);
+  if (!esValido) {
+    console.error('❌ Webhook firma inválida — posible fraude o WOMPI_EVENTS_KEY no configurada');
+    return;
   }
 
   // Extraer userId y plan de la referencia: "userId_plan_timestamp"
