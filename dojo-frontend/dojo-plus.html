@@ -1326,6 +1326,69 @@
   </div>
 </div>
 
+<!-- ===================================================
+     SCREEN — PANEL ADMIN
+     =================================================== -->
+<div class="screen" id="screen-admin">
+  <div class="content-wrap" style="max-width:1100px">
+    <h1 style="font-size:clamp(28px,4vw,42px);margin-bottom:4px">⚙️ Panel Admin</h1>
+    <p style="color:var(--gray);font-size:13px;margin-bottom:32px">Solo visible para administradores de DOJX</p>
+
+    <!-- Stats -->
+    <div id="admin-stats-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:36px"></div>
+
+    <!-- Tabs -->
+    <div class="tabs" style="margin-bottom:24px">
+      <button class="tab-btn active" onclick="switchTab(this,'admin-tab-usuarios')">👥 Usuarios</button>
+      <button class="tab-btn" onclick="switchTab(this,'admin-tab-contenido')">📋 Contenido</button>
+      <button class="tab-btn" onclick="switchTab(this,'admin-tab-resenas')">⭐ Reseñas</button>
+      <button class="tab-btn" onclick="switchTab(this,'admin-tab-pagos')">💰 Pagos</button>
+    </div>
+
+    <!-- Tab: Usuarios -->
+    <div class="tab-content active" id="tab-admin-tab-usuarios">
+      <div style="display:flex;gap:10px;margin-bottom:16px">
+        <input id="admin-user-search" class="form-input" type="text" placeholder="Buscar por nombre o email..."
+          style="flex:1" oninput="adminBuscarUsuarios()">
+      </div>
+      <div id="admin-usuarios-tabla" style="overflow-x:auto"></div>
+    </div>
+
+    <!-- Tab: Contenido -->
+    <div class="tab-content" id="tab-admin-tab-contenido">
+      <div style="display:flex;gap:10px;margin-bottom:20px">
+        <button class="btn-outline-red" style="font-size:13px" onclick="adminCargarContenido('escuelas')">🏫 Escuelas</button>
+        <button class="btn-outline-red" style="font-size:13px" onclick="adminCargarContenido('entrenadores')">🥊 Entrenadores</button>
+        <button class="btn-outline-red" style="font-size:13px" onclick="adminCargarContenido('eventos')">🏆 Eventos</button>
+      </div>
+      <div id="admin-contenido-tabla" style="overflow-x:auto"></div>
+    </div>
+
+    <!-- Tab: Reseñas -->
+    <div class="tab-content" id="tab-admin-tab-resenas">
+      <div id="admin-resenas-tabla" style="overflow-x:auto"></div>
+    </div>
+
+    <!-- Tab: Pagos -->
+    <div class="tab-content" id="tab-admin-tab-pagos">
+      <div class="section-card" style="margin-bottom:20px">
+        <div class="section-card-title">Activar plan manual</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px">
+          <input id="admin-plan-userId" class="form-input" type="text" placeholder="UUID del usuario" style="flex:2;min-width:200px">
+          <select id="admin-plan-tipo" class="form-input" style="flex:1;min-width:140px">
+            <option value="basic-personal">Basic Personal $50k</option>
+            <option value="basic-escuela">Basic Escuela $70k</option>
+            <option value="premium">Premium $100k</option>
+          </select>
+          <button class="btn-red" style="white-space:nowrap" onclick="adminActivarPlan()">Activar plan</button>
+        </div>
+      </div>
+      <div id="admin-pagos-tabla" style="overflow-x:auto"></div>
+    </div>
+
+  </div>
+</div>
+
 <!-- ===== MODAL: PUBLICAR ENTRENADOR / ESCUELA ===== -->
 <div class="modal-overlay" id="publishModal" onclick="if(event.target===this) closePublishModal()">
   <div class="modal" style="max-height:90vh;overflow-y:auto">

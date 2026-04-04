@@ -170,15 +170,28 @@ async function _activarPlanInterno(userId, plan, referencia_pago) {
   const expira = new Date();
   expira.setDate(expira.getDate() + 30);
 
+  // Idempotencia: si la referencia ya existe, no activar de nuevo
+  if (referencia_pago) {
+    const yaExiste = await pool.query(
+      'SELECT id FROM subscriptions WHERE referencia_pago = $1', [referencia_pago]
+    );
+    if (yaExiste.rows.length > 0) {
+      console.log('⚠️  Pago ya procesado anteriormente:', referencia_pago);
+      return; // Salir silenciosamente — ya fue activado
+    }
+  }
+
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
 
-    // Registrar en historial
+    // Registrar en historial — el índice UNIQUE en referencia_pago
+    // actúa como segunda línea de defensa contra doble inserción
     await client.query(
       `INSERT INTO subscriptions
          (user_id, plan, precio_cop, inicio, expira, referencia_pago, estado)
-       VALUES ($1,$2,$3,$4,$5,$6,'activo')`,
+       VALUES ($1,$2,$3,$4,$5,$6,'activo')
+       ON CONFLICT (referencia_pago) DO NOTHING`,
       [userId, plan, PLANES[plan].precio, inicio, expira, referencia_pago]
     );
 

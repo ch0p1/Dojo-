@@ -70,12 +70,23 @@ app.use('/api/auth', limiteAuth); // Doble límite en auth
 app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
 
 // ── Rutas de la API ───────────────────────────────────────────
-app.use('/api/auth',          require('./routes/auth.routes'));
-app.use('/api/trainers',      require('./routes/trainers.routes'));
-app.use('/api/schools',       require('./routes/schools.routes'));
-app.use('/api/events',        require('./routes/events.routes'));
-app.use('/api/subscriptions', require('./routes/subscriptions.routes'));
-app.use('/api/upload',        require('./routes/upload.routes'));
+// ── API v1 — versionada desde el inicio ──────────────────────
+// Permite hacer cambios breaking en v2 sin romper clientes v1
+const v1 = require('express').Router();
+v1.use('/auth',          require('./routes/auth.routes'));
+v1.use('/trainers',      require('./routes/trainers.routes'));
+v1.use('/schools',       require('./routes/schools.routes'));
+v1.use('/events',        require('./routes/events.routes'));
+v1.use('/reviews',       require('./routes/reviews.routes'));
+v1.use('/subscriptions', require('./routes/subscriptions.routes'));
+v1.use('/upload',        require('./routes/upload.routes'));
+v1.use('/admin',         require('./routes/admin.routes'));
+
+app.use('/api/v1', v1);
+
+// Compatibilidad con rutas sin versión — redirige a v1
+// (mantiene funcionando el frontend actual sin cambios)
+app.use('/api', v1);
 
 // ── 5. Health check — sin exponer rutas internas en producción ─
 app.get('/', (req, res) => {
