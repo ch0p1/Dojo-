@@ -1,12 +1,12 @@
 // src/controllers/auth.controller.js
-const bcrypt       = require('bcrypt');
-const jwt          = require('jsonwebtoken');
-const crypto       = require('crypto');
-const pool         = require('../db/connection');
-const validator    = require('validator');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
+const pool = require('../db/connection');
+const validator = require('validator');
 const emailService = require('../services/email.service');
 
-const SALT_ROUNDS       = 12;
+const SALT_ROUNDS = 12;
 const TOKEN_EXPIRA_HORAS = 24;
 
 function limpia(str) {
@@ -16,15 +16,21 @@ function limpia(str) {
 
 function emitirToken(usuario) {
   const esAdmin = usuario.email === process.env.ADMIN_EMAIL;
+  const secret = process.env.JWT_SECRET || '';
+
+  if (!secret || secret.trim() === '') {
+    throw new Error('JWT_SECRET no está definido. Revisa tu archivo .env');
+  }
+
   return jwt.sign({
-    userId:      usuario.id,
-    email:       usuario.email,
-    nombre:      usuario.nombre,
-    rol:         esAdmin ? 'admin' : 'usuario',
-    ciudad:      usuario.ciudad,
-    plan_activo: usuario.plan_activo  || null,
-    plan_expira: usuario.plan_expira  || null,
-  }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN || '7d' });
+    userId: usuario.id,
+    email: usuario.email,
+    nombre: usuario.nombre,
+    rol: esAdmin ? 'admin' : 'usuario',
+    ciudad: usuario.ciudad,
+    plan_activo: usuario.plan_activo || null,
+    plan_expira: usuario.plan_expira || null,
+  }, secret, { expiresIn: process.env.JWT_EXPIRES_IN || '7d' });
 }
 
 // ── Genera token de verificación y lo guarda en la BD ────────
@@ -32,8 +38,8 @@ async function crearTokenVerificacion(userId) {
   // Invalidar tokens anteriores del mismo usuario
   await pool.query('UPDATE verification_tokens SET usado=TRUE WHERE user_id=$1', [userId]);
 
-  const token    = crypto.randomBytes(48).toString('hex'); // 96 chars URL-safe
-  const expira   = new Date(Date.now() + TOKEN_EXPIRA_HORAS * 60 * 60 * 1000);
+  const token = crypto.randomBytes(48).toString('hex'); // 96 chars URL-safe
+  const expira = new Date(Date.now() + TOKEN_EXPIRA_HORAS * 60 * 60 * 1000);
 
   await pool.query(
     `INSERT INTO verification_tokens (user_id, token, expires_at)
@@ -56,7 +62,7 @@ async function register(req, res) {
     return res.status(400).json({ error: 'Email inválido' });
   if (String(password).length < 8 || String(password).length > 128)
     return res.status(400).json({ error: 'La contraseña debe tener entre 8 y 128 caracteres' });
-  if (!validator.isLength(String(ciudad).trim(), { min:2, max:100 }))
+  if (!validator.isLength(String(ciudad).trim(), { min: 2, max: 100 }))
     return res.status(400).json({ error: 'Ciudad inválida' });
 
   const disciplinasSanitizadas = Array.isArray(disciplinas)
@@ -86,8 +92,8 @@ async function register(req, res) {
     const nuevoUsuario = result.rows[0];
 
     // Crear token y enviar email de verificación
-    const token       = await crearTokenVerificacion(nuevoUsuario.id);
-    const appUrl      = process.env.APP_URL || 'http://127.0.0.1:3000';
+    const token = await crearTokenVerificacion(nuevoUsuario.id);
+    const appUrl = process.env.APP_URL || 'http://127.0.0.1:3000';
     const linkVerificar = `${appUrl}/dojo-plus.html?verificar=${token}`;
 
     // Enviar email (no bloqueante — si falla el email, el registro igual fue exitoso)
@@ -138,26 +144,30 @@ async function login(req, res) {
       });
     }
 
-    const token   = emitirToken(usuario);
+    const token = emitirToken(usuario);
     const esAdmin = usuario.email === process.env.ADMIN_EMAIL;
 
     res.json({
       mensaje: `¡Bienvenido de vuelta, ${usuario.nombre.split(' ')[0]}!`,
       token,
       usuario: {
-        id:          usuario.id,
-        nombre:      usuario.nombre,
-        email:       usuario.email,
-        ciudad:      usuario.ciudad,
-        rol:         esAdmin ? 'admin' : 'usuario',
+        id: usuario.id,
+        nombre: usuario.nombre,
+        email: usuario.email,
+        ciudad: usuario.ciudad,
+        rol: esAdmin ? 'admin' : 'usuario',
         plan_activo: usuario.plan_activo,
         plan_expira: usuario.plan_expira,
       }
     });
 
   } catch (err) {
-    console.error('Error en login:', err.message);
-    res.status(500).json({ error: 'Error interno del servidor' });
+    console.error('❌ Error detallado en Login:', err);
+    res.status(500).json({
+      error: 'Error interno del servidor',
+      mensaje: err.message,
+      codigo: err.code // Útil para detectar errores de PostgreSQL como '42703' (columna inexistente)
+    });
   }
 }
 
@@ -254,8 +264,8 @@ async function reenviarVerificacion(req, res) {
       }
     }
 
-    const token         = await crearTokenVerificacion(usuario.id);
-    const appUrl        = process.env.APP_URL || 'http://127.0.0.1:3000';
+    const token = await crearTokenVerificacion(usuario.id);
+    const appUrl = process.env.APP_URL || 'http://127.0.0.1:3000';
     const linkVerificar = `${appUrl}/dojo-plus.html?verificar=${token}`;
 
     emailService.enviarReenvioVerificacion(usuario.email, usuario.nombre, linkVerificar)

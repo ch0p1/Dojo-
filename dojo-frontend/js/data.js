@@ -21,11 +21,17 @@ export async function loadSchools() {
 
   try {
     const data = await apiFetch('/schools');
-    setData('schools', data.schools || []);
+    if (data && data.schools && data.schools.length > 0) {
+      setData('schools', data.schools);
+      let html = '';
+      data.schools.forEach(item => html += renderSchoolCard(item));
+      grid.innerHTML = html;
+    }
     applyListingFilters('schools');
   } catch (err) {
     console.error('Error loading schools:', err);
     if (!hadCards) grid.innerHTML = '<div class="listing-skeleton">Error al cargar escuelas.</div>';
+    else applyListingFilters('schools');
   }
 }
 
@@ -38,11 +44,17 @@ export async function loadTrainers() {
 
   try {
     const data = await apiFetch('/trainers');
-    setData('trainers', data.trainers || []);
+    if (data && data.trainers && data.trainers.length > 0) {
+      setData('trainers', data.trainers);
+      let html = '';
+      data.trainers.forEach(item => html += renderTrainerCard(item));
+      grid.innerHTML = html;
+    }
     applyListingFilters('trainers');
   } catch (err) {
     console.error('Error loading trainers:', err);
     if (!hadCards) grid.innerHTML = '<div class="listing-skeleton">Error al cargar entrenadores.</div>';
+    else applyListingFilters('trainers');
   }
 }
 
@@ -55,11 +67,17 @@ export async function loadEvents() {
 
   try {
     const data = await apiFetch('/events');
-    setData('events', data.events || []);
+    if (data && data.events && data.events.length > 0) {
+      setData('events', data.events);
+      let html = '';
+      data.events.forEach(item => html += renderEventCard(item));
+      grid.innerHTML = html;
+    }
     applyListingFilters('events');
   } catch (err) {
     console.error('Error loading events:', err);
     if (!hadCards) grid.innerHTML = '<div class="listing-skeleton">Error al cargar eventos.</div>';
+    else applyListingFilters('events');
   }
 }
 
@@ -68,12 +86,22 @@ export async function loadEvents() {
 // ==========================================
 
 export function handleFilterClick(el, listId, group, filterKey) {
+  const wasActive = el.classList.contains('active');
+  
   // Actualizar UI del filtro
   document.querySelectorAll(`.pill[data-group="${group}"]`).forEach(p => p.classList.remove('active'));
-  el.classList.add('active');
+  
+  let value = 'todas';
+  if (!wasActive) {
+    el.classList.add('active');
+    value = el.dataset.value || 'todas';
+  } else {
+    // Si se deseleccionó, activar el pill de "Todas" si existe
+    const todasPill = document.querySelector(`.pill[data-group="${group}"][data-value="todas"]`);
+    if (todasPill) todasPill.classList.add('active');
+  }
 
   // Actualizar estado
-  const value = el.dataset.value || 'todas';
   setFilter(listId, filterKey, value);
 
   // Aplicar filtros a los datos en memoria y re-renderizar
@@ -92,51 +120,49 @@ export function applyListingFilters(listId) {
   
   if (!grid) return;
 
-  const allData = getData(listId) || [];
   const filters = getFilters(listId);
+  const cards = grid.querySelectorAll('.card');
+  let matchCount = 0;
 
-  // Filtrado en memoria
-  const filteredData = allData.filter(item => {
+  cards.forEach(card => {
     // 1. Ciudad
-    const matchCity = filters.ciudad === 'todas' || (item.ciudad && item.ciudad.toLowerCase() === filters.ciudad.toLowerCase());
+    const cardCity = card.dataset.city || '';
+    const matchCity = filters.ciudad === 'todas' || cardCity.toLowerCase() === filters.ciudad.toLowerCase();
     
     // 2. Disciplina
     let matchDisc = true;
     if (filters.disciplina !== 'todas') {
-      const disciplines = (item.disciplinas || []).map(d => d.toLowerCase());
-      if (listId === 'events') {
-         matchDisc = (item.disciplina && item.disciplina.toLowerCase() === filters.disciplina.toLowerCase());
-      } else {
-         matchDisc = disciplines.includes(filters.disciplina.toLowerCase());
-      }
+      const cardDisc = (card.dataset.disciplines || '').toLowerCase();
+      matchDisc = cardDisc.includes(filters.disciplina.toLowerCase());
     }
     
     // 3. Búsqueda de texto (opcional)
     let matchSearch = true;
     if (filters.search) {
-      matchSearch = item.nombre.toLowerCase().includes(filters.search);
+      const cardName = (card.dataset.name || '').toLowerCase();
+      const cardDisc = (card.dataset.disciplines || '').toLowerCase();
+      matchSearch = cardName.includes(filters.search.toLowerCase()) || cardDisc.includes(filters.search.toLowerCase());
     }
 
-    return matchCity && matchDisc && matchSearch;
+    const visible = matchCity && matchDisc && matchSearch;
+    
+    if (visible) {
+      card.style.display = '';
+      card.style.order = '0';
+      matchCount++;
+    } else {
+      card.style.display = 'none';
+      card.style.order = '1';
+    }
   });
-
-  // Renderizado optimizado
-  let html = '';
-  filteredData.forEach(item => {
-    if (listId === 'schools') html += renderSchoolCard(item);
-    else if (listId === 'trainers') html += renderTrainerCard(item);
-    else if (listId === 'events') html += renderEventCard(item);
-  });
-
-  grid.innerHTML = html;
 
   // Actualizar contadores y estados vacíos
   if (count) {
     const noun = { schools: 'escuelas', trainers: 'entrenadores', events: 'eventos' }[listId];
-    count.innerHTML = `<strong>${filteredData.length}</strong> ${noun} encontrad${listId === 'events' ? 'o' : 'a'}s`;
+    count.innerHTML = `<strong>${matchCount}</strong> ${noun} encontrad${listId === 'events' ? 'o' : 'a'}s`;
   }
   
   if (empty) {
-    empty.classList.toggle('visible', filteredData.length === 0);
+    empty.classList.toggle('visible', matchCount === 0);
   }
 }

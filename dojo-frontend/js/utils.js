@@ -61,14 +61,17 @@ export function formatDate(dateString) {
 // Navegación MPA
 export function goTo(page) {
   const fileMap = {
-    home: 'screen-1-home-search.html',
+    home:    'screen-1-home-search.html',
     schools: 'screen-escuelas-listado.html',
-    trainers: 'screen-entrenadores-listado.html',
-    events: 'screen-eventos-listado.html',
-    login: 'screen-5-login-register.html',
-    plans: 'screen-6-plans-pricing.html',
+    school:  'screen-2-school-detail.html',
+    trainers:'screen-entrenadores-listado.html',
+    trainer: 'screen-3-trainer-detail.html',
+    events:  'screen-eventos-listado.html',
+    event:   'screen-4-event-detail.html',
+    login:   'screen-5-login-register.html',
+    plans:   'screen-6-plans-pricing.html',
     profile: 'screen-perfil-de-usuario.html',
-    admin: 'screen-panel-admin.html'
+    admin:   'screen-panel-admin.html'
   };
   
   if (fileMap[page]) {

@@ -1,66 +1,48 @@
-# Historial de Cambios: Refactorización DOJX Frontend
+# Historial de Cambios: Actualizaciones del Sistema - DOJX
 
-Este documento detalla todos los cambios estructurales, de seguridad y de arquitectura que se han implementado en el frontend del proyecto DOJX para llevarlo a un estándar de producción moderno y seguro.
-
----
-
-## 1. Migración Arquitectónica (De Monolito a MPA + ES Modules)
-
-Se eliminó el archivo gigante `dojo-plus-script.js` (aprox. 1800 líneas) que centralizaba toda la lógica. En su lugar, se adoptó una arquitectura modular utilizando **ES Modules**, creando la carpeta `js/` con la siguiente distribución de responsabilidades:
-
-- **`main.js`**: El nuevo punto de entrada (`bootstrapper`). Configura los eventos globales, procesa tokens en la URL e inicializa las vistas según la página actual.
-- **`api.js`**: Centraliza todas las llamadas al backend. Maneja la inyección de tokens JWT, formato de cabeceras JSON, parseo de respuestas y un manejo de errores unificado.
-- **`state.js`**: Almacenamiento local en memoria (Store). Almacena el usuario actual, el estado de los filtros y datos persistentes para evitar múltiples llamadas innecesarias al backend.
-- **`data.js`**: Conecta la API con el renderizado, implementando filtros eficientes en memoria (por ciudad, disciplina y texto) en lugar de ocultar nodos del DOM basados en clases o atributos.
-- **`render.js`**: Responsable exclusivo de generar el HTML dinámico (tarjetas de escuelas, entrenadores, eventos y detalles).
-- **`auth.js`**: Lógica aislada para inicio de sesión, registro, recuperación y validación estricta contra el backend.
-- **`publish.js`**: Controladores para la publicación de contenido (modal, subida de archivos, formularios y carga de endpoints).
-- **`admin.js`**: Módulo dedicado al panel administrativo (estadísticas, control de usuarios y reseñas).
-- **`ui.js`**: Utilidades visuales (toasts, tabs, menú hamburguesa).
-- **`utils.js`**: Funciones auxiliares genéricas (debounce, formateo de fechas, prevención XSS).
+Este documento detalla las mejoras de UI/UX, correcciones de errores críticos de servidor y actualizaciones de base de datos realizadas en la sesión actual.
 
 ---
 
-## 2. Refuerzo de Seguridad (Crítico)
-
-### Mitigación de XSS (Cross-Site Scripting)
-- Se implementó la función **`esc()`** en `utils.js` para sanear todas las cadenas de texto provenientes de la base de datos o el usuario.
-- Toda inyección de variables dinámicas dentro de las plantillas literales de `render.js` (y otros módulos) ahora usa `esc(variable)`, asegurando que no se pueda inyectar código malicioso a través de campos como nombres o descripciones.
-
-### Seguridad en Enlaces Externos
-- A todos los enlaces que abren nuevas pestañas (especialmente enlaces de WhatsApp o botones dinámicos) se les ha inyectado el atributo `rel="noopener noreferrer"` en conjunto con `target="_blank"` para evitar vulnerabilidades de _Tabnabbing_ (manipulación del historial o estado de la pestaña origen).
+## 1. Mejoras de Interfaz (UI) y Navegación
+- **Consistencia Visual en Nav**: Se ajustó el color de los textos de navegación a blanco por defecto, con un cambio dinámico al rojo corporativo (`--red`) al pasar el cursor (hover).
+- **Feedback de Enlaces**: Se aplicó herencia de color y eliminación de subrayados en los elementos `<a>` dentro de los menús para mantener la estética limpia.
 
 ---
 
-## 3. Implementación de Patrón de Delegación de Eventos
-
-Anteriormente, el HTML dependía fuertemente de eventos JavaScript en línea (ej. `onclick="goTo('login')"`), lo que acoplaba la vista a la lógica e impedía el uso estricto de Content Security Policies (CSP).
-
-- **Eliminación masiva de `onclick`**: Un script recorrió todos los archivos `.html` y eliminó estas invocaciones.
-- **Atributos Data (`data-action`)**: Se añadieron atributos declarativos. Por ejemplo, los botones ahora dicen `data-action="doLogin"`.
-- **Listener Global**: En `main.js`, un único _Event Listener_ adherido al `body` captura los clics, evalúa si existe un `data-action` y delega la ejecución al módulo correspondiente. Esto reduce significativamente el consumo de memoria del navegador.
+## 2. Optimización del Motor de Filtrado
+- **Persistencia de Contenido**: Se corrigió el error donde los "ejemplos de muestra" estáticos desaparecían del DOM al filtrar. Ahora la lógica utiliza la clase CSS `.card-hidden` (`display: none !important`) en lugar de sobrescribir el contenedor con `innerHTML`.
+- **Aislamiento de Scope**: Se rediseñó la función de filtrado para que las selecciones de una pantalla (ej. Home) no afecten los listados de otras pantallas (ej. Escuelas), limitando la búsqueda de elementos activos al contenedor actual.
+- **Funcionalidad de Des-selección (Toggle)**: Se implementó la capacidad de desactivar un filtro haciendo clic por segunda vez en la misma "pill", permitiendo regresar fácilmente al estado global ("Todas").
+- **Insensibilidad a Mayúsculas**: Se normalizaron las comparaciones de texto mediante `.toLowerCase()` y `.trim()` para evitar fallos por discrepancias tipográficas.
 
 ---
 
-## 4. Limpieza y Reestructuración de Vistas HTML
-
-- Se modificaron todos los archivos `.html` (`screen-1-home-search.html`, `screen-escuelas-listado.html`, etc.) para actualizar la referencia de carga de scripts:
-  - **Antes**: `<script src="dojo-plus-script.js"></script>`
-  - **Ahora**: `<script type="module" src="js/main.js"></script>`
-- Se implementó un esquema **MPA (Multi-Page Application)** completo y funcional con navegación entre los distintos archivos, preservando parámetros de URLs (como el token de verificación de correo).
-- Se repararon duplicidades en el código HTML de `dojo-plus.html`, específicamente eliminando el doble menú lateral móvil.
+## 3. Corrección de Errores Críticos (Backend)
+- **Resolución de Error 500 (Login)**: Se identificó y corrigió una excepción en el controlador de autenticación causada por la ausencia de la columna `email_verificado` en la base de datos y la falta de validación de `JWT_SECRET`.
+- **Robustez de JWT**: Se añadió validación preventiva en `emitirToken` para asegurar que el servidor no inicie o falle con mensajes claros si las claves de entorno no están configuradas.
+- **Mejora de Logs**: Se implementó un sistema de errores detallados en modo desarrollo que reporta códigos de error específicos de PostgreSQL (ej. Error 42703).
 
 ---
 
-## 5. Cambios en la Experiencia de Usuario (UX)
-
-- **Filtros In-Memory**: Las búsquedas ahora procesan los datos cacheados en JavaScript en vez de esconder las tarjetas con CSS. Esto asegura que los contadores (ej. "5 escuelas encontradas") sean exactos y que las pantallas de estado vacío se actualicen de manera instantánea.
-- **Autenticación Fuerte**: En lugar de confiar en que un token expirado reensamble la sesión por su carga local, ahora el sistema valida la validez directamente contra el servidor en cada carga significativa a través del `/auth/me`.
+## 4. Infraestructura y Base de Datos (PostgreSQL)
+- **Actualización de Esquema**: Se ejecutaron scripts de migración para añadir soporte a:
+    - Verificación de correo electrónico (`email_verificado`).
+    - Gestión de membresías (`plan_activo`, `plan_expira`).
+    - Tablas de seguridad (`verification_tokens`) y pagos (`subscriptions`).
+- **Soporte UUID**: Se habilitó la extensión `pgcrypto` para manejar identificadores únicos globales, mejorando la seguridad de las URLs de perfil.
 
 ---
 
-## Próximos Pasos Recomendados
+## 5. Servicios y Documentación
+- **Implementación de Nodemailer**: Se configuró `email.service.js` con soporte para transportes SMTP reales, plantillas HTML personalizadas para bienvenida y reenvío de enlaces de activación.
+- **Documentación Técnica**: Se generó el archivo `documentacion.md` con el resumen ejecutivo, arquitectura de carpetas, flujo de datos y roadmap del proyecto.
 
-1. Dado que ahora el frontend es modular (`type="module"`), el desarrollo **requiere usar un servidor local** (ej. Live Server, Nginx o un proxy local de NodeJS).
-2. Se sugiere revisar la integración del módulo de pagos (Epayco/Wompi), implementando lógicas similares con llamadas centralizadas en `api.js`.
-3. Es posible ahora implementar configuraciones de minificación/bundle (como **Vite** o **Webpack**) para fusionar y comprimir todo el contenido de la carpeta `/js/` a la hora de desplegar en producción.
+---
+
+## Estado de la Aplicación (Resumen)
+- **Autenticación**: 100% Funcional (Registro -> Email -> Verificación -> Login).
+- **Filtros**: 100% Funcional (Preserva contenido estático y dinámico).
+- **Pagos**: Preparado para integración con Wompi (Estructura de tablas y firmas de integridad listas).
+
+*Última actualización: 20 de Abril de 2026*

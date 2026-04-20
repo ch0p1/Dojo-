@@ -1,23 +1,55 @@
+<!-- ===================================================
+     SCREEN 5 — LOGIN / REGISTER
+     =================================================== -->
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>DOJX | Encuentra Tu Arte</title>
 
   <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
 
   <!-- Stylesheet -->
   <link rel="stylesheet" href="dojo-plus-styles.css">
 </head>
-\1
 
-<!-- ===== NAVIGATION ===== -->
-<nav>
-  <div class="nav-inner">
-    <div class="nav-logo"><a href="screen-1-home-search.html">DOJ<span>X</span></a></div>
-    <ul class="nav-links">
+<body>
+  <!-- ===== NAVIGATION ===== -->
+  <nav>
+    <div class="nav-inner">
+      <div class="nav-logo"><a href="screen-1-home-search.html">DOJ<span>X</span></a></div>
+      <ul class="nav-links">
+        <li><a href="screen-1-home-search.html">Inicio</a></li>
+        <li><a href="screen-escuelas-listado.html">Escuelas</a></li>
+        <li><a href="screen-entrenadores-listado.html">Entrenadores</a></li>
+        <li><a href="screen-eventos-listado.html">Eventos</a></li>
+        <li><a href="screen-6-plans-pricing.html">Planes</a></li>
+
+      </ul>
+      <div class="nav-right">
+        <div id="navAuth">
+          <button class="btn-login" style="padding:0; overflow:hidden;">
+            <div style="padding:8px 18px;"><a href="screen-5-login-register.html"
+                style="color:inherit; text-decoration:none; display:block;">Ingresar</a></div>
+          </button>
+        </div>
+        <!-- Hamburguesa — solo visible en mobile -->
+        <button class="nav-hamburger" id="hamburger" data-action="toggleMobileMenu" aria-label="Abrir menú">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ===== MOBILE MENU ===== -->
+  <div class="nav-mobile-menu" id="mobileMenu">
+    <ul class="nav-mobile-links">
       <li><a href="screen-1-home-search.html">Inicio</a></li>
       <li><a href="screen-escuelas-listado.html">Escuelas</a></li>
       <li><a href="screen-entrenadores-listado.html">Entrenadores</a></li>
@@ -25,168 +57,186 @@
       <li><a href="screen-6-plans-pricing.html">Planes</a></li>
 
     </ul>
-    <div class="nav-right">
-      <div id="navAuth">
-        <button class="btn-login" style="padding:0; overflow:hidden;"><div style="padding:8px 18px;">Ingresar</div></button>
-      </div>
-      <!-- Hamburguesa — solo visible en mobile -->
-      <button class="nav-hamburger" id="hamburger" data-action="toggleMobileMenu" aria-label="Abrir menú">
-        <span></span>
-        <span></span>
-        <span></span>
+    <div class="nav-mobile-footer">
+      <span class="nav-mobile-city">📍 Cali · Bogotá</span>
+      <button class="btn-login" style="padding:0; overflow:hidden;">
+        <div style="padding:8px 18px;"><a href="screen-5-login-register.html"
+            style="color:inherit; text-decoration:none; display:block;">Ingresar</a></div>
       </button>
     </div>
   </div>
-</nav>
+  <div class="screen" id="screen-login">
+    <div class="login-hero">
+      <div class="login-box">
 
-<!-- ===== MOBILE MENU ===== -->
-<div class="nav-mobile-menu" id="mobileMenu">
-  <ul class="nav-mobile-links">
-    <li><a href="screen-1-home-search.html">Inicio</a></li>
-    <li><a href="screen-escuelas-listado.html">Escuelas</a></li>
-    <li><a href="screen-entrenadores-listado.html">Entrenadores</a></li>
-    <li><a href="screen-eventos-listado.html">Eventos</a></li>
-    <li><a href="screen-6-plans-pricing.html">Planes</a></li>
+        <!-- Step 1 -->
+        <div id="reg-step-1">
+          <div class="progress-steps">
+            <div class="step-dot active">1</div>
+            <div class="step-line"></div>
+            <div class="step-dot">2</div>
+            <div class="step-line"></div>
+            <div class="step-dot">3</div>
+          </div>
+          <h1 class="register-title">Crea tu cuenta</h1>
+          <p class="register-sub">Únete a la comunidad DOJX</p>
 
-  </ul>
-  <div class="nav-mobile-footer">
-    <span class="nav-mobile-city">📍 Cali · Bogotá</span>
-    <button class="btn-login" style="padding:0; overflow:hidden;"><div style="padding:8px 18px;">Ingresar</div></button>
-  </div>
-</div>
+          <div class="form-group">
+            <label class="form-label">Nombre completo <span style="color:var(--red)">*</span></label>
+            <input id="reg-nombre" class="form-input" type="text" placeholder="Ej: Carlos Medina">
+            <div class="form-error" id="err-nombre">Ingresa tu nombre completo (mínimo 2 caracteres)</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email <span style="color:var(--red)">*</span></label>
+            <input id="reg-email" class="form-input" type="email" placeholder="tu@email.com">
+            <div class="form-error" id="err-email">Ingresa un email válido (ej: <a href="/cdn-cgi/l/email-protection"
+                class="__cf_email__" data-cfemail="0b65646669796e4b686479796e6425686466">[email&#160;protected]</a>)
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Contraseña <span style="color:var(--red)">*</span></label>
+            <input id="reg-pwd" class="form-input" type="password" placeholder="Mínimo 8 caracteres">
+            <div class="pwd-strength" id="pwd-strength-bar">
+              <div class="pwd-strength-fill" id="pwd-strength-fill"></div>
+            </div>
+            <div class="form-error" id="err-pwd">La contraseña debe tener al menos 8 caracteres</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Confirmar contraseña <span style="color:var(--red)">*</span></label>
+            <input id="reg-pwd2" class="form-input" type="password" placeholder="Repite tu contraseña">
+            <div class="form-error" id="err-pwd2">Las contraseñas no coinciden</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Ciudad <span style="color:var(--red)">*</span></label>
+            <select id="reg-ciudad" class="form-input">
+              <option value="">Selecciona tu ciudad</option>
+              <option value="Cali">Cali</option>
+              <option value="Bogotá">Bogotá</option>
+            </select>
+            <div class="form-error" id="err-ciudad">Selecciona tu ciudad</div>
+          </div>
 
-
-
-
-<!-- ===================================================
-     SCREEN 5 — LOGIN / REGISTER
-     =================================================== -->
-<div class="screen" id="screen-login">
-  <div class="login-hero">
-    <div class="login-box">
-
-      <!-- Step 1 -->
-      <div id="reg-step-1">
-        <div class="progress-steps">
-          <div class="step-dot active">1</div><div class="step-line"></div>
-          <div class="step-dot">2</div><div class="step-line"></div>
-          <div class="step-dot">3</div>
-        </div>
-        <h1 class="register-title">Crea tu cuenta</h1>
-        <p class="register-sub">Únete a la comunidad DOJX</p>
-
-        <div class="form-group">
-          <label class="form-label">Nombre completo <span style="color:var(--red)">*</span></label>
-          <input id="reg-nombre" class="form-input" type="text" placeholder="Ej: Carlos Medina" oninput="clearFieldError('reg-nombre')">
-          <div class="form-error" id="err-nombre">Ingresa tu nombre completo (mínimo 2 caracteres)</div>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Email <span style="color:var(--red)">*</span></label>
-          <input id="reg-email" class="form-input" type="email" placeholder="tu@email.com" oninput="clearFieldError('reg-email')">
-          <div class="form-error" id="err-email">Ingresa un email válido (ej: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0b65646669796e4b686479796e6425686466">[email&#160;protected]</a>)</div>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Contraseña <span style="color:var(--red)">*</span></label>
-          <input id="reg-pwd" class="form-input" type="password" placeholder="Mínimo 8 caracteres" oninput="checkPwdStrength(); clearFieldError('reg-pwd')">
-          <div class="pwd-strength" id="pwd-strength-bar"><div class="pwd-strength-fill" id="pwd-strength-fill"></div></div>
-          <div class="form-error" id="err-pwd">La contraseña debe tener al menos 8 caracteres</div>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Confirmar contraseña <span style="color:var(--red)">*</span></label>
-          <input id="reg-pwd2" class="form-input" type="password" placeholder="Repite tu contraseña" oninput="clearFieldError('reg-pwd2')">
-          <div class="form-error" id="err-pwd2">Las contraseñas no coinciden</div>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Ciudad <span style="color:var(--red)">*</span></label>
-          <select id="reg-ciudad" class="form-input" onchange="clearFieldError('reg-ciudad')">
-            <option value="">Selecciona tu ciudad</option>
-            <option value="Cali">Cali</option>
-            <option value="Bogotá">Bogotá</option>
-          </select>
-          <div class="form-error" id="err-ciudad">Selecciona tu ciudad</div>
+          <button class="btn-red" style="width:100%;justify-content:center;margin-top:8px"
+            data-action="validateStep1">Continuar →</button>
+          <p style="text-align:center;margin-top:20px;font-size:14px;color:var(--gray)">¿Ya tienes cuenta? <a
+              class="register-link" href="javascript:void(0)" data-action="showLogin">Inicia sesión</a></p>
         </div>
 
-        <button class="btn-red" style="width:100%;justify-content:center;margin-top:8px" data-action="validateStep1">Continuar →</button>
-        <p style="text-align:center;margin-top:20px;font-size:14px;color:var(--gray)">¿Ya tienes cuenta? <a class="register-link" href="javascript:void(0)" data-action="showLogin">Inicia sesión</a></p>
+        <!-- Step 2 -->
+        <div id="reg-step-2" style="display:none">
+          <div class="progress-steps">
+            <div class="step-dot done">✓</div>
+            <div class="step-line"></div>
+            <div class="step-dot active">2</div>
+            <div class="step-line"></div>
+            <div class="step-dot">3</div>
+          </div>
+          <h1 class="register-title">Personaliza tu experiencia</h1>
+          <p class="register-sub">¿Qué artes marciales te interesan?</p>
+          <div class="disc-grid" style="margin-bottom:28px">
+            <div class="disc-card" data-action="toggleDisc">
+              <div class="disc-icon">🥋</div>
+              <div class="disc-name">BJJ</div>
+            </div>
+            <div class="disc-card selected" data-action="toggleDisc">
+              <div class="disc-icon">🥊</div>
+              <div class="disc-name">Boxeo</div>
+            </div>
+            <div class="disc-card" data-action="toggleDisc">
+              <div class="disc-icon">🦵</div>
+              <div class="disc-name">Muay Thai</div>
+            </div>
+            <div class="disc-card" data-action="toggleDisc">
+              <div class="disc-icon">🎌</div>
+              <div class="disc-name">Karate</div>
+            </div>
+            <div class="disc-card selected" data-action="toggleDisc">
+              <div class="disc-icon">🏅</div>
+              <div class="disc-name">Taekwondo</div>
+            </div>
+            <div class="disc-card" data-action="toggleDisc">
+              <div class="disc-icon">💪</div>
+              <div class="disc-name">Wrestling</div>
+            </div>
+            <div class="disc-card" data-action="toggleDisc">
+              <div class="disc-icon">⚔️</div>
+              <div class="disc-name">MMA</div>
+            </div>
+            <div class="disc-card" data-action="toggleDisc">
+              <div class="disc-icon">🎯</div>
+              <div class="disc-name">Judo</div>
+            </div>
+            <div class="disc-card" data-action="toggleDisc">
+              <div class="disc-icon">🔥</div>
+              <div class="disc-name">Kickboxing</div>
+            </div>
+            <div class="disc-card" data-action="toggleDisc">
+              <div class="disc-icon">🌊</div>
+              <div class="disc-name">Capoeira</div>
+            </div>
+          </div>
+          <button class="btn-red" style="width:100%;justify-content:center" data-action="nextRegStep" data-step="3">Continuar →</button>
+        </div>
+
+        <!-- Step 3 -->
+        <div id="reg-step-3" style="display:none">
+          <div class="progress-steps">
+            <div class="step-dot done">✓</div>
+            <div class="step-line"></div>
+            <div class="step-dot done">✓</div>
+            <div class="step-line"></div>
+            <div class="step-dot active">3</div>
+          </div>
+          <h1 class="register-title">Horario preferido</h1>
+          <p class="register-sub">¿Cuándo sueles entrenar?</p>
+          <div class="sched-opt-grid" style="margin-bottom:28px">
+            <div class="sched-opt" data-action="selectSched">
+              <div class="sched-icon">🌅</div>
+              <div class="sched-time">Mañana</div>
+              <div class="sched-range">6am – 12pm</div>
+            </div>
+            <div class="sched-opt selected" data-action="selectSched">
+              <div class="sched-icon">☀️</div>
+              <div class="sched-time" style="color:var(--red)">Tarde</div>
+              <div class="sched-range">12pm – 6pm</div>
+            </div>
+            <div class="sched-opt" data-action="selectSched">
+              <div class="sched-icon">🌙</div>
+              <div class="sched-time">Noche</div>
+              <div class="sched-range">6pm – 10pm</div>
+            </div>
+          </div>
+          <button class="btn-red" style="width:100%;justify-content:center" data-action="finishRegister">🎉 Finalizar
+            Registro</button>
+        </div>
+
+        <!-- Login Form -->
+        <div id="login-form" style="display:none">
+          <h1 class="register-title">Bienvenido</h1>
+          <p class="register-sub">Inicia sesión en tu cuenta</p>
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input id="login-email" class="form-input" type="email" placeholder="tu@email.com">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Contraseña</label>
+            <input id="login-password" class="form-input" type="password" placeholder="Tu contraseña">
+          </div>
+          <div class="form-error" id="login-error" style="margin-bottom:12px"></div>
+          <button id="login-btn" class="btn-red" style="width:100%;justify-content:center;margin-top:8px"
+            data-action="doLogin">
+            Iniciar Sesión
+          </button>
+          <p style="text-align:center;margin-top:20px;font-size:14px;color:var(--gray)">¿No tienes cuenta? <a
+              class="register-link" href="javascript:void(0)" data-action="showRegister">Regístrate gratis</a></p>
+        </div>
+
       </div>
-
-      <!-- Step 2 -->
-      <div id="reg-step-2" style="display:none">
-        <div class="progress-steps">
-          <div class="step-dot done">✓</div><div class="step-line"></div>
-          <div class="step-dot active">2</div><div class="step-line"></div>
-          <div class="step-dot">3</div>
-        </div>
-        <h1 class="register-title">Personaliza tu experiencia</h1>
-        <p class="register-sub">¿Qué artes marciales te interesan?</p>
-        <div class="disc-grid" style="margin-bottom:28px">
-          <div class="disc-card" data-action="toggleDisc"><div class="disc-icon">🥋</div><div class="disc-name">BJJ</div></div>
-          <div class="disc-card selected" data-action="toggleDisc"><div class="disc-icon">🥊</div><div class="disc-name">Boxeo</div></div>
-          <div class="disc-card" data-action="toggleDisc"><div class="disc-icon">🦵</div><div class="disc-name">Muay Thai</div></div>
-          <div class="disc-card" data-action="toggleDisc"><div class="disc-icon">🎌</div><div class="disc-name">Karate</div></div>
-          <div class="disc-card selected" data-action="toggleDisc"><div class="disc-icon">🏅</div><div class="disc-name">Taekwondo</div></div>
-          <div class="disc-card" data-action="toggleDisc"><div class="disc-icon">💪</div><div class="disc-name">Wrestling</div></div>
-          <div class="disc-card" data-action="toggleDisc"><div class="disc-icon">⚔️</div><div class="disc-name">MMA</div></div>
-          <div class="disc-card" data-action="toggleDisc"><div class="disc-icon">🎯</div><div class="disc-name">Judo</div></div>
-          <div class="disc-card" data-action="toggleDisc"><div class="disc-icon">🔥</div><div class="disc-name">Kickboxing</div></div>
-          <div class="disc-card" data-action="toggleDisc"><div class="disc-icon">🌊</div><div class="disc-name">Capoeira</div></div>
-        </div>
-        <button class="btn-red" style="width:100%;justify-content:center" data-action="nextRegStep" data-step="3">Continuar →</button>
-      </div>
-
-      <!-- Step 3 -->
-      <div id="reg-step-3" style="display:none">
-        <div class="progress-steps">
-          <div class="step-dot done">✓</div><div class="step-line"></div>
-          <div class="step-dot done">✓</div><div class="step-line"></div>
-          <div class="step-dot active">3</div>
-        </div>
-        <h1 class="register-title">Horario preferido</h1>
-        <p class="register-sub">¿Cuándo sueles entrenar?</p>
-        <div class="sched-opt-grid" style="margin-bottom:28px">
-          <div class="sched-opt" data-action="selectSched"><div class="sched-icon">🌅</div><div class="sched-time">Mañana</div><div class="sched-range">6am – 12pm</div></div>
-          <div class="sched-opt selected" data-action="selectSched"><div class="sched-icon">☀️</div><div class="sched-time" style="color:var(--red)">Tarde</div><div class="sched-range">12pm – 6pm</div></div>
-          <div class="sched-opt" data-action="selectSched"><div class="sched-icon">🌙</div><div class="sched-time">Noche</div><div class="sched-range">6pm – 10pm</div></div>
-        </div>
-        <button class="btn-red" style="width:100%;justify-content:center" data-action="finishRegister">🎉 Finalizar Registro</button>
-      </div>
-
-      <!-- Login Form -->
-      <div id="login-form" style="display:none">
-        <h1 class="register-title">Bienvenido</h1>
-        <p class="register-sub">Inicia sesión en tu cuenta</p>
-        <div class="form-group">
-          <label class="form-label">Email</label>
-          <input id="login-email" class="form-input" type="email" placeholder="tu@email.com"
-            onkeydown="if(event.key==='Enter') doLogin()">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Contraseña</label>
-          <input id="login-password" class="form-input" type="password" placeholder="Tu contraseña"
-            onkeydown="if(event.key==='Enter') doLogin()">
-        </div>
-        <div class="form-error" id="login-error" style="margin-bottom:12px"></div>
-        <button id="login-btn" class="btn-red" style="width:100%;justify-content:center;margin-top:8px" data-action="doLogin">
-          Iniciar Sesión
-        </button>
-        <p style="text-align:center;margin-top:20px;font-size:14px;color:var(--gray)">¿No tienes cuenta? <a class="register-link" href="javascript:void(0)" data-action="showRegister">Regístrate gratis</a></p>
-      </div>
-
     </div>
   </div>
-</div>
 
-<!-- ===== MODAL: PUBLICAR ENTRENADOR / ESCUELA ===== -->
-<div class="modal-overlay" id="publishModal" data-action="closePublishModalOverlay">
-  <div class="modal" style="max-height:90vh;overflow-y:auto">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
-      <div class="modal-title" id="publishModalTitle">Publicar</div>
-      <button data-action="closePublishModal" style="background:none;border:none;color:var(--gray);font-size:20px;cursor:pointer;padding:4px;line-height:1">×</button>
-    </div>
-    <div id="publishForm"></div>
-  </div>
-</div>
-
+<script type="module" src="js/main.js"></script>
+</body>
 <!-- ===== FOOTER ===== -->
 <footer>
   <div class="footer-inner">
@@ -195,7 +245,8 @@
       <!-- Marca -->
       <div class="footer-brand">
         <div class="footer-logo">DOJ<span>X</span></div>
-        <p class="footer-tagline">La plataforma de artes marciales más completa de Colombia. Conectamos escuelas, entrenadores y eventos con tu pasión.</p>
+        <p class="footer-tagline">La plataforma de artes marciales más completa de Colombia. Conectamos escuelas,
+          entrenadores y eventos con tu pasión.</p>
         <div class="footer-socials">
           <a class="social-btn" href="#" title="Instagram">📸</a>
           <a class="social-btn" href="#" title="TikTok">🎵</a>
@@ -208,11 +259,11 @@
       <div>
         <div class="footer-col-title">Plataforma</div>
         <ul class="footer-links">
-          <li><span data-action="goTo" data-target="schools">Escuelas</span></li>
-          <li><span data-action="goTo" data-target="trainers">Entrenadores</span></li>
-          <li><span data-action="goTo" data-target="events">Eventos</span></li>
-          <li><span data-action="goTo" data-target="plans">Planes y precios</span></li>
-          <li><span data-action="goTo" data-target="login">Registrarse</span></li>
+          <li><span data-action="goTo" data-target="schools" style="cursor:pointer">Escuelas</span></li>
+          <li><span data-action="goTo" data-target="trainers" style="cursor:pointer">Entrenadores</span></li>
+          <li><span data-action="goTo" data-target="events" style="cursor:pointer">Eventos</span></li>
+          <li><span data-action="goTo" data-target="plans" style="cursor:pointer">Planes y precios</span></li>
+          <li><span data-action="goTo" data-target="login" style="cursor:pointer">Registrarse</span></li>
         </ul>
       </div>
 
@@ -248,7 +299,7 @@
       </div>
       <div class="footer-legal">
         <a href="#">Términos</a>
-                <a href="#">Privacidad</a>
+        <a href="#">Privacidad</a>
         <a href="#">Cookies</a>
       </div>
     </div>
@@ -256,21 +307,4 @@
   </div>
 </footer>
 
-<!-- JavaScript -- al final del body para que el DOM esté disponible -->
-
-<!-- Wompi Widget SDK -->
-<script src="https://checkout.wompi.co/widget.js"></script>
-
-<!-- Modal resultado de pago -->
-<div class="modal-overlay" id="pagoModal">
-  <div class="modal" style="max-width:400px;text-align:center">
-    <div id="pagoModal-icon" style="font-size:56px;margin-bottom:16px">⏳</div>
-    <div id="pagoModal-title" class="modal-title" style="justify-content:center;margin-bottom:8px">Procesando pago...</div>
-    <div id="pagoModal-sub" style="font-size:14px;color:var(--gray);margin-bottom:24px">Por favor espera un momento</div>
-    <button class="btn-red" style="width:100%;justify-content:center" onclick="closePagoModal()">Cerrar</button>
-  </div>
-</div>
-
-<script type="module" src="js/main.js"></script>
-</body>
 </html>
