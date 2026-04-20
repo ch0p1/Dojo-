@@ -20,7 +20,7 @@
     <ul class="nav-links">
       <li><a href="screen-1-home-search.html">Inicio</a></li>
       <li><a href="screen-escuelas-listado.html">Escuelas</a></li>
-      <li><a href="screen-entrenadores-listado.html">Entrenadores</a></li>
+      <li class="active">Entrenadores</li>
       <li><a href="screen-eventos-listado.html">Eventos</a></li>
       <li><a href="screen-6-plans-pricing.html">Planes</a></li>
 
@@ -44,7 +44,7 @@
   <ul class="nav-mobile-links">
     <li><a href="screen-1-home-search.html">Inicio</a></li>
     <li><a href="screen-escuelas-listado.html">Escuelas</a></li>
-    <li><a href="screen-entrenadores-listado.html">Entrenadores</a></li>
+    <li class="active">Entrenadores</li>
     <li><a href="screen-eventos-listado.html">Eventos</a></li>
     <li><a href="screen-6-plans-pricing.html">Planes</a></li>
 
@@ -58,29 +58,98 @@
 
 
 
+<!-- ===================================================
+     SCREEN — ENTRENADORES (listado)
+     =================================================== -->
+<div class="screen" id="screen-trainers">
 
+  <div class="listing-header">
+    <div class="listing-header-inner">
+      <h1 class="listing-title">ENTRENADORES</h1>
+      <p class="listing-subtitle">Entrenadores personales certificados en Colombia</p>
+    </div>
+  </div>
 
-<!-- INCLUDE: screen-1-home-search.html -->
+  <div class="listing-filters">
+    <span class="filter-label" style="min-width:auto;margin-right:4px">Ciudad</span>
+    <button class="pill active" data-group="tr-ciudad" data-value="todas"  data-action="filterPill" data-group="tr-ciudad" data-list="trainers" data-key="tr-ciudad">Todas</button>
+    <button class="pill"        data-group="tr-ciudad" data-value="cali"   data-action="filterPill" data-group="tr-ciudad" data-list="trainers" data-key="tr-ciudad">Cali</button>
+    <button class="pill"        data-group="tr-ciudad" data-value="bogota" data-action="filterPill" data-group="tr-ciudad" data-list="trainers" data-key="tr-ciudad">Bogotá</button>
+    <span class="filter-label" style="min-width:auto;margin-left:12px;margin-right:4px">Disciplina</span>
+    <button class="pill active" data-group="tr-disc" data-value="todas"     data-action="filterPill" data-group="tr-disc" data-list="trainers" data-key="tr-disc">Todas</button>
+    <button class="pill"        data-group="tr-disc" data-value="bjj"       data-action="filterPill" data-group="tr-disc" data-list="trainers" data-key="tr-disc">BJJ</button>
+    <button class="pill"        data-group="tr-disc" data-value="boxeo"     data-action="filterPill" data-group="tr-disc" data-list="trainers" data-key="tr-disc">Boxeo</button>
+    <button class="pill"        data-group="tr-disc" data-value="muay-thai" data-action="filterPill" data-group="tr-disc" data-list="trainers" data-key="tr-disc">Muay Thai</button>
+    <button class="pill"        data-group="tr-disc" data-value="mma"       data-action="filterPill" data-group="tr-disc" data-list="trainers" data-key="tr-disc">MMA</button>
+  </div>
 
-<!-- INCLUDE: screen-escuelas-listado.html -->
+  <div class="listing-grid-wrap">
+    <div class="listing-count" id="count-trainers"><strong>5</strong> entrenadores encontrados</div>
+    <div class="listing-trainers-grid" id="grid-trainers">
 
-<!-- INCLUDE: screen-entrenadores-listado.html -->
+      <div class="card trainer-card"
+        data-city="cali" data-disciplines="bjj grappling"
+        data-action="goTo" data-target="trainers">
+        <div class="trainer-photo-wrap"><div class="trainer-photo">🥋</div></div>
+        <div class="trainer-card-body">
+          <div class="trainer-name">Carlos Medina</div>
+          <div class="tags-wrap"><span class="tag">BJJ</span><span class="tag">Grappling</span></div>
+          <div class="trainer-exp">⚡ 12 años de exp.</div>
+        </div>
+      </div>
 
-<!-- INCLUDE: screen-eventos-listado.html -->
+      <div class="card trainer-card"
+        data-city="bogota" data-disciplines="boxeo mma"
+        data-action="goTo" data-target="trainers">
+        <div class="trainer-photo-wrap"><div class="trainer-photo" style="background:linear-gradient(135deg,#1a4a7a,#0a2a4a)">🥊</div></div>
+        <div class="trainer-card-body">
+          <div class="trainer-name">Juan Rodríguez</div>
+          <div class="tags-wrap"><span class="tag">Boxeo</span><span class="tag">MMA</span></div>
+          <div class="trainer-exp">⚡ 8 años de exp.</div>
+        </div>
+      </div>
 
-<!-- INCLUDE: screen-2-school-detail.html -->
+      <div class="card trainer-card"
+        data-city="cali" data-disciplines="muay-thai kickboxing"
+        data-action="goTo" data-target="trainers">
+        <div class="trainer-photo-wrap"><div class="trainer-photo" style="background:linear-gradient(135deg,#4a1a2a,#2a0a1a)">🦵</div></div>
+        <div class="trainer-card-body">
+          <div class="trainer-name">Ana Gómez</div>
+          <div class="tags-wrap"><span class="tag">Muay Thai</span><span class="tag">Kickboxing</span></div>
+          <div class="trainer-exp">⚡ 6 años de exp.</div>
+        </div>
+      </div>
 
-<!-- INCLUDE: screen-3-trainer-detail.html -->
+      <div class="card trainer-card"
+        data-city="cali" data-disciplines="judo wrestling"
+        data-action="goTo" data-target="trainers">
+        <div class="trainer-photo-wrap"><div class="trainer-photo" style="background:linear-gradient(135deg,#1a2a4a,#0a1a3a)">🎌</div></div>
+        <div class="trainer-card-body">
+          <div class="trainer-name">Luis Caicedo</div>
+          <div class="tags-wrap"><span class="tag">Judo</span><span class="tag">Wrestling</span></div>
+          <div class="trainer-exp">⚡ 15 años de exp.</div>
+        </div>
+      </div>
 
-<!-- INCLUDE: screen-4-event-detail.html -->
+      <div class="card trainer-card"
+        data-city="bogota" data-disciplines="karate"
+        data-action="goTo" data-target="trainers">
+        <div class="trainer-photo-wrap"><div class="trainer-photo" style="background:linear-gradient(135deg,#2a3a1a,#1a2a0a)">🏆</div></div>
+        <div class="trainer-card-body">
+          <div class="trainer-name">Diego Torres</div>
+          <div class="tags-wrap"><span class="tag">Karate</span></div>
+          <div class="trainer-exp">⚡ 18 años de exp.</div>
+        </div>
+      </div>
 
-<!-- INCLUDE: screen-5-login-register.html -->
-
-<!-- INCLUDE: screen-6-plans-pricing.html -->
-
-<!-- INCLUDE: screen-perfil-de-usuario.html -->
-
-<!-- INCLUDE: screen-panel-admin.html -->
+    </div>
+    <div class="listing-empty" id="empty-trainers">
+      <div class="listing-empty-icon">🥊</div>
+      <div class="listing-empty-title">Sin entrenadores</div>
+      <div class="listing-empty-sub">No hay entrenadores que coincidan con los filtros seleccionados.</div>
+    </div>
+  </div>
+</div>
 
 <!-- ===== MODAL: PUBLICAR ENTRENADOR / ESCUELA ===== -->
 <div class="modal-overlay" id="publishModal" data-action="closePublishModalOverlay">

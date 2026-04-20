@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DOJX | Encuentra Tu Arte</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="dojo-plus-styles.css">
+</head>
+\1
+
+<!-- ===== NAVIGATION ===== -->
+<nav>
+  <div class="nav-inner">
+    <div class="nav-logo"><a href="screen-1-home-search.html">DOJ<span>X</span></a></div>
+    <ul class="nav-links">
+      <li><a href="screen-1-home-search.html">Inicio</a></li>
+      <li class="active"><a href="screen-escuelas-listado.html">Escuelas</a></li>
+      <li><a href="screen-entrenadores-listado.html">Entrenadores</a></li>
+      <li><a href="screen-eventos-listado.html">Eventos</a></li>
+      <li><a href="screen-6-plans-pricing.html">Planes</a></li>
+
+    </ul>
+    <div class="nav-right">
+      <div id="navAuth">
+        <button class="btn-login" style="padding:0; overflow:hidden;"><div style="padding:8px 18px;"><a href="screen-5-login-register.html" style="color:inherit; text-decoration:none; display:block;">Ingresar</a></div></button>
+      </div>
+      <!-- Hamburguesa — solo visible en mobile -->
+      <button class="nav-hamburger" id="hamburger" data-action="toggleMobileMenu" aria-label="Abrir menú">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- ===== MOBILE MENU ===== -->
+<div class="nav-mobile-menu" id="mobileMenu">
+  <ul class="nav-mobile-links">
+    <li><a href="screen-1-home-search.html">Inicio</a></li>
+    <li class="active"><a href="screen-escuelas-listado.html">Escuelas</a></li>
+    <li><a href="screen-entrenadores-listado.html">Entrenadores</a></li>
+    <li><a href="screen-eventos-listado.html">Eventos</a></li>
+    <li><a href="screen-6-plans-pricing.html">Planes</a></li>
+
+  </ul>
+  <div class="nav-mobile-footer">
+    <span class="nav-mobile-city">📍 Cali · Bogotá</span>
+    <button class="btn-login" style="padding:0; overflow:hidden;"><div style="padding:8px 18px;"><a href="screen-5-login-register.html" style="color:inherit; text-decoration:none; display:block;">Ingresar</a></div></button>
+  </div>
+</div>
+
+
+
+
+<!-- ===================================================
+     SCREEN 2 — SCHOOL DETAIL
+     =================================================== -->
+<div class="screen" id="screen-school">
+  <div class="hero-detail">
+    <div class="hero-detail-bg">🏫</div>
+    <div class="hero-detail-overlay"></div>
+    <div class="hero-detail-content">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+        <span class="tag gold">⭐ RECOMENDADO</span>
+        <div class="city-badge">📍 Cali, Valle del Cauca</div>
+      </div>
+      <h1 style="font-size:clamp(32px,5vw,52px);margin-bottom:10px">Alliance BJJ Cali</h1>
+      <div class="tags-wrap" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <span class="tag">BJJ</span>
+        <span class="tag">Grappling</span>
+        <span class="tag">No-Gi</span>
+        <div class="stars" style="margin-left:8px">★★★★★ <span style="color:var(--gray);font-size:12px">(128 reseñas)</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content-wrap">
+    <button class="btn-back" data-action="goTo" data-target="schools">← Escuelas</button>
+    <div class="tabs">
+      <button class="tab-btn active" data-action="switchTab" data-tab-id="school-desc">Descripción</button>
+      <button class="tab-btn" data-action="switchTab" data-tab-id="school-inst">Instalaciones</button>
+      <button class="tab-btn" data-action="switchTab" data-tab-id="school-prof">Profesores</button>
+      <button class="tab-btn" data-action="switchTab" data-tab-id="school-hor">Horarios</button>
+    </div>
+
+    <div class="tab-content active" id="tab-school-desc">
+      <div class="section-card">
+        <div class="section-card-title">🏫 Sobre la Escuela</div>
+        <p style="font-size:15px;line-height:1.7;color:rgba(255,255,255,0.8);margin-bottom:20px">
+          Alliance BJJ Cali es una de las academias de Jiu-Jitsu Brasileño más reconocidas de Colombia. Afiliada a la red mundial Alliance Jiu-Jitsu, ofrecemos programas para todos los niveles — desde principiantes absolutos hasta competidores de alto rendimiento.
+        </p>
+        <div style="display:flex;gap:12px;flex-wrap:wrap">
+          <div class="badge">🗓 Desde 2012 · 13 años</div>
+          <div class="badge">👥 +400 estudiantes</div>
+          <div class="badge">🌎 Afiliada Alliance Global</div>
+        </div>
+      </div>
+      <div class="section-card">
+        <div class="section-card-title">🏆 Logros y Títulos</div>
+        <div class="achievement-item">
+          <span class="achievement-icon">🥇</span>
+          <div><div style="font-weight:600">Campeones Nacionales CBJJ 2024</div><div style="font-size:12px;color:var(--gray)">Categoría Absoluta · División Adultos</div></div>
+        </div>
+        <div class="achievement-item">
+          <span class="achievement-icon">🏅</span>
+          <div><div style="font-weight:600">Copa Valle de Jiu-Jitsu · 1er Puesto</div><div style="font-size:12px;color:var(--gray)">2023 · Múltiples categorías</div></div>
+        </div>
+        <div class="achievement-item">
+          <span class="achievement-icon">🌟</span>
+          <div><div style="font-weight:600">IBJJF Pan American Games</div><div style="font-size:12px;color:var(--gray)">2022 · Semifinalistas</div></div>
+        </div>
+        <div class="achievement-item" style="border-bottom:none">
+          <span class="achievement-icon">🎖</span>
+          <div><div style="font-weight:600">Mejor Academia Colombia · BJJF</div><div style="font-size:12px;color:var(--gray)">2021 · Premio Nacional</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-content" id="tab-school-inst">
+      <div class="section-card">
+        <div class="section-card-title">🏋️ Galería de Instalaciones</div>
+        <div class="photo-grid">
+          <div class="photo-grid-item" style="background:linear-gradient(135deg,#1a0a0a,#2a1515)">🥋<br><span style="font-size:12px;color:var(--gray)">Tatami Principal</span></div>
+          <div class="photo-grid-item" style="background:linear-gradient(135deg,#0a0a1a,#15152a)">🏋️<br><span style="font-size:12px;color:var(--gray)">Área de Pesas</span></div>
+          <div class="photo-grid-item" style="background:linear-gradient(135deg,#0a1a0a,#15251a)">🚿<br><span style="font-size:12px;color:var(--gray)">Vestuarios</span></div>
+          <div class="photo-grid-item" style="background:linear-gradient(135deg,#1a1a0a,#2a2a15)">🥊<br><span style="font-size:12px;color:var(--gray)">Área de Striking</span></div>
+        </div>
+        <div style="margin-top:20px">
+          <div class="achievement-item"><span class="achievement-icon">📐</span><span>Tatami de 300 m² con colchonetas de alta calidad</span></div>
+          <div class="achievement-item"><span class="achievement-icon">❄️</span><span>Aire acondicionado industrial en todas las áreas</span></div>
+          <div class="achievement-item" style="border-bottom:none"><span class="achievement-icon">🅿️</span><span>Parqueadero privado para estudiantes</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-content" id="tab-school-prof">
+      <div class="instructor-cards">
+        <div class="instructor-card">
+          <div class="instructor-photo">🥋</div>
+          <span class="belt-badge belt-black">Cinta Negra 3er Grado</span>
+          <div style="font-weight:700;margin-bottom:6px">Carlos Medina</div>
+          <div style="font-size:12px;color:var(--gray);line-height:1.5">Head Coach · Más de 12 años enseñando BJJ.</div>
+        </div>
+        <div class="instructor-card">
+          <div class="instructor-photo" style="background:linear-gradient(135deg,#4a1a6a,#2a0a4a)">🏆</div>
+          <span class="belt-badge belt-brown">Cinta Café</span>
+          <div style="font-weight:700;margin-bottom:6px">María Ospina</div>
+          <div style="font-size:12px;color:var(--gray);line-height:1.5">Instructora Principal · Competición femenina.</div>
+        </div>
+        <div class="instructor-card">
+          <div class="instructor-photo" style="background:linear-gradient(135deg,#6a3a1a,#4a1a0a)">⚡</div>
+          <span class="belt-badge belt-purple">Cinta Púrpura</span>
+          <div style="font-weight:700;margin-bottom:6px">Santiago Peña</div>
+          <div style="font-size:12px;color:var(--gray);line-height:1.5">Instructor Juvenil · Formación de jóvenes.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-content" id="tab-school-hor">
+      <div class="section-card">
+        <div class="section-card-title">📅 Horario Semanal</div>
+        <div style="overflow-x:auto">
+          <table class="schedule-table">
+            <thead>
+              <tr>
+                <th>Horario</th><th>LUN</th><th>MAR</th><th>MIÉ</th><th>JUE</th><th>VIE</th><th>SÁB</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span style="font-size:11px;color:var(--gold)">🌅 Mañana</span></td>
+                <td><span class="sched-morning">7:00 AM</span></td>
+                <td><span class="sched-empty">—</span></td>
+                <td><span class="sched-morning">7:00 AM</span></td>
+                <td><span class="sched-empty">—</span></td>
+                <td><span class="sched-morning">7:00 AM</span></td>
+                <td><span class="sched-morning">8:00 AM</span></td>
+              </tr>
+              <tr>
+                <td><span style="font-size:11px;color:#3498DB">☀️ Tarde</span></td>
+                <td><span class="sched-afternoon">3:00 PM</span></td>
+                <td><span class="sched-afternoon">3:00 PM</span></td>
+                <td><span class="sched-afternoon">3:00 PM</span></td>
+                <td><span class="sched-afternoon">3:00 PM</span></td>
+                <td><span class="sched-afternoon">3:00 PM</span></td>
+                <td><span class="sched-afternoon">10:00 AM</span></td>
+              </tr>
+              <tr>
+                <td><span style="font-size:11px;color:var(--red)">🌙 Noche</span></td>
+                <td><span class="sched-night">7:00 PM</span></td>
+                <td><span class="sched-night">7:00 PM</span></td>
+                <td><span class="sched-night">7:00 PM</span></td>
+                <td><span class="sched-night">7:00 PM</span></td>
+                <td><span class="sched-night">7:00 PM</span></td>
+                <td><span class="sched-empty">—</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="margin-top:16px;display:flex;gap:16px;flex-wrap:wrap">
+          <div style="font-size:12px;color:var(--gray)"><span class="sched-morning">Mañana</span> = Técnica Fundamental</div>
+          <div style="font-size:12px;color:var(--gray)"><span class="sched-afternoon">Tarde</span> = Sparring Abierto</div>
+          <div style="font-size:12px;color:var(--gray)"><span class="sched-night">Noche</span> = Entrenamiento Avanzado</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <div class="fixed-wa">
+    <a id="wa-btn-school" class="btn-wa" href="#" target="_blank" rel="noopener noreferrer">
+      <span style="font-size:18px">📲</span> Contactar por WhatsApp
+    </a>
+  </div>
+</div>
+
+<!-- ===== MODAL: PUBLICAR ENTRENADOR / ESCUELA ===== -->
+<div class="modal-overlay" id="publishModal" data-action="closePublishModalOverlay">
+  <div class="modal" style="max-height:90vh;overflow-y:auto">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+      <div class="modal-title" id="publishModalTitle">Publicar</div>
+      <button data-action="closePublishModal" style="background:none;border:none;color:var(--gray);font-size:20px;cursor:pointer;padding:4px;line-height:1">×</button>
+    </div>
+    <div id="publishForm"></div>
+  </div>
+</div>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+
+      <!-- Marca -->
+      <div class="footer-brand">
+        <div class="footer-logo">DOJ<span>X</span></div>
+        <p class="footer-tagline">La plataforma de artes marciales más completa de Colombia. Conectamos escuelas, entrenadores y eventos con tu pasión.</p>
+        <div class="footer-socials">
+          <a class="social-btn" href="#" title="Instagram">📸</a>
+          <a class="social-btn" href="#" title="TikTok">🎵</a>
+          <a class="social-btn" href="#" title="WhatsApp">💬</a>
+          <a class="social-btn" href="#" title="YouTube">▶️</a>
+        </div>
+      </div>
+
+      <!-- Plataforma -->
+      <div>
+        <div class="footer-col-title">Plataforma</div>
+        <ul class="footer-links">
+          <li><span data-action="goTo" data-target="schools">Escuelas</span></li>
+          <li><span data-action="goTo" data-target="trainers">Entrenadores</span></li>
+          <li><span data-action="goTo" data-target="events">Eventos</span></li>
+          <li><span data-action="goTo" data-target="plans">Planes y precios</span></li>
+          <li><span data-action="goTo" data-target="login">Registrarse</span></li>
+        </ul>
+      </div>
+
+      <!-- Ciudades -->
+      <div>
+        <div class="footer-col-title">Ciudades</div>
+        <ul class="footer-links">
+          <li><span>Cali</span></li>
+          <li><span>Bogotá</span></li>
+          <li><span style="opacity:0.4">Medellín — pronto</span></li>
+          <li><span style="opacity:0.4">Barranquilla — pronto</span></li>
+        </ul>
+      </div>
+
+      <!-- Legal -->
+      <div>
+        <div class="footer-col-title">Legal</div>
+        <ul class="footer-links">
+          <li><a href="#">Términos de uso</a></li>
+          <li><a href="#">Privacidad</a></li>
+          <li><a href="#">Cookies</a></li>
+          <li><a href="#">Soporte</a></li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="footer-bottom">
+      <span class="footer-copy">© 2025 DOJX. Todos los derechos reservados.</span>
+      <div class="footer-cities">
+        <span class="footer-city-dot"></span> Cali
+        <span class="footer-city-dot"></span> Bogotá
+      </div>
+      <div class="footer-legal">
+        <a href="#">Términos</a>
+                <a href="#">Privacidad</a>
+        <a href="#">Cookies</a>
+      </div>
+    </div>
+
+  </div>
+</footer>
+
+<!-- JavaScript -- al final del body para que el DOM esté disponible -->
+
+<!-- Wompi Widget SDK -->
+<script src="https://checkout.wompi.co/widget.js"></script>
+
+<!-- Modal resultado de pago -->
+<div class="modal-overlay" id="pagoModal">
+  <div class="modal" style="max-width:400px;text-align:center">
+    <div id="pagoModal-icon" style="font-size:56px;margin-bottom:16px">⏳</div>
+    <div id="pagoModal-title" class="modal-title" style="justify-content:center;margin-bottom:8px">Procesando pago...</div>
+    <div id="pagoModal-sub" style="font-size:14px;color:var(--gray);margin-bottom:24px">Por favor espera un momento</div>
+    <button class="btn-red" style="width:100%;justify-content:center" onclick="closePagoModal()">Cerrar</button>
+  </div>
+</div>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

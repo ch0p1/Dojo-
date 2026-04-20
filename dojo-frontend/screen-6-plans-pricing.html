@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DOJX | Encuentra Tu Arte</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="dojo-plus-styles.css">
+</head>
+\1
+
+<!-- ===== NAVIGATION ===== -->
+<nav>
+  <div class="nav-inner">
+    <div class="nav-logo"><a href="screen-1-home-search.html">DOJ<span>X</span></a></div>
+    <ul class="nav-links">
+      <li><a href="screen-1-home-search.html">Inicio</a></li>
+      <li><a href="screen-escuelas-listado.html">Escuelas</a></li>
+      <li><a href="screen-entrenadores-listado.html">Entrenadores</a></li>
+      <li><a href="screen-eventos-listado.html">Eventos</a></li>
+      <li class="active">Planes</li>
+
+    </ul>
+    <div class="nav-right">
+      <div id="navAuth">
+        <button class="btn-login" style="padding:0; overflow:hidden;"><div style="padding:8px 18px;"><a href="screen-5-login-register.html" style="color:inherit; text-decoration:none; display:block;">Ingresar</a></div></button>
+      </div>
+      <!-- Hamburguesa — solo visible en mobile -->
+      <button class="nav-hamburger" id="hamburger" data-action="toggleMobileMenu" aria-label="Abrir menú">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- ===== MOBILE MENU ===== -->
+<div class="nav-mobile-menu" id="mobileMenu">
+  <ul class="nav-mobile-links">
+    <li><a href="screen-1-home-search.html">Inicio</a></li>
+    <li><a href="screen-escuelas-listado.html">Escuelas</a></li>
+    <li><a href="screen-entrenadores-listado.html">Entrenadores</a></li>
+    <li><a href="screen-eventos-listado.html">Eventos</a></li>
+    <li class="active">Planes</li>
+
+  </ul>
+  <div class="nav-mobile-footer">
+    <span class="nav-mobile-city">📍 Cali · Bogotá</span>
+    <button class="btn-login" style="padding:0; overflow:hidden;"><div style="padding:8px 18px;"><a href="screen-5-login-register.html" style="color:inherit; text-decoration:none; display:block;">Ingresar</a></div></button>
+  </div>
+</div>
+
+
+
+
+<!-- ===================================================
+     SCREEN 6 — PLANS / PRICING
+     =================================================== -->
+<div class="screen" id="screen-plans">
+  <div style="padding:60px 24px 100px;max-width:1060px;margin:0 auto">
+
+    <div style="text-align:center;margin-bottom:56px">
+      
+      <h1 style="font-size:clamp(42px,6vw,70px);margin-bottom:12px">ELIGE TU PLAN</h1>
+      <p style="font-size:16px;color:var(--gray);max-width:400px;margin:0 auto">Haz crecer tu escuela o perfil de entrenador en la plataforma #1 de artes marciales en Colombia</p>
+    </div>
+
+    <div class="pricing-grid">
+      <!-- Basic Personalizado -->
+      <div class="price-card">
+        <div class="price-name">BASIC PERSONALIZADO</div>
+        <div style="font-size:12px;color:var(--gray);margin-bottom:4px">Para entrenadores independientes</div>
+        <div class="price-amount">$50.000</div>
+        <div class="price-period">COP / mes</div>
+        <ul class="price-features">
+          <li>Perfil de entrenador personalizado</li>
+          <li>Aparece en búsquedas</li>
+          <li>Contacto directo por WhatsApp</li>
+          <li>Horarios visibles a estudiantes</li>
+        </ul>
+        <button class="btn-outline-red" style="width:100%;text-align:center;padding:14px"
+          onclick="iniciarPago('basic-personal')">Comenzar</button>
+      </div>
+
+      <!-- Basic Escuela (Popular) -->
+      <div class="price-card popular">
+        <div class="popular-badge">MÁS POPULAR</div>
+        <div class="price-name" style="color:var(--white)">BASIC ESCUELA</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.7);margin-bottom:4px">Para academias y dojos</div>
+        <div class="price-amount" style="color:var(--white)">$70.000</div>
+        <div class="price-period" style="color:rgba(255,255,255,0.7)">COP / mes</div>
+        <ul class="price-features" style="color:var(--white)">
+          <li>Todo lo del plan anterior</li>
+          <li>Perfil completo de escuela</li>
+          <li>Galería de instalaciones</li>
+          <li>2 entrenadores incluidos</li>
+          <li>Horario semanal completo</li>
+        </ul>
+        <button style="width:100%;padding:14px;border-radius:4px;background:var(--white);color:var(--red);border:none;font-family:'Outfit',sans-serif;font-weight:700;font-size:14px;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;transition:opacity 0.2s"
+          onclick="iniciarPago('basic-escuela')"
+          onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">Comenzar</button>
+      </div>
+
+      <!-- Premium -->
+      <div class="price-card premium">
+        <div class="price-name" style="color:var(--gold)">PREMIUM</div>
+        <div style="font-size:12px;color:var(--gray);margin-bottom:4px">Máxima visibilidad</div>
+        <div class="price-amount" style="color:var(--gold)">$100.000</div>
+        <div class="price-period">COP / mes</div>
+        <ul class="price-features">
+          <li>Todo lo del Basic Escuela</li>
+          <li>Primero en búsquedas</li>
+          <li>Etiqueta "Recomendado"</li>
+          <li>Destacado en sección principal</li>
+          <li>Mayor visibilidad en eventos</li>
+        </ul>
+        <button style="width:100%;padding:14px;border-radius:4px;background:transparent;color:var(--gold);border:1.5px solid var(--gold);font-family:'Outfit',sans-serif;font-weight:700;font-size:14px;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;transition:all 0.2s"
+          onclick="iniciarPago('premium')"
+          onmouseover="this.style.background='rgba(212,172,13,0.15)'" onmouseout="this.style.background='transparent'">Comenzar</button>
+      </div>
+    </div>
+
+    <p style="text-align:center;color:var(--gray);font-size:13px;margin-top:32px">
+      🔒 Todos los planes con facturación mensual. Cancela cuando quieras.
+    </p>
+
+    <!-- Comparison Table -->
+    <div style="margin-top:56px;background:var(--card-bg);border-radius:12px;border:1px solid rgba(255,255,255,0.06);overflow:hidden">
+      <div style="padding:20px 24px;border-bottom:1px solid rgba(255,255,255,0.06)"><h2 style="font-size:22px">COMPARAR PLANES</h2></div>
+      <div style="overflow-x:auto">
+        <table style="width:100%;border-collapse:collapse">
+          <thead>
+            <tr>
+              <th style="padding:16px 24px;font-size:12px;color:var(--gray);font-weight:600;letter-spacing:0.06em;text-transform:uppercase;text-align:left;border-bottom:1px solid rgba(255,255,255,0.06)">Característica</th>
+              <th style="padding:16px;font-size:13px;font-family:'Bebas Neue',sans-serif;letter-spacing:0.05em;border-bottom:1px solid rgba(255,255,255,0.06);text-align:center">Basic<br>Personal</th>
+              <th style="padding:16px;font-size:13px;font-family:'Bebas Neue',sans-serif;color:var(--red);letter-spacing:0.05em;border-bottom:1px solid rgba(255,255,255,0.06);text-align:center">Basic<br>Escuela</th>
+              <th style="padding:16px;font-size:13px;font-family:'Bebas Neue',sans-serif;color:var(--gold);letter-spacing:0.05em;border-bottom:1px solid rgba(255,255,255,0.06);text-align:center">Premium</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid rgba(255,255,255,0.04)">
+              <td style="padding:14px 24px;font-size:13px">Perfil visible en búsquedas</td>
+              <td style="text-align:center">✅</td><td style="text-align:center">✅</td><td style="text-align:center">✅</td>
+            </tr>
+            <tr style="border-bottom:1px solid rgba(255,255,255,0.04)">
+              <td style="padding:14px 24px;font-size:13px">Galería de instalaciones</td>
+              <td style="text-align:center;color:var(--gray2)">—</td><td style="text-align:center">✅</td><td style="text-align:center">✅</td>
+            </tr>
+            <tr style="border-bottom:1px solid rgba(255,255,255,0.04)">
+              <td style="padding:14px 24px;font-size:13px">Primer lugar en búsquedas</td>
+              <td style="text-align:center;color:var(--gray2)">—</td><td style="text-align:center;color:var(--gray2)">—</td><td style="text-align:center;color:var(--gold)">✅</td>
+            </tr>
+            <tr>
+              <td style="padding:14px 24px;font-size:13px">Etiqueta "Recomendado"</td>
+              <td style="text-align:center;color:var(--gray2)">—</td><td style="text-align:center;color:var(--gray2)">—</td><td style="text-align:center;color:var(--gold)">✅</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== MODAL: PUBLICAR ENTRENADOR / ESCUELA ===== -->
+<div class="modal-overlay" id="publishModal" data-action="closePublishModalOverlay">
+  <div class="modal" style="max-height:90vh;overflow-y:auto">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+      <div class="modal-title" id="publishModalTitle">Publicar</div>
+      <button data-action="closePublishModal" style="background:none;border:none;color:var(--gray);font-size:20px;cursor:pointer;padding:4px;line-height:1">×</button>
+    </div>
+    <div id="publishForm"></div>
+  </div>
+</div>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+
+      <!-- Marca -->
+      <div class="footer-brand">
+        <div class="footer-logo">DOJ<span>X</span></div>
+        <p class="footer-tagline">La plataforma de artes marciales más completa de Colombia. Conectamos escuelas, entrenadores y eventos con tu pasión.</p>
+        <div class="footer-socials">
+          <a class="social-btn" href="#" title="Instagram">📸</a>
+          <a class="social-btn" href="#" title="TikTok">🎵</a>
+          <a class="social-btn" href="#" title="WhatsApp">💬</a>
+          <a class="social-btn" href="#" title="YouTube">▶️</a>
+        </div>
+      </div>
+
+      <!-- Plataforma -->
+      <div>
+        <div class="footer-col-title">Plataforma</div>
+        <ul class="footer-links">
+          <li><span data-action="goTo" data-target="schools">Escuelas</span></li>
+          <li><span data-action="goTo" data-target="trainers">Entrenadores</span></li>
+          <li><span data-action="goTo" data-target="events">Eventos</span></li>
+          <li><span data-action="goTo" data-target="plans">Planes y precios</span></li>
+          <li><span data-action="goTo" data-target="login">Registrarse</span></li>
+        </ul>
+      </div>
+
+      <!-- Ciudades -->
+      <div>
+        <div class="footer-col-title">Ciudades</div>
+        <ul class="footer-links">
+          <li><span>Cali</span></li>
+          <li><span>Bogotá</span></li>
+          <li><span style="opacity:0.4">Medellín — pronto</span></li>
+          <li><span style="opacity:0.4">Barranquilla — pronto</span></li>
+        </ul>
+      </div>
+
+      <!-- Legal -->
+      <div>
+        <div class="footer-col-title">Legal</div>
+        <ul class="footer-links">
+          <li><a href="#">Términos de uso</a></li>
+          <li><a href="#">Privacidad</a></li>
+          <li><a href="#">Cookies</a></li>
+          <li><a href="#">Soporte</a></li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="footer-bottom">
+      <span class="footer-copy">© 2025 DOJX. Todos los derechos reservados.</span>
+      <div class="footer-cities">
+        <span class="footer-city-dot"></span> Cali
+        <span class="footer-city-dot"></span> Bogotá
+      </div>
+      <div class="footer-legal">
+        <a href="#">Términos</a>
+                <a href="#">Privacidad</a>
+        <a href="#">Cookies</a>
+      </div>
+    </div>
+
+  </div>
+</footer>
+
+<!-- JavaScript -- al final del body para que el DOM esté disponible -->
+
+<!-- Wompi Widget SDK -->
+<script src="https://checkout.wompi.co/widget.js"></script>
+
+<!-- Modal resultado de pago -->
+<div class="modal-overlay" id="pagoModal">
+  <div class="modal" style="max-width:400px;text-align:center">
+    <div id="pagoModal-icon" style="font-size:56px;margin-bottom:16px">⏳</div>
+    <div id="pagoModal-title" class="modal-title" style="justify-content:center;margin-bottom:8px">Procesando pago...</div>
+    <div id="pagoModal-sub" style="font-size:14px;color:var(--gray);margin-bottom:24px">Por favor espera un momento</div>
+    <button class="btn-red" style="width:100%;justify-content:center" onclick="closePagoModal()">Cerrar</button>
+  </div>
+</div>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

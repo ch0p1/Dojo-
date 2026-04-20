@@ -21,7 +21,7 @@
       <li><a href="screen-1-home-search.html">Inicio</a></li>
       <li><a href="screen-escuelas-listado.html">Escuelas</a></li>
       <li><a href="screen-entrenadores-listado.html">Entrenadores</a></li>
-      <li><a href="screen-eventos-listado.html">Eventos</a></li>
+      <li class="active">Eventos</li>
       <li><a href="screen-6-plans-pricing.html">Planes</a></li>
 
     </ul>
@@ -45,7 +45,7 @@
     <li><a href="screen-1-home-search.html">Inicio</a></li>
     <li><a href="screen-escuelas-listado.html">Escuelas</a></li>
     <li><a href="screen-entrenadores-listado.html">Entrenadores</a></li>
-    <li><a href="screen-eventos-listado.html">Eventos</a></li>
+    <li class="active">Eventos</li>
     <li><a href="screen-6-plans-pricing.html">Planes</a></li>
 
   </ul>
@@ -58,29 +58,99 @@
 
 
 
+<!-- ===================================================
+     SCREEN — EVENTOS (listado)
+     =================================================== -->
+<div class="screen" id="screen-events">
 
+  <div class="listing-header">
+    <div class="listing-header-inner">
+      <h1 class="listing-title">EVENTOS</h1>
+      <p class="listing-subtitle">Torneos y competencias de artes marciales</p>
+    </div>
+  </div>
 
-<!-- INCLUDE: screen-1-home-search.html -->
+  <div class="listing-filters">
+    <span class="filter-label" style="min-width:auto;margin-right:4px">Ciudad</span>
+    <button class="pill active" data-group="ev-ciudad" data-value="todas"  data-action="filterPill" data-group="ev-ciudad" data-list="events" data-key="ev-ciudad">Todas</button>
+    <button class="pill"        data-group="ev-ciudad" data-value="cali"   data-action="filterPill" data-group="ev-ciudad" data-list="events" data-key="ev-ciudad">Cali</button>
+    <button class="pill"        data-group="ev-ciudad" data-value="bogota" data-action="filterPill" data-group="ev-ciudad" data-list="events" data-key="ev-ciudad">Bogotá</button>
+    <span class="filter-label" style="min-width:auto;margin-left:12px;margin-right:4px">Disciplina</span>
+    <button class="pill active" data-group="ev-disc" data-value="todas"     data-action="filterPill" data-group="ev-disc" data-list="events" data-key="ev-disc">Todas</button>
+    <button class="pill"        data-group="ev-disc" data-value="bjj"       data-action="filterPill" data-group="ev-disc" data-list="events" data-key="ev-disc">BJJ</button>
+    <button class="pill"        data-group="ev-disc" data-value="boxeo"     data-action="filterPill" data-group="ev-disc" data-list="events" data-key="ev-disc">Boxeo</button>
+    <button class="pill"        data-group="ev-disc" data-value="muay-thai" data-action="filterPill" data-group="ev-disc" data-list="events" data-key="ev-disc">Muay Thai</button>
+    <button class="pill"        data-group="ev-disc" data-value="mma"       data-action="filterPill" data-group="ev-disc" data-list="events" data-key="ev-disc">MMA</button>
+    <button class="pill"        data-group="ev-disc" data-value="judo"      data-action="filterPill" data-group="ev-disc" data-list="events" data-key="ev-disc">Judo</button>
+  </div>
 
-<!-- INCLUDE: screen-escuelas-listado.html -->
+  <div class="listing-grid-wrap">
+    <div class="listing-count" id="count-events"><strong>5</strong> eventos encontrados</div>
+    <div class="listing-events-grid" id="grid-events">
 
-<!-- INCLUDE: screen-entrenadores-listado.html -->
+      <div class="card event-card"
+        data-city="cali" data-disciplines="bjj"
+        data-action="goTo" data-target="events">
+        <div class="event-poster">🏆</div>
+        <div class="event-card-body">
+          <div class="event-name">Copa Valle BJJ Open 2025</div>
+          <span class="tag">BJJ · Gi</span>
+          <div class="event-date">📅 15 Feb · Cali</div>
+        </div>
+      </div>
 
-<!-- INCLUDE: screen-eventos-listado.html -->
+      <div class="card event-card"
+        data-city="bogota" data-disciplines="boxeo"
+        data-action="goTo" data-target="events">
+        <div class="event-poster" style="background:linear-gradient(160deg,#0a1a0a,#0a2a1a)">🥊</div>
+        <div class="event-card-body">
+          <div class="event-name">Noche de Boxeo Colombia</div>
+          <span class="tag">Boxeo</span>
+          <div class="event-date">📅 22 Feb · Bogotá</div>
+        </div>
+      </div>
 
-<!-- INCLUDE: screen-2-school-detail.html -->
+      <div class="card event-card"
+        data-city="cali" data-disciplines="muay-thai"
+        data-action="goTo" data-target="events">
+        <div class="event-poster" style="background:linear-gradient(160deg,#1a0a0a,#2a1a0a)">🦵</div>
+        <div class="event-card-body">
+          <div class="event-name">Muay Thai Gran Prix</div>
+          <span class="tag">Muay Thai</span>
+          <div class="event-date">📅 8 Mar · Cali</div>
+        </div>
+      </div>
 
-<!-- INCLUDE: screen-3-trainer-detail.html -->
+      <div class="card event-card"
+        data-city="bogota" data-disciplines="mma"
+        data-action="goTo" data-target="events">
+        <div class="event-poster" style="background:linear-gradient(160deg,#0a0a1a,#1a0a2a)">⚔️</div>
+        <div class="event-card-body">
+          <div class="event-name">MMA Showdown Bogotá</div>
+          <span class="tag">MMA</span>
+          <div class="event-date">📅 20 Mar · Bogotá</div>
+        </div>
+      </div>
 
-<!-- INCLUDE: screen-4-event-detail.html -->
+      <div class="card event-card"
+        data-city="cali" data-disciplines="judo"
+        data-action="goTo" data-target="events">
+        <div class="event-poster" style="background:linear-gradient(160deg,#1a1a0a,#2a1a0a)">🎌</div>
+        <div class="event-card-body">
+          <div class="event-name">Torneo Nacional Judo</div>
+          <span class="tag">Judo</span>
+          <div class="event-date">📅 5 Abr · Cali</div>
+        </div>
+      </div>
 
-<!-- INCLUDE: screen-5-login-register.html -->
-
-<!-- INCLUDE: screen-6-plans-pricing.html -->
-
-<!-- INCLUDE: screen-perfil-de-usuario.html -->
-
-<!-- INCLUDE: screen-panel-admin.html -->
+    </div>
+    <div class="listing-empty" id="empty-events">
+      <div class="listing-empty-icon">🏆</div>
+      <div class="listing-empty-title">Sin eventos</div>
+      <div class="listing-empty-sub">No hay eventos que coincidan con los filtros seleccionados.</div>
+    </div>
+  </div>
+</div>
 
 <!-- ===== MODAL: PUBLICAR ENTRENADOR / ESCUELA ===== -->
 <div class="modal-overlay" id="publishModal" data-action="closePublishModalOverlay">

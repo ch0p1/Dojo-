@@ -20,7 +20,7 @@
     <ul class="nav-links">
       <li><a href="screen-1-home-search.html">Inicio</a></li>
       <li><a href="screen-escuelas-listado.html">Escuelas</a></li>
-      <li><a href="screen-entrenadores-listado.html">Entrenadores</a></li>
+      <li class="active"><a href="screen-entrenadores-listado.html">Entrenadores</a></li>
       <li><a href="screen-eventos-listado.html">Eventos</a></li>
       <li><a href="screen-6-plans-pricing.html">Planes</a></li>
 
@@ -44,7 +44,7 @@
   <ul class="nav-mobile-links">
     <li><a href="screen-1-home-search.html">Inicio</a></li>
     <li><a href="screen-escuelas-listado.html">Escuelas</a></li>
-    <li><a href="screen-entrenadores-listado.html">Entrenadores</a></li>
+    <li class="active"><a href="screen-entrenadores-listado.html">Entrenadores</a></li>
     <li><a href="screen-eventos-listado.html">Eventos</a></li>
     <li><a href="screen-6-plans-pricing.html">Planes</a></li>
 
@@ -58,29 +58,87 @@
 
 
 
+<!-- ===================================================
+     SCREEN 3 — TRAINER DETAIL
+     =================================================== -->
+<div class="screen" id="screen-trainer">
+  <div class="trainer-hero" style="background:radial-gradient(ellipse at 50% 0%, rgba(192,57,43,0.12) 0%, transparent 60%)">
+    <div class="trainer-hero-photo">🥊</div>
+    <h1 class="trainer-hero-name">JUAN RODRÍGUEZ</h1>
+    <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:20px">
+      <span class="tag">Boxeo</span><span class="tag">Muay Thai</span><span class="tag">MMA</span>
+    </div>
+    <p style="max-width:500px;margin:0 auto;color:rgba(255,255,255,0.75);font-size:15px;line-height:1.7">
+      Entrenador certificado con experiencia en alto rendimiento. Campeón departamental de boxeo 3 veces consecutivas.
+    </p>
+  </div>
 
+  <div class="content-wrap">
+    <button class="btn-back" data-action="goTo" data-target="trainers">← Entrenadores</button>
+    <div class="section-card">
+      <div class="section-card-title">⚡ Experiencia</div>
+      <div style="display:flex;gap:16px;margin-bottom:20px;flex-wrap:wrap">
+        <div class="badge">🗓 8 años entrenando</div>
+        <div class="badge">👥 +200 atletas formados</div>
+        <div class="badge">🌎 Certificado AIBA</div>
+      </div>
+      <div class="exp-bar-wrap">
+        <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--gray);margin-bottom:4px"><span>Boxeo Técnico</span><span>Experto</span></div>
+        <div class="exp-bar"><div class="exp-bar-fill" style="width:95%"></div></div>
+      </div>
+      <div class="exp-bar-wrap" style="margin-top:12px">
+        <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--gray);margin-bottom:4px"><span>Muay Thai</span><span>Avanzado</span></div>
+        <div class="exp-bar"><div class="exp-bar-fill" style="width:80%"></div></div>
+      </div>
+      <div class="exp-bar-wrap" style="margin-top:12px">
+        <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--gray);margin-bottom:4px"><span>Preparación Física</span><span>Avanzado</span></div>
+        <div class="exp-bar"><div class="exp-bar-fill" style="width:85%"></div></div>
+      </div>
+      <div class="divider"></div>
+      <div class="achievement-item">
+        <span class="achievement-icon">🥇</span>
+        <div><div style="font-weight:600">Campeón Departamental Valle · 2022, 2023, 2024</div><div style="font-size:12px;color:var(--gray)">Boxeo Amateur · Peso Welter</div></div>
+      </div>
+      <div class="achievement-item" style="border-bottom:none">
+        <span class="achievement-icon">🏅</span>
+        <div><div style="font-weight:600">Selección Colombia Amateur · 2023</div><div style="font-size:12px;color:var(--gray)">Juegos Bolivarianos · Representante</div></div>
+      </div>
+    </div>
 
-<!-- INCLUDE: screen-1-home-search.html -->
+    <div class="section-card">
+      <div class="section-card-title">📅 Horarios Disponibles</div>
+      <p style="font-size:13px;color:var(--gray);margin-bottom:16px">Selecciona un bloque disponible para agendar tu clase</p>
+      <div class="avail-grid">
+        <div class="avail-header"></div>
+        <div class="avail-header">LUN</div><div class="avail-header">MAR</div><div class="avail-header">MIÉ</div>
+        <div class="avail-header">JUE</div><div class="avail-header">VIE</div><div class="avail-header">SÁB</div>
+        <div class="avail-label">🌅 7AM</div>
+        <div class="avail-slot free"></div><div class="avail-slot busy"></div><div class="avail-slot free"></div>
+        <div class="avail-slot busy"></div><div class="avail-slot free"></div><div class="avail-slot free"></div>
+        <div class="avail-label">☀️ 3PM</div>
+        <div class="avail-slot busy"></div><div class="avail-slot free"></div><div class="avail-slot busy"></div>
+        <div class="avail-slot free"></div><div class="avail-slot busy"></div><div class="avail-slot free"></div>
+        <div class="avail-label">🌙 7PM</div>
+        <div class="avail-slot free"></div><div class="avail-slot free"></div><div class="avail-slot busy"></div>
+        <div class="avail-slot free"></div><div class="avail-slot free"></div><div class="avail-slot busy"></div>
+      </div>
+      <div style="margin-top:14px;display:flex;gap:16px;font-size:12px;color:var(--gray)">
+        <div style="display:flex;align-items:center;gap:6px"><div style="width:12px;height:12px;border-radius:2px;background:rgba(192,57,43,0.3);border:1px solid var(--red)"></div> Disponible</div>
+        <div style="display:flex;align-items:center;gap:6px"><div style="width:12px;height:12px;border-radius:2px;background:var(--black3);border:1px solid var(--gray2)"></div> Ocupado</div>
+      </div>
+    </div>
 
-<!-- INCLUDE: screen-escuelas-listado.html -->
+    <div style="text-align:center;margin-top:8px;font-size:14px;color:var(--gray)">
+      💵 Desde <strong style="color:var(--white)">$80.000 COP</strong> / sesión
+    </div>
+  </div>
 
-<!-- INCLUDE: screen-entrenadores-listado.html -->
-
-<!-- INCLUDE: screen-eventos-listado.html -->
-
-<!-- INCLUDE: screen-2-school-detail.html -->
-
-<!-- INCLUDE: screen-3-trainer-detail.html -->
-
-<!-- INCLUDE: screen-4-event-detail.html -->
-
-<!-- INCLUDE: screen-5-login-register.html -->
-
-<!-- INCLUDE: screen-6-plans-pricing.html -->
-
-<!-- INCLUDE: screen-perfil-de-usuario.html -->
-
-<!-- INCLUDE: screen-panel-admin.html -->
+  <div class="fixed-wa">
+    <a id="wa-btn-trainer" class="btn-wa" href="#" target="_blank" rel="noopener noreferrer">
+      <span style="font-size:18px">📲</span> Agendar con WhatsApp
+    </a>
+  </div>
+</div>
 
 <!-- ===== MODAL: PUBLICAR ENTRENADOR / ESCUELA ===== -->
 <div class="modal-overlay" id="publishModal" data-action="closePublishModalOverlay">

@@ -21,7 +21,7 @@
       <li><a href="screen-1-home-search.html">Inicio</a></li>
       <li><a href="screen-escuelas-listado.html">Escuelas</a></li>
       <li><a href="screen-entrenadores-listado.html">Entrenadores</a></li>
-      <li><a href="screen-eventos-listado.html">Eventos</a></li>
+      <li class="active"><a href="screen-eventos-listado.html">Eventos</a></li>
       <li><a href="screen-6-plans-pricing.html">Planes</a></li>
 
     </ul>
@@ -45,7 +45,7 @@
     <li><a href="screen-1-home-search.html">Inicio</a></li>
     <li><a href="screen-escuelas-listado.html">Escuelas</a></li>
     <li><a href="screen-entrenadores-listado.html">Entrenadores</a></li>
-    <li><a href="screen-eventos-listado.html">Eventos</a></li>
+    <li class="active"><a href="screen-eventos-listado.html">Eventos</a></li>
     <li><a href="screen-6-plans-pricing.html">Planes</a></li>
 
   </ul>
@@ -58,29 +58,82 @@
 
 
 
+<!-- ===================================================
+     SCREEN 4 — EVENT DETAIL
+     =================================================== -->
+<div class="screen" id="screen-event">
+  <div style="max-width:480px;margin:0 auto;padding:24px 24px 0">
+    <div class="event-poster-detail" style="width:100%;aspect-ratio:3/4;border-radius:12px;overflow:hidden;background:linear-gradient(160deg,#1a0a0a,#2a0a0a,#0a0a1a);display:flex;align-items:center;justify-content:center;font-size:120px;border:1px solid rgba(192,57,43,0.2);box-shadow:0 8px 48px var(--red-glow)">🏆</div>
+  </div>
 
+  <div class="content-wrap">
+    <button class="btn-back" data-action="goTo" data-target="events">← Eventos</button>
+    <h1 class="event-detail-title" style="font-size:clamp(32px,5vw,48px);margin-bottom:10px">COPA VALLE BJJ OPEN 2025</h1>
+    <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;align-items:center">
+      <span class="tag">BJJ · Gi</span><span class="tag">No-Gi</span><span class="tag gold">Torneo Oficial</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px">
+      <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--red),#7b1a12);display:flex;align-items:center;justify-content:center;font-size:18px;border:2px solid rgba(192,57,43,0.4)">🏢</div>
+      <div>
+        <div style="font-size:11px;color:var(--gray);text-transform:uppercase;font-weight:600;letter-spacing:0.06em">Organizado por</div>
+        <div class="event-detail-org" style="font-size:14px;font-weight:700">Federación Colombiana de BJJ</div>
+      </div>
+    </div>
 
-<!-- INCLUDE: screen-1-home-search.html -->
+    <div class="section-card">
+      <div class="section-card-title">📋 Detalles del Evento</div>
+      <div class="detail-info-item event-detail-item">
+        <span class="detail-info-icon">📍</span>
+        <div><div class="detail-info-label">Ubicación</div><div class="event-detail-val">Coliseo El Pueblo, Cali — Valle del Cauca</div></div>
+      </div>
+      <div class="detail-info-item event-detail-item">
+        <span class="detail-info-icon">📅</span>
+        <div><div class="detail-info-label">Fecha y Hora</div><div class="event-detail-val">Sábado, 15 de Febrero 2025 · 8:00 AM – 6:00 PM</div></div>
+      </div>
+      <div class="detail-info-item event-detail-item">
+        <span class="detail-info-icon">🥋</span>
+        <div><div class="detail-info-label">Disciplina</div><div class="event-detail-val">BJJ · Gi y No-Gi · Todas las categorías</div></div>
+      </div>
+      <div class="detail-info-item event-detail-item" style="border-bottom:none">
+        <span class="detail-info-icon">🏢</span>
+        <div><div class="detail-info-label">Organizado por</div><div class="event-detail-val">Federación Colombiana de Jiu-Jitsu Brasileño (FCBJJ)</div></div>
+      </div>
+    </div>
 
-<!-- INCLUDE: screen-escuelas-listado.html -->
+    <div class="section-card">
+      <div class="section-card-title">📜 Reglamento</div>
+      <p style="font-size:14px;color:rgba(255,255,255,0.75);margin-bottom:16px;line-height:1.6">Descarga el reglamento oficial del torneo con todas las categorías y normas de competencia.</p>
+      <a id="reglamento-btn" href="#" target="_blank" rel="noopener noreferrer"
+         class="btn-outline-red" style="display:inline-flex;align-items:center;gap:10px;text-decoration:none;opacity:0.5;pointer-events:none">
+        <span style="font-size:18px">📄</span> Descargar Reglamento PDF
+      </a>
+    </div>
 
-<!-- INCLUDE: screen-entrenadores-listado.html -->
+    <div class="section-card">
+      <div class="section-card-title">✍️ Inscripción</div>
+      <div style="display:flex;gap:16px;flex-wrap:wrap">
+        <div style="text-align:center;flex:1;min-width:100px">
+          <div style="font-size:24px;font-family:'Bebas Neue',sans-serif;color:var(--red)">247</div>
+          <div style="font-size:12px;color:var(--gray)">Inscritos</div>
+        </div>
+        <div style="text-align:center;flex:1;min-width:100px">
+          <div style="font-size:24px;font-family:'Bebas Neue',sans-serif;color:var(--gold)">$80.000</div>
+          <div style="font-size:12px;color:var(--gray)">COP por categoría</div>
+        </div>
+        <div style="text-align:center;flex:1;min-width:100px">
+          <div style="font-size:24px;font-family:'Bebas Neue',sans-serif;color:var(--wa)">5</div>
+          <div style="font-size:12px;color:var(--gray)">Días restantes</div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-<!-- INCLUDE: screen-eventos-listado.html -->
-
-<!-- INCLUDE: screen-2-school-detail.html -->
-
-<!-- INCLUDE: screen-3-trainer-detail.html -->
-
-<!-- INCLUDE: screen-4-event-detail.html -->
-
-<!-- INCLUDE: screen-5-login-register.html -->
-
-<!-- INCLUDE: screen-6-plans-pricing.html -->
-
-<!-- INCLUDE: screen-perfil-de-usuario.html -->
-
-<!-- INCLUDE: screen-panel-admin.html -->
+  <div class="fixed-wa">
+    <a id="wa-btn-event" class="btn-wa" href="#" target="_blank" rel="noopener noreferrer">
+      <span style="font-size:18px">📲</span> Contactar al Organizador
+    </a>
+  </div>
+</div>
 
 <!-- ===== MODAL: PUBLICAR ENTRENADOR / ESCUELA ===== -->
 <div class="modal-overlay" id="publishModal" data-action="closePublishModalOverlay">

@@ -7,18 +7,31 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- ── users ────────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS users (
-  id            UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  email         VARCHAR(255) UNIQUE NOT NULL,
-  password_hash VARCHAR(255) NOT NULL,
-  nombre        VARCHAR(150) NOT NULL,
-  ciudad        VARCHAR(100),
-  disciplinas   TEXT[]    DEFAULT '{}',
-  horario_pref  VARCHAR(50),
-  plan_activo   VARCHAR(50),
-  plan_expira   TIMESTAMPTZ,
-  activo        BOOLEAN DEFAULT TRUE,
-  created_at    TIMESTAMPTZ DEFAULT NOW()
+  id                UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  email             VARCHAR(255) UNIQUE NOT NULL,
+  password_hash     VARCHAR(255) NOT NULL,
+  nombre            VARCHAR(150) NOT NULL,
+  ciudad            VARCHAR(100),
+  disciplinas       TEXT[]    DEFAULT '{}',
+  horario_pref      VARCHAR(50),
+  plan_activo       VARCHAR(50),
+  plan_expira       TIMESTAMPTZ,
+  email_verificado  BOOLEAN DEFAULT FALSE,
+  activo            BOOLEAN DEFAULT TRUE,
+  created_at        TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- ── verification_tokens ──────────────────────────────────────
+CREATE TABLE IF NOT EXISTS verification_tokens (
+  id         UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id    UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  token      VARCHAR(128) UNIQUE NOT NULL,
+  expires_at TIMESTAMPTZ NOT NULL,
+  usado      BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_vtokens_token   ON verification_tokens(token);
+CREATE INDEX IF NOT EXISTS idx_vtokens_user_id ON verification_tokens(user_id);
 
 -- ── subscriptions ────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS subscriptions (
@@ -128,6 +141,10 @@ CREATE INDEX IF NOT EXISTS idx_reviews_school_id   ON reviews(school_id)  WHERE 
 CREATE INDEX IF NOT EXISTS idx_reviews_trainer_id  ON reviews(trainer_id) WHERE activo = TRUE;
 
 -- ── Migraciones seguras para BDs existentes ──────────────────
+ALTER TABLE users ADD COLUMN IF NOT EXISTS email_verificado BOOLEAN DEFAULT FALSE;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS activo BOOLEAN DEFAULT TRUE;
+-- Usuarios existentes quedan verificados para no romper acceso actual
+UPDATE users SET email_verificado = TRUE WHERE email_verificado = FALSE OR email_verificado IS NULL;
 ALTER TABLE schools     ADD COLUMN IF NOT EXISTS slug         VARCHAR(100);
 ALTER TABLE schools     ADD COLUMN IF NOT EXISTS total_resenas INTEGER DEFAULT 0;
 ALTER TABLE trainers    ADD COLUMN IF NOT EXISTS slug         VARCHAR(100);

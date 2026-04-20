@@ -58,29 +58,115 @@
 
 
 
+<!-- ===================================================
+     SCREEN — PERFIL DE USUARIO
+     =================================================== -->
+<div class="screen" id="screen-profile">
 
+  <div class="profile-hero">
+    <div class="profile-hero-inner">
+      <div class="profile-avatar-wrap">
+        <div class="profile-avatar" id="profileAvatar">CM</div>
+        <div class="profile-avatar-edit" title="Cambiar foto">✏️</div>
+      </div>
+      <div class="profile-meta">
+        <div class="profile-name" id="profileName">CARLOS MEDINA</div>
+        <div class="profile-email" id="profileEmail"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0c797f796d7e65634c69616d6560226f6361">[email&#160;protected]</a></div>
+        <div class="profile-badges">
+          <span class="profile-city-badge" id="profileCity">📍 Cali</span>
+          <span id="profile-badges-extra">
+            <span class="profile-member-badge">🥋 Miembro DOJX</span>
+          </span>
+        </div>
+      </div>
+      <div class="profile-actions">
+        <button class="btn-edit-profile">✏️ Editar perfil</button>
+        <button class="btn-logout" data-action="logout">Cerrar sesión</button>
+      </div>
+    </div>
+  </div>
 
-<!-- INCLUDE: screen-1-home-search.html -->
+  <div class="profile-body">
 
-<!-- INCLUDE: screen-escuelas-listado.html -->
+    <!-- Disciplinas guardadas -->
+    <div class="profile-section-card full">
+      <div class="profile-section-title">🥋 Mis disciplinas</div>
+      <div class="profile-disc-grid" id="profileDiscs">
+        <span class="profile-no-disc">Completa tu registro para ver tus disciplinas guardadas.</span>
+      </div>
+    </div>
 
-<!-- INCLUDE: screen-entrenadores-listado.html -->
+    <!-- Horario preferido -->
+    <div class="profile-section-card">
+      <div class="profile-section-title">⏰ Horario preferido</div>
+      <div class="profile-schedule-card" id="profileSchedule">
+        <div class="profile-schedule-icon">⚡</div>
+        <div>
+          <div class="profile-schedule-label">Sin seleccionar</div>
+          <div class="profile-schedule-range">Completa tu registro</div>
+        </div>
+      </div>
+    </div>
 
-<!-- INCLUDE: screen-eventos-listado.html -->
+    <!-- Estadísticas rápidas -->
+    <div class="profile-section-card">
+      <div class="profile-section-title">📊 Actividad</div>
+      <div class="profile-stats">
+        <div class="profile-stat">
+          <div class="profile-stat-num">0</div>
+          <div class="profile-stat-label">Escuelas guardadas</div>
+        </div>
+        <div class="profile-stat">
+          <div class="profile-stat-num">0</div>
+          <div class="profile-stat-label">Eventos vistos</div>
+        </div>
+        <div class="profile-stat">
+          <div class="profile-stat-num">0</div>
+          <div class="profile-stat-label">Entrenadores</div>
+        </div>
+        <div class="profile-stat">
+          <div class="profile-stat-num">1</div>
+          <div class="profile-stat-label">Días activo</div>
+        </div>
+      </div>
+    </div>
 
-<!-- INCLUDE: screen-2-school-detail.html -->
+    <!-- Accesos rápidos -->
+    <div class="profile-section-card">
+      <div class="profile-section-title">🔗 Accesos rápidos</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <button class="btn-outline-red" style="display:flex;align-items:center;gap:10px;justify-content:flex-start;padding:12px 16px" data-action="goTo" data-target="schools">
+          🏫 <span>Buscar escuelas</span>
+        </button>
+        <button class="btn-outline-red" style="display:flex;align-items:center;gap:10px;justify-content:flex-start;padding:12px 16px" data-action="goTo" data-target="trainers">
+          🥊 <span>Ver entrenadores</span>
+        </button>
+        <button class="btn-outline-red" style="display:flex;align-items:center;gap:10px;justify-content:flex-start;padding:12px 16px" data-action="goTo" data-target="events">
+          🏆 <span>Próximos eventos</span>
+        </button>
+        <button style="display:flex;align-items:center;gap:10px;justify-content:flex-start;padding:12px 16px;border-radius:4px;background:transparent;border:1.5px solid var(--gold);color:var(--gold);font-family:'Outfit',sans-serif;font-weight:600;font-size:14px;cursor:pointer;transition:all 0.2s" data-action="goTo" data-target="plans">
+          ⭐ <span>Ver planes premium</span>
+        </button>
+      </div>
+    </div>
 
-<!-- INCLUDE: screen-3-trainer-detail.html -->
+    <!-- Publicar contenido (dinámico según plan) -->
+    <div class="profile-section-card" id="profile-plan-section">
+      <div class="profile-section-title">🔒 Publicar contenido</div>
+      <p style="font-size:13px;color:var(--gray);margin-bottom:14px;line-height:1.6">Activa un plan mensual para publicar tu perfil de entrenador o tu escuela en DOJX.</p>
+      <button class="btn-red" style="width:100%;justify-content:center" data-action="goTo" data-target="plans">Ver planes desde $50.000 COP →</button>
+    </div>
 
-<!-- INCLUDE: screen-4-event-detail.html -->
+    <!-- Mis entrenadores publicados -->
+    <div class="profile-section-card full">
+      <div class="profile-section-title">🥋 Mis entrenadores publicados</div>
+      <div id="profile-mis-trainers">
+        <span class="profile-no-disc">Inicia sesión para ver tus publicaciones.</span>
+      </div>
+    </div>
 
-<!-- INCLUDE: screen-5-login-register.html -->
-
-<!-- INCLUDE: screen-6-plans-pricing.html -->
-
-<!-- INCLUDE: screen-perfil-de-usuario.html -->
-
-<!-- INCLUDE: screen-panel-admin.html -->
+  </div>
+</div>
 
 <!-- ===== MODAL: PUBLICAR ENTRENADOR / ESCUELA ===== -->
 <div class="modal-overlay" id="publishModal" data-action="closePublishModalOverlay">

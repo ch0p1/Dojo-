@@ -175,11 +175,10 @@ nav {
 
 /* ===== SCREENS ===== */
 .screen {
-  display: none; min-height: 100vh;
+  min-height: 100vh;
   padding-top: var(--nav-height);
   animation: fadeIn 0.4s ease;
 }
-.screen.active { display: block; }
 
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
@@ -1155,3 +1154,5 @@ a.wa-icon[href="#"] { opacity: 0.5; cursor: not-allowed; }
   color: var(--wa);
   font-size: 12px;
 }
+. n a v - l i n k s   l i   a ,   . n a v - m o b i l e - l i n k s   l i   a ,   . n a v - l o g o   a   {   t e x t - d e c o r a t i o n :   n o n e ;   c o l o r :   i n h e r i t ;   d i s p l a y :   b l o c k ;   h e i g h t :   1 0 0 % ;   w i d t h :   1 0 0 % ;   }  
+ 
