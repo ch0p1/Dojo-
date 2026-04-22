@@ -1,11 +1,11 @@
 // src/index.js
 require('dotenv').config();
 
-const express    = require('express');
-const cors       = require('cors');
-const helmet     = require('helmet');
-const rateLimit  = require('express-rate-limit');
-const path       = require('path');
+const express = require('express');
+const cors = require('cors');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
+const path = require('path');
 
 const app = express();
 const isProd = process.env.NODE_ENV === 'production';
@@ -35,8 +35,8 @@ app.use(cors({
     if (origenesPermitidos.includes(origin)) return callback(null, true);
     callback(new Error('Origen no permitido por CORS'));
   },
-  methods: ['GET','POST','PUT','DELETE','OPTIONS'],
-  allowedHeaders: ['Content-Type','Authorization'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
 }));
 
@@ -64,7 +64,6 @@ const limiteAuth = rateLimit({
 });
 
 app.use(limiteGeneral);
-app.use('/api/auth', limiteAuth); // Doble límite en auth
 
 // Servir archivos subidos (temporal hasta Cloudinary en producción)
 app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
@@ -73,29 +72,33 @@ app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
 // ── API v1 — versionada desde el inicio ──────────────────────
 // Permite hacer cambios breaking en v2 sin romper clientes v1
 const v1 = require('express').Router();
-v1.use('/auth',          require('./routes/auth.routes'));
-v1.use('/trainers',      require('./routes/trainers.routes'));
-v1.use('/schools',       require('./routes/schools.routes'));
-v1.use('/events',        require('./routes/events.routes'));
-v1.use('/reviews',       require('./routes/reviews.routes'));
-v1.use('/subscriptions', require('./routes/subscriptions.routes'));
-v1.use('/upload',        require('./routes/upload.routes'));
-v1.use('/admin',         require('./routes/admin.routes'));
 
+// Aplicar el límite de auth directamente sobre el router v1
+v1.use('/auth', limiteAuth);
+v1.use('/auth', require('./routes/auth.routes'));
+
+v1.use('/trainers', require('./routes/trainers.routes'));
+v1.use('/schools', require('./routes/schools.routes'));
+v1.use('/events', require('./routes/events.routes'));
+v1.use('/reviews', require('./routes/reviews.routes'));
+v1.use('/subscriptions', require('./routes/subscriptions.routes'));
+v1.use('/upload', require('./routes/upload.routes'));
+v1.use('/admin', require('./routes/admin.routes'));
+
+// Centralizamos en v1 como estándar del proyecto
 app.use('/api/v1', v1);
 
-// Compatibilidad con rutas sin versión — redirige a v1
-// (mantiene funcionando el frontend actual sin cambios)
-app.use('/api', v1);
+// Si el frontend ya usa /api/v1, esta ruta de compatibilidad es redundante
+// app.use('/api', v1);
 
 // ── 5. Health check — sin exponer rutas internas en producción ─
 app.get('/', (req, res) => {
   if (isProd) {
-    return res.json({ api:'DOJX', estado:'online' });
+    return res.json({ api: 'DOJX', estado: 'online' });
   }
   res.json({
-    api:'DOJX Backend (dev)', version:'1.0.0', estado:'online',
-    rutas:[
+    api: 'DOJX Backend (dev)', version: '1.0.0', estado: 'online',
+    rutas: [
       'POST /api/auth/register', 'POST /api/auth/login', 'GET /api/auth/me',
       'GET/POST/PUT/DELETE /api/trainers',
       'GET/POST/PUT/DELETE /api/schools',

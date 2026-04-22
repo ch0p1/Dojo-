@@ -93,12 +93,17 @@ async function register(req, res) {
 
     // Crear token y enviar email de verificación
     const token = await crearTokenVerificacion(nuevoUsuario.id);
-    const appUrl = process.env.APP_URL || 'http://127.0.0.1:3000';
-    const linkVerificar = `${appUrl}/dojo-plus.html?verificar=${token}`;
+    const appUrl = process.env.APP_URL || 'http://127.0.0.1:5500';
+    // Cambiamos dojo-plus.html por index.html (asegúrate que este sea el nombre de tu archivo)
+    const linkVerificar = `${appUrl}/screen-1-home-search.html?verificar=${token}`;
 
-    // Enviar email (no bloqueante — si falla el email, el registro igual fue exitoso)
-    emailService.enviarVerificacion(nuevoUsuario.email, nuevoUsuario.nombre, linkVerificar)
-      .catch(err => console.error('⚠️  Error enviando email verificación:', err.message));
+    // Intentamos enviar el correo de forma síncrona para asegurar que salga antes de responder al cliente
+    try {
+      await emailService.enviarVerificacion(nuevoUsuario.email, nuevoUsuario.nombre, linkVerificar);
+    } catch (mailErr) {
+      console.error('⚠️  Error enviando email verificación inicial:', mailErr.message);
+      // No bloqueamos el registro, pero el log nos dirá qué pasó
+    }
 
     res.status(201).json({
       mensaje: `Registro exitoso. Revisa tu correo (${nuevoUsuario.email}) para verificar tu cuenta.`,
@@ -265,8 +270,8 @@ async function reenviarVerificacion(req, res) {
     }
 
     const token = await crearTokenVerificacion(usuario.id);
-    const appUrl = process.env.APP_URL || 'http://127.0.0.1:3000';
-    const linkVerificar = `${appUrl}/dojo-plus.html?verificar=${token}`;
+    const appUrl = process.env.APP_URL || 'http://127.0.0.1:5500';
+    const linkVerificar = `${appUrl}/screen-1-home-search.html?verificar=${token}`;
 
     emailService.enviarReenvioVerificacion(usuario.email, usuario.nombre, linkVerificar)
       .catch(err => console.error('⚠️  Error reenviando verificación:', err.message));

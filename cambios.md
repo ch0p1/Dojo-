@@ -1,48 +1,35 @@
 # Historial de Cambios: Actualizaciones del Sistema - DOJX
 
-Este documento detalla las mejoras de UI/UX, correcciones de errores críticos de servidor y actualizaciones de base de datos realizadas en la sesión actual.
+Este documento detalla las mejoras de UI/UX, correcciones de errores críticos de servidor y actualizaciones de infraestructura realizadas.
 
 ---
 
-## 1. Mejoras de Interfaz (UI) y Navegación
-- **Consistencia Visual en Nav**: Se ajustó el color de los textos de navegación a blanco por defecto, con un cambio dinámico al rojo corporativo (`--red`) al pasar el cursor (hover).
-- **Feedback de Enlaces**: Se aplicó herencia de color y eliminación de subrayados en los elementos `<a>` dentro de los menús para mantener la estética limpia.
+## Sesión: 21 de Abril de 2026
+
+### 1. Correcciones de Frontend e Interactividad
+- **Exposición Global de Funciones**: Se inyectaron funciones clave de `auth.js` (`validateStep1`, `showLoginForm`, `nextRegStep`, etc.) en el objeto `window`. Esto solucionó el problema de los botones "Continuar" y enlaces de "Iniciar Sesión" que no respondían debido al scope de los módulos ES6.
+- **Optimización de Pestañas**: Se implementó `window.name = 'dojx_app'` y el uso de `target="dojx_app"` en los enlaces de correo. Ahora, al hacer clic en "Activar mi cuenta", se reutiliza la pestaña abierta de la aplicación en lugar de abrir ventanas duplicadas.
+- **Fix de Importación en API**: Se añadió el `export` faltante a `API_URL` en `api.js`, resolviendo errores de sintaxis al importar el módulo en otros archivos de lógica.
 
 ---
 
-## 2. Optimización del Motor de Filtrado
-- **Persistencia de Contenido**: Se corrigió el error donde los "ejemplos de muestra" estáticos desaparecían del DOM al filtrar. Ahora la lógica utiliza la clase CSS `.card-hidden` (`display: none !important`) en lugar de sobrescribir el contenedor con `innerHTML`.
-- **Aislamiento de Scope**: Se rediseñó la función de filtrado para que las selecciones de una pantalla (ej. Home) no afecten los listados de otras pantallas (ej. Escuelas), limitando la búsqueda de elementos activos al contenedor actual.
-- **Funcionalidad de Des-selección (Toggle)**: Se implementó la capacidad de desactivar un filtro haciendo clic por segunda vez en la misma "pill", permitiendo regresar fácilmente al estado global ("Todas").
-- **Insensibilidad a Mayúsculas**: Se normalizaron las comparaciones de texto mediante `.toLowerCase()` y `.trim()` para evitar fallos por discrepancias tipográficas.
+### 2. Infraestructura y Seguridad (Backend)
+- **Gestión de Variables de Entorno**: Se reubicó el archivo `.env` a la raíz del backend y se forzó su carga en los servicios de Base de Datos y Email. Esto corrigió errores de credenciales no definidas (`undefined`).
+- **Robustez en PostgreSQL**: Se actualizó `connection.js` para manejar autenticación SCRAM, asegurando que las contraseñas se procesen como strings y proporcionando logs de error claros para diagnóstico de conexión.
+- **Implementación de Cloudinary**: Se creó `cloudinary.service.js` para centralizar la futura gestión de imágenes y archivos multimedia de la plataforma.
 
 ---
 
-## 3. Corrección de Errores Críticos (Backend)
-- **Resolución de Error 500 (Login)**: Se identificó y corrigió una excepción en el controlador de autenticación causada por la ausencia de la columna `email_verificado` en la base de datos y la falta de validación de `JWT_SECRET`.
-- **Robustez de JWT**: Se añadió validación preventiva en `emitirToken` para asegurar que el servidor no inicie o falle con mensajes claros si las claves de entorno no están configuradas.
-- **Mejora de Logs**: Se implementó un sistema de errores detallados en modo desarrollo que reporta códigos de error específicos de PostgreSQL (ej. Error 42703).
+### 3. Flujo de Autenticación y Correo (SMTP)
+- **Configuración de Gmail SMTP**: Se integró el soporte para "Contraseñas de Aplicación" de Google, eliminando el error de autenticación 535. Se añadieron logs detallados y manejo de TLS para asegurar la entrega.
+- **Sincronización de Enlaces de Verificación**: Se corrigió la generación de enlaces en `auth.controller.js` para apuntar al puerto correcto del Live Server (`5500`) y al archivo de destino real (`screen-1-home-search.html`).
+- **Manejo de Carrera (Race Condition)**: Se implementó `await` en el envío del correo de registro inicial, garantizando que el proceso de email finalice antes de que el servidor responda al usuario.
 
 ---
 
-## 4. Infraestructura y Base de Datos (PostgreSQL)
-- **Actualización de Esquema**: Se ejecutaron scripts de migración para añadir soporte a:
-    - Verificación de correo electrónico (`email_verificado`).
-    - Gestión de membresías (`plan_activo`, `plan_expira`).
-    - Tablas de seguridad (`verification_tokens`) y pagos (`subscriptions`).
-- **Soporte UUID**: Se habilitó la extensión `pgcrypto` para manejar identificadores únicos globales, mejorando la seguridad de las URLs de perfil.
-
----
-
-## 5. Servicios y Documentación
-- **Implementación de Nodemailer**: Se configuró `email.service.js` con soporte para transportes SMTP reales, plantillas HTML personalizadas para bienvenida y reenvío de enlaces de activación.
-- **Documentación Técnica**: Se generó el archivo `documentacion.md` con el resumen ejecutivo, arquitectura de carpetas, flujo de datos y roadmap del proyecto.
-
----
-
-## Estado de la Aplicación (Resumen)
-- **Autenticación**: 100% Funcional (Registro -> Email -> Verificación -> Login).
-- **Filtros**: 100% Funcional (Preserva contenido estático y dinámico).
-- **Pagos**: Preparado para integración con Wompi (Estructura de tablas y firmas de integridad listas).
+### Estado Actual (Resumen)
+- **Autenticación**: 100% Operativa con verificación de correo.
+- **Base de Datos**: Conexión estable con manejo de errores SCRAM.
+- **Frontend**: Interactividad restaurada y navegación sincronizada con el servidor.
 
 *Última actualización: 20 de Abril de 2026*
