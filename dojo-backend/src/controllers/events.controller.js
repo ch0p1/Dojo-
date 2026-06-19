@@ -36,11 +36,11 @@ async function editar(req, res) {
     const ex = await pool.query('SELECT user_id FROM events WHERE id=$1', [id]);
     if (ex.rows.length === 0) return res.status(404).json({ error: 'Evento no encontrado' });
     if (!esAdmin && ex.rows[0].user_id !== userId) return res.status(403).json({ error: 'Sin permiso' });
-    const { nombre, disciplina, ciudad, fecha, organizador, whatsapp, descripcion, activo } = req.body;
+    const { nombre, disciplina, ciudad, fecha, organizador, whatsapp, descripcion, activo, tags, costo_inscripcion } = req.body;
     const result = await pool.query(
       `UPDATE events SET nombre=$1, disciplina=$2, ciudad=$3, fecha=$4,
-       organizador=$5, whatsapp=$6, descripcion=$7, activo=$8 WHERE id=$9 RETURNING *`,
-      [nombre, disciplina, ciudad, fecha, organizador, whatsapp, descripcion, activo, id]
+       organizador=$5, whatsapp=$6, descripcion=$7, activo=$8, tags=$9, costo_inscripcion=$10 WHERE id=$11 RETURNING *`,
+      [nombre, disciplina, ciudad, fecha, organizador, whatsapp, descripcion, activo, tags || [], parseInt(costo_inscripcion) || 0, id]
     );
     res.json({ mensaje: 'Evento actualizado', event: result.rows[0] });
   } catch (err) { handleError(res, err); }

@@ -44,7 +44,7 @@ export function logoutUser() {
   resetRegisterForm();
 
   showToast('👋 Sesión cerrada.');
-  goTo('home');
+  window.location.href = 'index.html';
 }
 
 function renderUserNav(user) {
@@ -115,7 +115,7 @@ export async function doLogin() {
     document.getElementById('login-email').value = '';
     document.getElementById('login-password').value = '';
 
-    goTo('home');
+    window.location.href = 'index.html';
   } catch (err) {
     if (btn) { btn.disabled = false; btn.textContent = 'Iniciar Sesión'; }
 
@@ -306,27 +306,66 @@ export function mostrarPantallaVerificacion(email, nombre) {
 }
 
 export async function reenviarVerificacion(email, btn) {
-  if (btn) { btn.disabled = true; btn.textContent = '⏳ Enviando...'; }
+  if (!btn || btn.classList.contains('loading')) return;
+
+  const originalText = '🔄 Reenviar correo de verificación';
+  const msg = document.getElementById('reenvio-msg');
+
+  btn.disabled = true;
+  btn.classList.add('loading');
+  btn.textContent = '⏳ Enviando...';
+  if (msg) msg.style.display = 'none';
+
   try {
-    await apiFetch('/auth/reenviar-verificacion', {
+    const response = await apiFetch('/auth/reenviar-verificacion', {
       method: 'POST',
       body: JSON.stringify({ email }),
     });
-    const msg = document.getElementById('reenvio-msg');
+
     if (msg) {
-      msg.textContent = '✅ Correo enviado. Revisa tu bandeja de entrada y la carpeta de spam.';
+      msg.textContent = '✅ ' + (response.mensaje || 'Enlace enviado correctamente.');
       msg.style.display = 'block';
+      msg.style.color = 'var(--wa)';
     }
+
+    // Cooldown de 60 segundos tras éxito
+    iniciarContador(btn, 60, originalText);
+
   } catch (err) {
-    const msg = document.getElementById('reenvio-msg');
     if (msg) {
       msg.textContent = err.message || 'Error al reenviar';
       msg.style.color = 'var(--red)';
       msg.style.display = 'block';
     }
-  } finally {
-    if (btn) { btn.disabled = false; btn.textContent = '🔄 Reenviar correo de verificación'; }
+
+    // Si es un error de "demasiadas peticiones" (429), bloqueamos por 60s
+    // Si es otro error (red, etc), permitimos reintentar rápido
+    if (err.status === 429) {
+      iniciarContador(btn, 30, originalText);
+    } else {
+      btn.disabled = false;
+      btn.classList.remove('loading');
+      btn.textContent = originalText;
+    }
   }
+}
+
+function iniciarContador(btn, segundos, textoOriginal) {
+  let timeLeft = segundos;
+  btn.disabled = true;
+  btn.textContent = `⏳ Reintentar en ${timeLeft}s`;
+
+  const timer = setInterval(() => {
+    timeLeft--;
+    if (timeLeft > 0) {
+      btn.textContent = `⏳ Reintentar en ${timeLeft}s`;
+    } else {
+      clearInterval(timer);
+      btn.disabled = false;
+      btn.classList.remove('loading');
+      btn.textContent = textoOriginal;
+    }
+  }, 1000);
 }
 
 export function ocultarVerificacion() {
@@ -345,9 +384,19 @@ export async function procesarVerificacionEnUrl() {
 
   const box = document.querySelector('.login-box');
   if (!box) {
-    // Si no estamos en la página de login, redirigir allí con el token en hash o persistido, 
-    // pero idealmente quien reciba la URL del correo irá directo al servidor que sirve el login.
-    // Asumiremos que el backend manda a /screen-5-login-register.html?verificar=TOKEN
+    // Fallback: Si no hay .login-box (ej. en index.html), usamos Toasts
+    try {
+      const data = await apiFetch('/auth/verificar-email?token=' + encodeURIComponent(token));
+
+      // Iniciar sesión automáticamente
+      saveToken(data.token);
+      setCurrentUser(data.usuario);
+      renderUserNav(data.usuario);
+
+      showToast('🎉 ¡Cuenta verificada con éxito! Ya puedes ingresar.');
+    } catch (err) {
+      showToast('❌ ' + (err.message || 'Error de verificación'));
+    }
     return;
   }
 
@@ -357,7 +406,13 @@ export async function procesarVerificacionEnUrl() {
   </div>`;
 
   try {
-    await apiFetch('/auth/verificar-email?token=' + encodeURIComponent(token));
+    const data = await apiFetch('/auth/verificar-email?token=' + encodeURIComponent(token));
+
+    // Iniciar sesión automáticamente
+    saveToken(data.token);
+    setCurrentUser(data.usuario);
+    renderUserNav(data.usuario);
+
     box.innerHTML = `<div style="text-align:center;padding:40px 0">
       <div style="font-size:56px;margin-bottom:16px">🎉</div>
       <h2 style="font-size:22px;margin-bottom:12px;color:var(--white)">¡Cuenta verificada!</h2>
@@ -389,6 +444,15 @@ export async function procesarVerificacionEnUrl() {
   }
 }
 
+export function editProfile() {
+  showToast('⚙️ Abriendo edición de perfil...');
+  // Intentamos ir al perfil, si 'profile' es una pantalla definida en utils.js
+  // de lo contrario, puedes redirigir a un HTML específico si no usas SPA
+  if (typeof goTo === 'function') {
+    goTo('profile');
+  }
+}
+
 // ==========================================
 // EXPOSICIÓN GLOBAL (Fix para botones/links en HTML)
 // ==========================================
@@ -398,3 +462,9 @@ window.validateStep1 = validateStep1;
 window.nextRegStep = nextRegStep;
 window.finishRegister = finishRegister;
 window.checkPwdStrength = checkPwdStrength;
+window.doLogin = doLogin;
+window.logoutUser = logoutUser;
+window.editProfile = editProfile;
+
+// Ejecutar automáticamente al cargar el script para procesar tokens en la URL
+procesarVerificacionEnUrl();

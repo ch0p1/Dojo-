@@ -8,6 +8,7 @@ import { showToast } from './ui.js';
 import { loadSchools, loadTrainers, loadEvents } from './data.js';
 
 let publishType = null;
+export let editItemId = null;
 let galeriaFiles = [];
 let reglamentoFile = null;
 
@@ -24,7 +25,7 @@ export function openPublishModal(type) {
   if (!modal || !formContainer || !title) return;
 
   const titles = { trainer: '🥊 Publicar entrenador', school: '🏫 Publicar escuela', event: '🏆 Publicar evento' };
-  title.textContent = titles[type] || 'Publicar';
+  title.textContent = editItemId ? '✏️ Editar ' + (titles[type] || '').split(' ').slice(1).join(' ') : (titles[type] || 'Publicar');
 
   if (type === 'trainer') formContainer.innerHTML = buildTrainerForm();
   else if (type === 'school') formContainer.innerHTML = buildSchoolForm();
@@ -39,8 +40,64 @@ export function closePublishModal() {
   if (modal) modal.classList.remove('open');
   document.body.style.overflow = '';
   publishType = null;
+  editItemId = null;
   galeriaFiles = [];
   reglamentoFile = null;
+}
+
+export function openEditModal(type, item) {
+  editItemId = item.id;
+  openPublishModal(type);
+  
+  // Rellenar campos después de un pequeño delay para asegurar que el DOM se haya renderizado
+  setTimeout(() => {
+    if (document.getElementById('pub-nombre')) document.getElementById('pub-nombre').value = item.nombre || '';
+    if (document.getElementById('pub-whatsapp')) document.getElementById('pub-whatsapp').value = item.whatsapp || '';
+    if (document.getElementById('pub-ciudad')) document.getElementById('pub-ciudad').value = item.ciudad || '';
+    if (document.getElementById('pub-bio')) document.getElementById('pub-bio').value = item.descripcion || item.bio || '';
+    
+    if (type === 'trainer') {
+      if (document.getElementById('pub-disciplinas')) document.getElementById('pub-disciplinas').value = (item.disciplinas || []).join(', ');
+      if (document.getElementById('pub-exp')) document.getElementById('pub-exp').value = item.experiencia_anos || 0;
+    } else if (type === 'school') {
+      if (document.getElementById('pub-disciplinas')) document.getElementById('pub-disciplinas').value = (item.disciplinas || []).join(', ');
+      if (document.getElementById('pub-direccion')) document.getElementById('pub-direccion').value = item.direccion || '';
+      // Horarios - requiere lógica extra si se quiere prellenar, por ahora vaciamos o llenamos inputs básicos
+      if (item.horarios) {
+        Object.keys(item.horarios).forEach(dia => {
+          // Simplificado: toma el primer horario de la mañana/tarde/noche y lo pone en un slot
+          const slots = document.getElementById('slots-' + dia);
+          if (slots) {
+             const turnos = Object.values(item.horarios[dia]).filter(Boolean);
+             if (turnos.length > 0) {
+                 const input = slots.querySelector('input');
+                 if (input) input.value = turnos[0];
+                 for (let i = 1; i < turnos.length; i++) {
+                     addSchedSlot(dia);
+                     const allInputs = slots.querySelectorAll('input');
+                     if (allInputs[allInputs.length - 1]) allInputs[allInputs.length - 1].value = turnos[i];
+                 }
+             }
+          }
+        });
+      }
+    } else if (type === 'event') {
+      if (document.getElementById('pub-organizador')) document.getElementById('pub-organizador').value = item.organizador || '';
+      if (document.getElementById('pub-disciplina')) document.getElementById('pub-disciplina').value = item.disciplina || '';
+      if (document.getElementById('pub-tags')) document.getElementById('pub-tags').value = (item.tags || []).join(', ');
+      if (document.getElementById('pub-costo')) document.getElementById('pub-costo').value = item.costo_inscripcion || 0;
+      if (document.getElementById('pub-fecha') && item.fecha) {
+        // Formatear a datetime-local format: YYYY-MM-DDThh:mm
+        const d = new Date(item.fecha);
+        const pad = n => n.toString().padStart(2, '0');
+        const dt = d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + 'T' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+        document.getElementById('pub-fecha').value = dt;
+      }
+    }
+
+    const btn = document.querySelector('#publishForm .btn-red');
+    if (btn) btn.textContent = 'Guardar Cambios';
+  }, 50);
 }
 
 // ==========================================
@@ -173,13 +230,17 @@ function buildEventForm() {
       <input id="pub-whatsapp" class="form-input" type="tel" placeholder="+57 300 123 4567"></div>
     <div class="form-group"><label class="form-label">Ciudad <span style="color:var(--red)">*</span></label>
       <select id="pub-ciudad" class="form-input"><option value="">Ciudad</option><option>Cali</option><option>Bogotá</option></select></div>
-    <div class="form-group"><label class="form-label">Disciplina <span style="color:var(--red)">*</span></label>
+    <div class="form-group"><label class="form-label">Disciplina Principal <span style="color:var(--red)">*</span></label>
       <select id="pub-disciplina" class="form-input">
         <option value="">Selecciona disciplina</option>
         <option>BJJ</option><option>Boxeo</option><option>Muay Thai</option>
         <option>MMA</option><option>Karate</option><option>Judo</option>
         <option>Taekwondo</option><option>Wrestling</option><option>Kickboxing</option>
       </select></div>
+    <div class="form-group"><label class="form-label">Tags (separados por coma)</label>
+      <input id="pub-tags" class="form-input" type="text" placeholder="Ej: Gi, No-Gi, Torneo Oficial"></div>
+    <div class="form-group"><label class="form-label">Costo de inscripción (COP) <span style="color:var(--red)">*</span></label>
+      <input id="pub-costo" class="form-input" type="number" min="0" placeholder="Ej: 80000"></div>
     <div class="form-group"><label class="form-label">Fecha y hora <span style="color:var(--red)">*</span></label>
       <input id="pub-fecha" class="form-input" type="datetime-local"></div>
     <div class="form-group"><label class="form-label">Descripción</label>
@@ -312,20 +373,23 @@ export async function submitPublish() {
     return;
   }
   if (errEl) errEl.classList.remove('visible');
-  if (btn) { btn.disabled = true; btn.textContent = 'Publicando...'; }
+  if (btn) { btn.disabled = true; btn.textContent = editItemId ? 'Guardando...' : 'Publicando...'; }
 
   try {
     const token = getToken();
-    let creado, id;
+    let resData, id;
+    const method = editItemId ? 'PUT' : 'POST';
+    const baseUrl = publishType === 'trainer' ? '/trainers' : (publishType === 'school' ? '/schools' : '/events');
+    const url = editItemId ? baseUrl + '/' + editItemId : baseUrl;
 
     if (publishType === 'trainer') {
       const disciplinas = (document.getElementById('pub-disciplinas')?.value || '').split(',').map(d => d.trim()).filter(Boolean);
-      creado = await apiFetch('/trainers', { method: 'POST', body: JSON.stringify({
+      resData = await apiFetch(url, { method, body: JSON.stringify({
         nombre, whatsapp, ciudad, disciplinas,
         bio: document.getElementById('pub-bio')?.value.trim() || null,
         experiencia_anos: parseInt(document.getElementById('pub-exp')?.value) || 0,
       })});
-      id = creado.trainer.id;
+      id = resData.trainer?.id || editItemId;
 
     } else if (publishType === 'school') {
       const disciplinas = (document.getElementById('pub-disciplinas')?.value || '').split(',').map(d => d.trim()).filter(Boolean);
@@ -338,29 +402,32 @@ export async function submitPublish() {
         horarios[dia].push(val);
       });
 
-      creado = await apiFetch('/schools', { method: 'POST', body: JSON.stringify({
+      resData = await apiFetch(url, { method, body: JSON.stringify({
         nombre, whatsapp, ciudad, disciplinas, horarios,
         descripcion: document.getElementById('pub-bio')?.value.trim() || null,
         direccion: document.getElementById('pub-direccion')?.value.trim() || null,
       })});
-      id = creado.school.id;
+      id = resData.school?.id || editItemId;
 
     } else if (publishType === 'event') {
       const disciplina = document.getElementById('pub-disciplina')?.value;
+      const tagsString = document.getElementById('pub-tags')?.value || '';
+      const tags = tagsString.split(',').map(t => t.trim()).filter(Boolean);
+      const costo_inscripcion = parseInt(document.getElementById('pub-costo')?.value) || 0;
       const fecha = document.getElementById('pub-fecha')?.value;
       const organizador = document.getElementById('pub-organizador')?.value.trim();
       
       if (!disciplina || !fecha || !organizador) {
         if (errEl) { errEl.textContent = 'Disciplina, organizador y fecha son obligatorios.'; errEl.classList.add('visible'); }
-        if (btn) { btn.disabled = false; btn.textContent = 'Publicar evento'; }
+        if (btn) { btn.disabled = false; btn.textContent = editItemId ? 'Guardar Cambios' : 'Publicar evento'; }
         return;
       }
       
-      creado = await apiFetch('/events', { method: 'POST', body: JSON.stringify({
-        nombre, whatsapp, ciudad, disciplina, fecha, organizador,
+      resData = await apiFetch(url, { method, body: JSON.stringify({
+        nombre, whatsapp, ciudad, disciplina, fecha, organizador, tags, costo_inscripcion,
         descripcion: document.getElementById('pub-bio')?.value.trim() || null,
       })});
-      id = creado.event.id;
+      id = resData.event?.id || editItemId;
     }
 
     // Subidas
@@ -393,9 +460,10 @@ export async function submitPublish() {
       }).catch(e => console.warn('Reglamento no subido:', e));
     }
 
+    const wasEdit = !!editItemId;
     closePublishModal();
     const labels = { trainer: 'Entrenador', school: 'Escuela', event: 'Evento' };
-    showToast('✅ ' + (labels[publishType] || 'Contenido') + ' publicado correctamente');
+    showToast('✅ ' + (labels[publishType] || 'Contenido') + (wasEdit ? ' actualizado' : ' publicado') + ' correctamente');
     
     // Recargar datos y dispatch
     if (publishType === 'trainer') loadTrainers();

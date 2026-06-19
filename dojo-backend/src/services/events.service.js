@@ -24,7 +24,8 @@ async function listar({ ciudad, disciplina, page = 1, limit = 20 }) {
   params.push(lim, offset);
   const result = await pool.query(
     `SELECT e.id, e.slug, e.nombre, e.disciplina, e.ciudad, e.fecha,
-            e.organizador, e.whatsapp, e.poster_url, e.reglamento_url, e.descripcion
+            e.organizador, e.whatsapp, e.poster_url, e.reglamento_url, e.descripcion,
+            e.tags, e.costo_inscripcion
      FROM events e ${where}
      ORDER BY e.fecha ASC
      LIMIT $${params.length - 1} OFFSET $${params.length}`,
@@ -72,8 +73,8 @@ async function crear(userId, datos) {
 
   const result = await pool.query(
     `INSERT INTO events (user_id, slug, nombre, disciplina, ciudad, fecha,
-       organizador, whatsapp, descripcion)
-     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING *`,
+       organizador, whatsapp, descripcion, tags, costo_inscripcion)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) RETURNING *`,
     [userId, slug,
      String(nombre).trim().slice(0,200),
      String(disciplina).trim(),
@@ -81,7 +82,9 @@ async function crear(userId, datos) {
      fechaDate,
      String(organizador).trim().slice(0,200),
      whatsapp.replace(/\D/g,'').slice(0,15),
-     descripcion ? String(descripcion).trim().slice(0,3000) : null]
+     descripcion ? String(descripcion).trim().slice(0,3000) : null,
+     datos.tags || [],
+     parseInt(datos.costo_inscripcion) || 0]
   );
   return result.rows[0];
 }

@@ -5,12 +5,13 @@
  */
 
 import { loadUserFromToken, procesarVerificacionEnUrl, logoutUser, doLogin, nextRegStep, resetRegisterForm, validateStep1, showLoginForm, showRegisterForm, checkPwdStrength, finishRegister, reenviarVerificacion, ocultarVerificacion } from './auth.js';
-import { toggleMobileMenu, closeMobileMenu, switchTab, toggleDisc, selectSched, clearFieldError } from './ui.js';
+import { toggleMobileMenu, closeMobileMenu, switchTab, toggleDisc, selectSched, clearFieldError, showToast } from './ui.js';
 import { goTo, esc } from './utils.js';
+import { apiFetch } from './api.js';
 import { loadSchools, loadTrainers, loadEvents, handleFilterClick, handleSearchInput } from './data.js';
-import { openPublishModal, closePublishModal, submitPublish, previewFoto, addGaleriaPreview, previewReglamento, removeReglamento, addSchedSlot, removeSchedSlot } from './publish.js';
+import { openPublishModal, closePublishModal, submitPublish, previewFoto, addGaleriaPreview, previewReglamento, removeReglamento, addSchedSlot, removeSchedSlot, openEditModal } from './publish.js';
 import { loadAdminStats, adminBuscarUsuarios, adminCargarContenido, adminCargarResenas, adminCargarPagos, adminBloquear, adminDesbloquear, adminDesactivar, adminVerificarResena, adminEliminarResena, adminActivarPlan } from './admin.js';
-import { setActiveDetail, getActiveDetail } from './state.js';
+import { setActiveDetail, getActiveDetail, getCurrentUser } from './state.js';
 import { renderSchoolDetail, renderTrainerDetail, renderEventDetail, wireDetailWa } from './render.js';
 
 // ==========================================
@@ -136,8 +137,26 @@ async function initCurrentPage() {
     if (item) { renderEventDetail(item); wireDetailWa('event', item); }
   }
 
-  // PANEL ADMIN
+  // LOGIN — mostrar formulario de login automáticamente si se accede directo
+  if (currentPath.includes('login-register') || currentPath.includes('screen-5')) {
+    // Si ya hay sesión activa, redirigir al inicio
+    const sesionActiva = getCurrentUser();
+    if (sesionActiva) {
+      goTo('home');
+      return;
+    }
+    // Mostrar login por defecto (no el registro)
+    showLoginForm();
+  }
+
+  // PANEL ADMIN — verificar permisos antes de cargar
   if (currentPath.includes('panel-admin')) {
+    const adminUser = getCurrentUser();
+    if (!adminUser || adminUser.rol !== 'admin') {
+      // No tiene permisos: redirigir al home
+      goTo('home');
+      return;
+    }
     loadAdminStats();
     adminBuscarUsuarios();
     // Cargar contenido al cambiar tab
@@ -150,6 +169,9 @@ async function initCurrentPage() {
 
   // PERFIL
   if (currentPath.includes('perfil-de-usuario')) {
+    const currentUser = getCurrentUser();
+    if (currentUser) renderProfileElements(currentUser);
+
     document.addEventListener('userLoaded', ({ detail: { user } }) => {
       renderProfileElements(user);
     });
@@ -163,6 +185,34 @@ async function initCurrentPage() {
 function setupEventDelegation() {
   // ── CLICK ────────────────────────────────
   document.body.addEventListener('click', (e) => {
+    // Manejo de editar / eliminar ítems desde las vistas de detalle
+    const editBtn = e.target.closest('#btn-edit-item');
+    if (editBtn) {
+      const id = editBtn.getAttribute('data-id');
+      const type = editBtn.getAttribute('data-type');
+      const item = getActiveDetail(type);
+      if (item) openEditModal(type, item);
+      return;
+    }
+
+    const delBtn = e.target.closest('#btn-delete-item');
+    if (delBtn) {
+      const id = delBtn.getAttribute('data-id');
+      const type = delBtn.getAttribute('data-type');
+      if (confirm('¿Estás seguro de que deseas eliminar este contenido de forma permanente?')) {
+        const endpoints = { trainer: '/trainers/', school: '/schools/', event: '/events/' };
+        const routeType = type === 'event' ? 'eventos' : (type === 'school' ? 'escuelas' : 'entrenadores');
+        apiFetch(endpoints[type] + id, { method: 'DELETE' }).then(() => {
+          showToast('✅ Eliminado exitosamente');
+          goTo(type + 's'); // redirigir al listado (events, schools, trainers)
+          setTimeout(() => window.location.href = 'screen-' + routeType + '-listado.html', 100);
+        }).catch(err => {
+          showToast('❌ Error al eliminar: ' + err.message);
+        });
+      }
+      return;
+    }
+
     const actionEl = e.target.closest('[data-action]');
     if (!actionEl) return;
     const action = actionEl.dataset.action;

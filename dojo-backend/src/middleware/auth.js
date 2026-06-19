@@ -5,6 +5,28 @@
 //  Uso admin: router.delete('/ruta', verificarToken, soloAdmin, controlador)
 // ─────────────────────────────────────────────────────────────
 const jwt = require('jsonwebtoken');
+const validator = require('validator');
+
+/**
+ * Normaliza el email de forma consistente (igual que en auth.controller.js)
+ */
+function normalizarEmail(email) {
+  if (!email) return '';
+  const limpio = String(email).trim().toLowerCase();
+  return validator.normalizeEmail(limpio) || limpio;
+}
+
+/**
+ * Re-evalúa si el usuario del payload es admin comparando con ADMIN_EMAIL.
+ * Esto garantiza que tokens emitidos antes de configurar ADMIN_EMAIL
+ * también reciban los privilegios de administrador correctamente.
+ */
+function resolverRol(payload) {
+  if (!process.env.ADMIN_EMAIL || !payload.email) return payload.rol || 'usuario';
+  return normalizarEmail(payload.email) === normalizarEmail(process.env.ADMIN_EMAIL)
+    ? 'admin'
+    : (payload.rol || 'usuario');
+}
 
 // ── Verifica que el token sea válido ─────────────────────────
 function verificarToken(req, res, next) {
@@ -21,7 +43,9 @@ function verificarToken(req, res, next) {
 
   try {
     const payload = jwt.verify(token, process.env.JWT_SECRET);
-    req.usuario = payload; // { userId, rol, plan_activo, plan_expira, iat, exp }
+    // Re-evaluar el rol en cada request para que tokens viejos (pre-ADMIN_EMAIL)
+    // también reciban privilegios de administrador si el email coincide.
+    req.usuario = { ...payload, rol: resolverRol(payload) };
     next();
   } catch (err) {
     if (err.name === 'TokenExpiredError') {

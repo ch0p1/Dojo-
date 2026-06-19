@@ -1,4 +1,5 @@
 // src/controllers/auth.controller.js
+require('dotenv').config();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
@@ -14,19 +15,33 @@ function limpia(str) {
   return validator.escape(String(str).trim());
 }
 
-function emitirToken(usuario) {
-  const esAdmin = usuario.email === process.env.ADMIN_EMAIL;
-  const secret = process.env.JWT_SECRET || '';
+/**
+ * Normaliza el email de forma consistente en toda la aplicación
+ */
+function normalizar(email) {
+  if (!email) return '';
+  const emailLimpio = String(email).trim().toLowerCase();
+  return validator.normalizeEmail(emailLimpio) || emailLimpio;
+}
 
+/**
+ * Compara el email del usuario con el ADMIN_EMAIL del entorno de forma segura
+ */
+function esUsuarioAdmin(email) {
+  if (!email || !process.env.ADMIN_EMAIL) return false;
+  return normalizar(email) === normalizar(process.env.ADMIN_EMAIL);
+}
+
+function emitirToken(usuario) {
+  const secret = process.env.JWT_SECRET || '';
   if (!secret || secret.trim() === '') {
     throw new Error('JWT_SECRET no está definido. Revisa tu archivo .env');
   }
-
   return jwt.sign({
     userId: usuario.id,
     email: usuario.email,
     nombre: usuario.nombre,
-    rol: esAdmin ? 'admin' : 'usuario',
+    rol: esUsuarioAdmin(usuario.email) ? 'admin' : 'usuario',
     ciudad: usuario.ciudad,
     plan_activo: usuario.plan_activo || null,
     plan_expira: usuario.plan_expira || null,
@@ -70,7 +85,8 @@ async function register(req, res) {
     : [];
 
   try {
-    const existe = await pool.query('SELECT id FROM users WHERE email=$1', [email.toLowerCase()]);
+    const emailNormal = normalizar(email);
+    const existe = await pool.query('SELECT id FROM users WHERE email=$1', [emailNormal]);
     if (existe.rows.length > 0)
       return res.status(409).json({ error: 'Email ya registrado' });
 
@@ -80,7 +96,7 @@ async function register(req, res) {
       `INSERT INTO users (email, password_hash, nombre, ciudad, disciplinas, horario_pref, email_verificado)
        VALUES ($1,$2,$3,$4,$5,$6, FALSE) RETURNING id, email, nombre, ciudad`,
       [
-        validator.normalizeEmail(email) || email.toLowerCase(),
+        emailNormal,
         password_hash,
         limpia(nombre),
         limpia(ciudad),
@@ -94,8 +110,7 @@ async function register(req, res) {
     // Crear token y enviar email de verificación
     const token = await crearTokenVerificacion(nuevoUsuario.id);
     const appUrl = process.env.APP_URL || 'http://127.0.0.1:5500';
-    // Cambiamos dojo-plus.html por index.html (asegúrate que este sea el nombre de tu archivo)
-    const linkVerificar = `${appUrl}/screen-1-home-search.html?verificar=${token}`;
+    const linkVerificar = `${appUrl}/index.html?verificar=${token}`;
 
     // Intentamos enviar el correo de forma síncrona para asegurar que salga antes de responder al cliente
     try {
@@ -124,11 +139,12 @@ async function login(req, res) {
     return res.status(400).json({ error: 'Email y contraseña son obligatorios' });
 
   try {
+    const emailNormal = normalizar(email);
     const result = await pool.query(
       `SELECT id, email, nombre, ciudad, password_hash,
               plan_activo, plan_expira, email_verificado
        FROM users WHERE email=$1`,
-      [email.toLowerCase()]
+      [emailNormal]
     );
 
     if (result.rows.length === 0)
@@ -141,16 +157,26 @@ async function login(req, res) {
 
     // ── Verificar email ──────────────────────────────────────
     if (!usuario.email_verificado) {
+      // Generar nuevo token y enviar correo inmediatamente si no está verificado
+      const token = await crearTokenVerificacion(usuario.id);
+      const appUrl = process.env.APP_URL || 'http://127.0.0.1:5500';
+      const linkVerificar = `${appUrl}/index.html?verificar=${token}`;
+
+      try {
+        await emailService.enviarReenvioVerificacion(usuario.email, usuario.nombre, linkVerificar);
+      } catch (mailErr) {
+        console.error('⚠️ Error enviando verificación automática en login:', mailErr.message);
+      }
+
       return res.status(403).json({
         error: 'Email no verificado',
         codigo: 'EMAIL_NO_VERIFICADO',
-        mensaje: 'Debes verificar tu correo antes de iniciar sesión. Revisa tu bandeja de entrada.',
+        mensaje: 'Tu cuenta no está verificada. Te hemos enviado un nuevo enlace de activación a tu correo.',
         email: usuario.email,
       });
     }
 
     const token = emitirToken(usuario);
-    const esAdmin = usuario.email === process.env.ADMIN_EMAIL;
 
     res.json({
       mensaje: `¡Bienvenido de vuelta, ${usuario.nombre.split(' ')[0]}!`,
@@ -160,7 +186,7 @@ async function login(req, res) {
         nombre: usuario.nombre,
         email: usuario.email,
         ciudad: usuario.ciudad,
-        rol: esAdmin ? 'admin' : 'usuario',
+        rol: esUsuarioAdmin(usuario.email) ? 'admin' : 'usuario',
         plan_activo: usuario.plan_activo,
         plan_expira: usuario.plan_expira,
       }
@@ -219,10 +245,24 @@ async function verificarEmail(req, res) {
       throw err;
     } finally { client.release(); }
 
+    // Obtener el usuario actualizado para emitir su sesión
+    const userQuery = await pool.query('SELECT * FROM users WHERE id = $1', [user_id]);
+    const usuario = userQuery.rows[0];
+    const tokenSesion = emitirToken(usuario);
+
     res.json({
       mensaje: `¡Cuenta verificada! Bienvenido a DOJX, ${nombre.split(' ')[0]}.`,
       verificado: true,
-      email,
+      token: tokenSesion,
+      usuario: {
+        id: usuario.id,
+        nombre: usuario.nombre,
+        email: usuario.email,
+        ciudad: usuario.ciudad,
+        rol: esUsuarioAdmin(usuario.email) ? 'admin' : 'usuario',
+        plan_activo: usuario.plan_activo,
+        plan_expira: usuario.plan_expira,
+      }
     });
 
   } catch (err) {
@@ -238,9 +278,10 @@ async function reenviarVerificacion(req, res) {
     return res.status(400).json({ error: 'Email requerido' });
 
   try {
+    const emailNormal = normalizar(email);
     const result = await pool.query(
       'SELECT id, nombre, email, email_verificado FROM users WHERE email=$1',
-      [email.toLowerCase()]
+      [emailNormal]
     );
 
     // Siempre responder igual — no revelar si el email existe
@@ -271,10 +312,13 @@ async function reenviarVerificacion(req, res) {
 
     const token = await crearTokenVerificacion(usuario.id);
     const appUrl = process.env.APP_URL || 'http://127.0.0.1:5500';
-    const linkVerificar = `${appUrl}/screen-1-home-search.html?verificar=${token}`;
+    const linkVerificar = `${appUrl}/index.html?verificar=${token}`;
 
-    emailService.enviarReenvioVerificacion(usuario.email, usuario.nombre, linkVerificar)
-      .catch(err => console.error('⚠️  Error reenviando verificación:', err.message));
+    try {
+      await emailService.enviarReenvioVerificacion(usuario.email, usuario.nombre, linkVerificar);
+    } catch (mailErr) {
+      console.error('⚠️ Error reenviando verificación:', mailErr.message);
+    }
 
     res.json({ mensaje: 'Si existe una cuenta con ese correo, recibirás un nuevo enlace.' });
 
@@ -299,7 +343,7 @@ async function getMe(req, res) {
     const u = result.rows[0];
     res.json({
       ...u,
-      rol: u.email === process.env.ADMIN_EMAIL ? 'admin' : 'usuario',
+      rol: esUsuarioAdmin(u.email) ? 'admin' : 'usuario',
       plan_vigente: u.plan_activo && new Date(u.plan_expira) > new Date()
     });
   } catch (err) {

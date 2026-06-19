@@ -70,7 +70,7 @@
       style="background:radial-gradient(ellipse at 50% 0%, rgba(192,57,43,0.12) 0%, transparent 60%)">
       <div class="trainer-hero-photo">🥊</div>
       <h1 class="trainer-hero-name">JUAN RODRÍGUEZ</h1>
-      <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:20px">
+      <div id="trainer-detail-tags" style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:20px">
         <span class="tag">Boxeo</span><span class="tag">Muay Thai</span><span class="tag">MMA</span>
       </div>
       <p style="max-width:500px;margin:0 auto;color:rgba(255,255,255,0.75);font-size:15px;line-height:1.7">
@@ -80,6 +80,10 @@
 
     <div class="content-wrap">
       <button class="btn-back" data-action="goTo" data-target="trainers">← Entrenadores</button>
+      <div id="author-actions" style="display:none; gap:10px; margin-bottom:20px; margin-top:10px;">
+        <button class="btn-outline-red" id="btn-edit-item" style="padding: 6px 12px; font-size: 14px;">✏️ Editar</button>
+        <button class="btn-outline-red" id="btn-delete-item" style="padding: 6px 12px; font-size: 14px;">🗑 Eliminar</button>
+      </div>
       <div class="section-card">
         <div class="section-card-title">⚡ Experiencia</div>
         <div style="display:flex;gap:16px;margin-bottom:20px;flex-wrap:wrap">
@@ -182,6 +186,13 @@
       <a id="wa-btn-trainer" class="btn-wa" href="#" target="_blank">
         <span style="font-size:18px">📲</span> Agendar con WhatsApp
       </a>
+    </div>
+  <!-- ===== PUBLISH MODAL ===== -->
+  <div class="modal-overlay" id="publishModal" data-action="closePublishModalOverlay">
+    <div class="modal" style="max-width:560px;max-height:90vh;overflow-y:auto">
+      <div class="modal-title" id="publishModalTitle">Publicar contenido</div>
+      <button class="modal-close" data-action="closePublishModal" aria-label="Cerrar">×</button>
+      <div id="publishForm"></div>
     </div>
   </div>
 

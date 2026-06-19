@@ -4,7 +4,7 @@
  */
 
 import { esc, buildWaUrl, formatDate } from './utils.js';
-import { setActiveDetail } from './state.js';
+import { setActiveDetail, getCurrentUser } from './state.js';
 import { goTo } from './utils.js';
 
 // ==========================================
@@ -87,6 +87,28 @@ export function renderEventCard(ev) {
 // RENDERERS DE DETALLES
 // ==========================================
 
+function setupAuthorActions(type, item) {
+  const actionsEl = document.getElementById('author-actions');
+  if (!actionsEl) return;
+
+  const user = getCurrentUser();
+  if (user && (user.id === item.user_id || user.rol === 'admin')) {
+    actionsEl.style.display = 'flex';
+    const btnEdit = document.getElementById('btn-edit-item');
+    const btnDelete = document.getElementById('btn-delete-item');
+    if (btnEdit) {
+      btnEdit.setAttribute('data-id', item.id);
+      btnEdit.setAttribute('data-type', type);
+    }
+    if (btnDelete) {
+      btnDelete.setAttribute('data-id', item.id);
+      btnDelete.setAttribute('data-type', type);
+    }
+  } else {
+    actionsEl.style.display = 'none';
+  }
+}
+
 export function renderSchoolDetail(s) {
   if (!s) return;
   const el = document.getElementById('screen-school');
@@ -111,7 +133,7 @@ export function renderSchoolDetail(s) {
     }
   }
 
-  const tagsWrap = el.querySelector('.hero-detail-content .tags-wrap') || el.querySelector('.hero-detail-content div[style*="gap:8px"]');
+  const tagsWrap = document.getElementById('school-detail-tags');
   if (tagsWrap && s.disciplinas?.length) {
     tagsWrap.innerHTML = s.disciplinas.map(d => `<span class="tag">${esc(d)}</span>`).join('');
   }
@@ -150,6 +172,8 @@ export function renderSchoolDetail(s) {
         }).join('')}
       </tr>`).join('');
   }
+
+  setupAuthorActions('school', s);
 }
 
 export function renderTrainerDetail(t) {
@@ -173,13 +197,15 @@ export function renderTrainerDetail(t) {
     }
   }
 
-  const tagsDiv = el.querySelector('.trainer-hero div[style*="gap:8px"]');
+  const tagsDiv = document.getElementById('trainer-detail-tags');
   if (tagsDiv && t.disciplinas?.length) {
     tagsDiv.innerHTML = t.disciplinas.map(d => `<span class="tag">${esc(d)}</span>`).join('');
   }
 
   const bioP = el.querySelector('.trainer-hero p');
   if (bioP && t.bio) bioP.textContent = t.bio;
+
+  setupAuthorActions('trainer', t);
 }
 
 export function renderEventDetail(ev) {
@@ -234,6 +260,40 @@ export function renderEventDetail(ev) {
       regBtn.style.pointerEvents = 'none';
     }
   }
+
+  const tagsEl = document.getElementById('event-detail-tags');
+  if (tagsEl) {
+    if (ev.tags && ev.tags.length > 0) {
+      tagsEl.innerHTML = ev.tags.map(t => `<span class="tag">${esc(t)}</span>`).join('');
+    } else {
+      tagsEl.innerHTML = `<span class="tag">${esc(ev.disciplina)}</span>`;
+    }
+  }
+
+  const costoEl = document.getElementById('event-detail-costo');
+  if (costoEl) {
+    const costo = ev.costo_inscripcion || 0;
+    costoEl.textContent = costo > 0 ? '$' + costo.toLocaleString('es-CO') : 'Gratis';
+  }
+
+  const diasEl = document.getElementById('event-detail-dias');
+  if (diasEl) {
+    if (ev.fecha) {
+      const diffTime = new Date(ev.fecha) - new Date();
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      if (diffDays > 0) {
+        diasEl.textContent = diffDays;
+        diasEl.style.fontSize = '24px';
+      } else {
+        diasEl.textContent = 'Finalizado';
+        diasEl.style.fontSize = '18px';
+      }
+    } else {
+      diasEl.textContent = '-';
+    }
+  }
+
+  setupAuthorActions('event', ev);
 }
 
 export function wireDetailWa(tipo, item) {

@@ -15,9 +15,9 @@
   <!-- ===== NAVIGATION ===== -->
   <nav>
     <div class="nav-inner">
-      <div class="nav-logo"><a href="screen-1-home-search.html">DOJ<span>X</span></a></div>
+      <div class="nav-logo"><a href="index.html">DOJ<span>X</span></a></div>
       <ul class="nav-links">
-        <li><a href="screen-1-home-search.html">Inicio</a></li>
+        <li><a href="index.html">Inicio</a></li>
         <li><a href="screen-escuelas-listado.html">Escuelas</a></li>
         <li><a href="screen-entrenadores-listado.html">Entrenadores</a></li>
         <li><a href="screen-eventos-listado.html">Eventos</a></li>
@@ -44,7 +44,7 @@
   <!-- ===== MOBILE MENU ===== -->
   <div class="nav-mobile-menu" id="mobileMenu">
     <ul class="nav-mobile-links">
-      <li><a href="screen-1-home-search.html">Inicio</a></li>
+      <li><a href="index.html">Inicio</a></li>
       <li><a href="screen-escuelas-listado.html">Escuelas</a></li>
       <li><a href="screen-entrenadores-listado.html">Entrenadores</a></li>
       <li><a href="screen-eventos-listado.html">Eventos</a></li>
@@ -73,9 +73,11 @@
         </div>
         <h1 style="font-size:clamp(32px,5vw,52px);margin-bottom:10px">Alliance BJJ Cali</h1>
         <div class="tags-wrap" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
-          <span class="tag">BJJ</span>
-          <span class="tag">Grappling</span>
-          <span class="tag">No-Gi</span>
+          <span id="school-detail-tags" style="display:flex;gap:8px">
+            <span class="tag">BJJ</span>
+            <span class="tag">Grappling</span>
+            <span class="tag">No-Gi</span>
+          </span>
           <div class="stars" style="margin-left:8px">★★★★★ <span style="color:var(--gray);font-size:12px">(128
               reseñas)</span></div>
         </div>
@@ -84,6 +86,10 @@
 
     <div class="content-wrap">
       <button class="btn-back" data-action="goTo" data-target="schools">← Escuelas</button>
+      <div id="author-actions" style="display:none; gap:10px; margin-bottom:20px; margin-top:10px;">
+        <button class="btn-outline-red" id="btn-edit-item" style="padding: 6px 12px; font-size: 14px;">✏️ Editar</button>
+        <button class="btn-outline-red" id="btn-delete-item" style="padding: 6px 12px; font-size: 14px;">🗑 Eliminar</button>
+      </div>
       <div class="tabs">
         <button class="tab-btn active" data-action="switchTab" data-tab-id="school-desc">Descripción</button>
         <button class="tab-btn" data-action="switchTab" data-tab-id="school-inst">Instalaciones</button>
@@ -251,6 +257,13 @@
       <a id="wa-btn-school" class="btn-wa" href="#" target="_blank">
         <span style="font-size:18px">📲</span> Contactar por WhatsApp
       </a>
+    </div>
+  <!-- ===== PUBLISH MODAL ===== -->
+  <div class="modal-overlay" id="publishModal" data-action="closePublishModalOverlay">
+    <div class="modal" style="max-width:560px;max-height:90vh;overflow-y:auto">
+      <div class="modal-title" id="publishModalTitle">Publicar contenido</div>
+      <button class="modal-close" data-action="closePublishModal" aria-label="Cerrar">×</button>
+      <div id="publishForm"></div>
     </div>
   </div>
 

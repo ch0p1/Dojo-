@@ -21,9 +21,9 @@
   <!-- ===== NAVIGATION ===== -->
   <nav>
     <div class="nav-inner">
-      <div class="nav-logo"><a href="screen-1-home-search.html">DOJ<span>X</span></a></div>
+      <div class="nav-logo"><a href="index.html">DOJ<span>X</span></a></div>
       <ul class="nav-links">
-        <li><a href="screen-1-home-search.html">Inicio</a></li>
+        <li><a href="index.html">Inicio</a></li>
         <li><a href="screen-escuelas-listado.html">Escuelas</a></li>
         <li><a href="screen-entrenadores-listado.html">Entrenadores</a></li>
         <li><a href="screen-eventos-listado.html">Eventos</a></li>
@@ -50,7 +50,7 @@
   <!-- ===== MOBILE MENU ===== -->
   <div class="nav-mobile-menu" id="mobileMenu">
     <ul class="nav-mobile-links">
-      <li><a href="screen-1-home-search.html">Inicio</a></li>
+      <li><a href="index.html">Inicio</a></li>
       <li><a href="screen-escuelas-listado.html">Escuelas</a></li>
       <li><a href="screen-entrenadores-listado.html">Entrenadores</a></li>
       <li><a href="screen-eventos-listado.html">Eventos</a></li>
@@ -75,9 +75,13 @@
 
     <div class="content-wrap">
       <button class="btn-back" data-action="goTo" data-target="events">← Eventos</button>
+      <div id="author-actions" style="display:none; gap:10px; margin-bottom:20px;">
+        <button class="btn-outline-red" id="btn-edit-item" style="padding: 6px 12px; font-size: 14px;">✏️ Editar</button>
+        <button class="btn-outline-red" id="btn-delete-item" style="padding: 6px 12px; font-size: 14px;">🗑 Eliminar</button>
+      </div>
       <h1 class="event-detail-title" style="font-size:clamp(32px,5vw,48px);margin-bottom:10px">COPA VALLE BJJ OPEN 2025
       </h1>
-      <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;align-items:center">
+      <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;align-items:center" id="event-detail-tags">
         <span class="tag">BJJ · Gi</span><span class="tag">No-Gi</span><span class="tag gold">Torneo Oficial</span>
       </div>
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px">
@@ -137,15 +141,15 @@
         <div class="section-card-title">✍️ Inscripción</div>
         <div style="display:flex;gap:16px;flex-wrap:wrap">
           <div style="text-align:center;flex:1;min-width:100px">
-            <div style="font-size:24px;font-family:'Bebas Neue',sans-serif;color:var(--red)">247</div>
+            <div style="font-size:24px;font-family:'Bebas Neue',sans-serif;color:var(--red)">-</div>
             <div style="font-size:12px;color:var(--gray)">Inscritos</div>
           </div>
           <div style="text-align:center;flex:1;min-width:100px">
-            <div style="font-size:24px;font-family:'Bebas Neue',sans-serif;color:var(--gold)">$80.000</div>
+            <div style="font-size:24px;font-family:'Bebas Neue',sans-serif;color:var(--gold)" id="event-detail-costo">$80.000</div>
             <div style="font-size:12px;color:var(--gray)">COP por categoría</div>
           </div>
           <div style="text-align:center;flex:1;min-width:100px">
-            <div style="font-size:24px;font-family:'Bebas Neue',sans-serif;color:var(--wa)">5</div>
+            <div style="font-size:24px;font-family:'Bebas Neue',sans-serif;color:var(--wa)" id="event-detail-dias">5</div>
             <div style="font-size:12px;color:var(--gray)">Días restantes</div>
           </div>
         </div>
@@ -156,6 +160,13 @@
       <a id="wa-btn-event" class="btn-wa" href="#" target="_blank">
         <span style="font-size:18px">📲</span> Contactar al Organizador
       </a>
+    </div>
+  <!-- ===== PUBLISH MODAL ===== -->
+  <div class="modal-overlay" id="publishModal" data-action="closePublishModalOverlay">
+    <div class="modal" style="max-width:560px;max-height:90vh;overflow-y:auto">
+      <div class="modal-title" id="publishModalTitle">Publicar contenido</div>
+      <button class="modal-close" data-action="closePublishModal" aria-label="Cerrar">×</button>
+      <div id="publishForm"></div>
     </div>
   </div>
 

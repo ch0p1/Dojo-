@@ -2,6 +2,7 @@
 const pool = require('../db/connection');
 
 const PRECIOS = { 'basic-personal':50000,'basic-escuela':70000,'premium':100000 };
+const PLANES_VALIDOS = Object.keys(PRECIOS);
 
 // ── GET /admin/stats — dashboard números ─────────────────────
 async function stats(req, res) {
