@@ -231,6 +231,53 @@ function setupEventDelegation() {
 
     // AUTH & FORMS
     // Agregamos preventDefault para evitar saltos de página en enlaces
+    if (action === 'buyPlan') {
+      e.preventDefault();
+      const plan = actionEl.dataset.plan;
+      if (!getCurrentUser()) {
+        showToast('Inicia sesión para elegir un plan');
+        showLoginForm();
+        goTo('login');
+        return;
+      }
+      
+      const originalText = actionEl.textContent;
+      actionEl.textContent = 'Cargando...';
+      actionEl.disabled = true;
+
+      apiFetch('/subscriptions/crear-pago', {
+        method: 'POST',
+        body: JSON.stringify({ plan })
+      }).then(data => {
+        const form = document.createElement('form');
+        form.method = 'GET';
+        form.action = 'https://checkout.wompi.co/p/';
+        
+        const fields = {
+          'public-key': data.public_key,
+          'currency': data.currency,
+          'amount-in-cents': data.amount_in_cents,
+          'reference': data.reference,
+          'signature:integrity': data.signature,
+          'redirect-url': data.redirect_url
+        };
+
+        for (const [key, val] of Object.entries(fields)) {
+          const input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = key;
+          input.value = val;
+          form.appendChild(input);
+        }
+        
+        document.body.appendChild(form);
+        form.submit();
+      }).catch(err => {
+        showToast('❌ Error al iniciar pago: ' + err.message);
+        actionEl.textContent = originalText;
+        actionEl.disabled = false;
+      });
+    }
     if (action === 'showLogin') { e.preventDefault(); showLoginForm(); }
     if (action === 'showRegister') { e.preventDefault(); showRegisterForm(); }
     if (action === 'doLogin') { e.preventDefault(); doLogin(); }
